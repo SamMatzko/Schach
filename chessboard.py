@@ -48,33 +48,47 @@ class ChessBoard(Gtk.Grid):
                 if r == "1":
                     if c == "a" or c == "h":
                         image = IMAGE_R
+                        image_name = "R"
                     elif c == "b" or c == "g":
                         image = IMAGE_N
+                        image_name = "N"
                     elif c == "c" or c == "f":
                         image = IMAGE_B
+                        image_name = "B"
                     elif c == "d":
                         image = IMAGE_Q
+                        image_name = "Q"
                     elif c == "e":
                         image = IMAGE_K
+                        image_name = "K"
                 elif r == "2":
                     image = IMAGE_P
+                    image_name = "P"
                 elif r == "8":
                     if c == "a" or c == "h":
                         image = IMAGE_r
+                        image_name = "r"
                     elif c == "b" or c == "g":
                         image = IMAGE_n
+                        image_name = "n"
                     elif c == "c" or c == "f":
                         image = IMAGE_b
+                        image_name = "b"
                     elif c == "d":
                         image = IMAGE_q
+                        image_name = "q"
                     elif c == "e":
                         image = IMAGE_k
+                        image_name = "k"
                 elif r == "7":
                     image = IMAGE_p
+                    image_name = "p"
 
                 # Execute the squares' creation so that we don't have
                 # to type 192 lines
-                exec(f"self.{c}{r} = Square(color='{color}', name='{c}{r}', image=Gtk.Image.new_from_file(image))")
+                exec(f"iii = Gtk.Image.new_from_file(image)")
+                exec(f"iii.set_name(image_name)")
+                exec(f"self.{c}{r} = Square(color='{color}', name='{c}{r}', image=iii)")
                 exec(f"self.{c}{r}.color = '{color}'")
                 exec(f"self.attach(self.{c}{r}, {cindex + 1}, {rindex + 1}, 1, 1)")
 
@@ -88,7 +102,9 @@ class ChessBoard(Gtk.Grid):
             if string[sint] == ".":
                 exec("square.reload(Gtk.Image.new_from_file(IMAGE_EMPTY))")
             else:
-                exec(f"square.reload(Gtk.Image.new_from_file(IMAGE_{string[sint]}))")
+                exec(f"iii = Gtk.Image.new_from_file(IMAGE_{string[sint]})")
+                exec(f"iii.set_name('{string[sint]}')")
+                exec(f"square.reload(iii)")
 
         self.hide()
         self.show_all()
@@ -106,8 +122,14 @@ class Square(Gtk.Button):
 
         self.image = image
         self.image.connect("draw", self._on_draw, {"color": self.rgba})
+        self.connect("clicked", self._on_clicked)
 
         self.add(image)
+
+    def _on_clicked(self, event):
+        print(event)
+        print(self.get_name())
+        print(self.image.get_name())
 
     def _on_draw(self, widget, cr, data):
         
