@@ -9,7 +9,7 @@ from gi.repository import Gdk, Gtk
 class ChessBoard(Gtk.Grid):
     """The chessboard widget."""
 
-    def __init__(self, string=None):
+    def __init__(self, parent=None, string=None):
 
         Gtk.Grid.__init__(self)
         self._create_squares()
@@ -17,6 +17,9 @@ class ChessBoard(Gtk.Grid):
 
         if string is not None:
             self.from_string(string)
+
+        # The parent
+        self.parent = parent
 
         # The fuction to call when a square is invoked
         self.square_function = None

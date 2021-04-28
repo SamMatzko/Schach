@@ -1,5 +1,6 @@
 import chess
 import chess.engine
+import dialogs
 
 from constants import *
 
@@ -138,16 +139,9 @@ class Game:
                                 color = "black"
 
                             # ...promote us!
-                            promote_to = PromotionDialog(master=self.chessboard.root.nametowidget("."), color=color).show()
+                            promote_to = dialogs.PromotionDialog(self.chessboard.parent, color=color).show_dialog()
                             self.board.push(chess.Move.from_uci(move + (promote_to.lower())))
-                            self.chessboard.square_image_config(
-                                move_from,
-                                "empty"
-                            )
-                            self.chessboard.square_image_config(
-                                self.move_to,
-                                promote_to
-                            )
+                            self.chessboard.from_string(str(self.board))
 
                 # Update the board
                 self.chessboard.from_string(str(self.board))

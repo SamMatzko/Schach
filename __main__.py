@@ -17,7 +17,7 @@ class App(Gtk.Window):
         self.connect("delete-event", self.quit)
 
         # The chessboard widget
-        self.chessboard = chessboard.ChessBoard()
+        self.chessboard = chessboard.ChessBoard(parent=self)
         self.add(self.chessboard)
 
         # The game manager instance
