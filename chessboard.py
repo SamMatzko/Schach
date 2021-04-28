@@ -17,7 +17,25 @@ class ChessBoard(Gtk.Grid):
         if string is not None:
             self.from_string(string)
 
+        # The fuction to call when a square is invoked
+        self.square_function = None
+
         self.show_all()
+
+    def _bound_method(self, widget):
+        """The method called when a square is invoked."""
+
+        # Call the method if it exists
+        if self.square_function != None:
+            self.square_function(
+                {
+                    "square": widget,
+                    "location": widget.get_name(),
+                    "piece": widget.get_piece()
+                }
+            )
+        else:
+            raise TypeError("Cannot call type 'None'.")
 
     def _create_squares(self):
         for c in LETTERS:
@@ -43,6 +61,7 @@ class ChessBoard(Gtk.Grid):
 
                 # Reset the image
                 image = IMAGE_EMPTY
+                image_name = "."
 
                 # Set which piece is for this square
                 if r == "1":
@@ -92,6 +111,29 @@ class ChessBoard(Gtk.Grid):
                 exec(f"self.{c}{r}.color = '{color}'")
                 exec(f"self.attach(self.{c}{r}, {cindex + 1}, {rindex + 1}, 1, 1)")
 
+    def _get_squares(self):
+        """Return a list of the squares."""
+
+        # The list
+        l = []
+
+        for c in LETTERS:
+            for r in NUMBERS:
+                exec(f"l.append(self.{c}{r})")
+
+        return(l)
+
+    def bind_squares(self, func):
+        """Bind all the squares at a "clicked" event to a call of function FUNC."""
+        
+        # Go through and bind all the squares to self._bound_method.
+        # This method then calls func when it is called.
+        for square in self._get_squares():
+            square.connect("clicked", self._bound_method)
+
+        # Set the square_function to be called by the squares
+        self.square_function = func        
+
     def from_string(self, string):
         """Rearrange the board according to STRING."""
 
@@ -122,14 +164,8 @@ class Square(Gtk.Button):
 
         self.image = image
         self.image.connect("draw", self._on_draw, {"color": self.rgba})
-        self.connect("clicked", self._on_clicked)
 
         self.add(image)
-
-    def _on_clicked(self, event):
-        print(event)
-        print(self.get_name())
-        print(self.image.get_name())
 
     def _on_draw(self, widget, cr, data):
         
@@ -144,6 +180,12 @@ class Square(Gtk.Button):
         self.cr.set_source_rgba(r, g, b, a)
         self.cr.rectangle(0, 0, self.width, self.height)
         self.cr.fill()
+
+    def get_piece(self):
+        """Return a byte representing the chess piece that is currently
+        on this square."""
+
+        return self.image.get_name()
 
     def reload(self, image):
         

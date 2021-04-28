@@ -16,8 +16,12 @@ class App(Gtk.Window):
 
         self.cb = chessboard.ChessBoard()
         self.add(self.cb)
+        self.cb.bind_squares(self.method)
 
         self.show_all()
+
+    def method(self, *args):
+        print(args)
 
     def update(self, *args):
         self.cb.from_string(". . b . . . . r p . . . p . p p . p . . q . . . Q . p n . . k P . . b P n p . . . P . . . . . p P . P r B P . P R N . . K B N R")
