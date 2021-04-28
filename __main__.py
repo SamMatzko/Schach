@@ -14,7 +14,7 @@ class App(Gtk.Window):
         
         # The window and its settings and events
         Gtk.Window.__init__(self, title="Schach")
-        self.connect("delete-event", Gtk.main_quit)
+        self.connect("delete-event", self.quit)
 
         # The chessboard widget
         self.chessboard = chessboard.ChessBoard()
@@ -24,6 +24,15 @@ class App(Gtk.Window):
         self.game = game.Game(self.chessboard)
 
         self.show_all()
+
+    def quit(self, *args):
+        """Properly close the application."""
+
+        # Stop the engine
+        self.game.engine.quit()
+
+        # Close the window and exit
+        Gtk.main_quit()
 
 if __name__ == "__main__":
     window = App()
