@@ -50,3 +50,6 @@ IMAGE_WARNING = f"{ROOT_PATH}icons/application/warning.png"
 # The audio file
 AUDIO_FILE_1 = f"{ROOT_PATH}audio/move1.wav"
 AUDIO_FILE_2 = f"{ROOT_PATH}audio/move2.wav"
+
+# The menu .xml file
+MENU_XML = f"{ROOT_PATH}ui/menu.xml"
