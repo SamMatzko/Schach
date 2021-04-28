@@ -53,6 +53,7 @@ class App(Gtk.Window):
 
         menu_actions = [
             ("File Menu", None, "File"),
+            ("File New", None, "New game...", "<control>N", None, self.new_game),
             ("File Quit", None, "Quit", "<control>Q", None, self.quit)
         ]
 
@@ -71,6 +72,10 @@ class App(Gtk.Window):
         accelgroup = self.uimanager.get_accel_group()
         self.add_accel_group(accelgroup)
         return self.uimanager
+
+    def new_game(self, *args):
+        """Create a new game."""
+        self.game.new_game()
 
     def quit(self, *args):
         """Properly close the application."""

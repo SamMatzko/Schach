@@ -1,6 +1,8 @@
 <ui>
     <menubar name="MenuBar">
         <menu action="File Menu">
+            <menuitem action="File New"/>
+            <separator/>
             <menuitem action="File Quit"/>
         </menu>
     </menubar>
