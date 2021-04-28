@@ -1,5 +1,6 @@
 import chessboard
 import gi
+import time
 
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gio, Gtk
@@ -11,11 +12,15 @@ class App(Gtk.Window):
         
         Gtk.Window.__init__(self, title="Schach")
         self.connect("delete-event", Gtk.main_quit)
+        self.connect("key-press-event", self.update)
 
-        cb = chessboard.ChessBoard()
-        self.add(cb)
+        self.cb = chessboard.ChessBoard()
+        self.add(self.cb)
 
         self.show_all()
+
+    def update(self, *args):
+        self.cb.from_string(". . b . . . . r p . . . p . p p . p . . q . . . Q . p n . . k P . . b P n p . . . P . . . . . p P . P r B P . P R N . . K B N R")
 
 if __name__ == "__main__":
     window = App()
