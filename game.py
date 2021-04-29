@@ -24,6 +24,10 @@ class Game:
         self.white_frame = white_frame
         self.black_frame = black_frame
 
+        # The limits for the computer
+        self.white_limit = None
+        self.black_limit = None
+
         # The board
         self.board = chess.Board()
 
@@ -131,6 +135,32 @@ class Game:
                 self.chessboard.from_string(str(self.board))
                 self._update_status()
 
+    def _engine_move(self):
+        """Make the engine this turn."""
+
+        if not self.board.is_game_over():
+
+            # Move the right time for the right turn
+            if self.board.turn:
+                limit = self.white_limit
+            else:
+                limit = self.black_limit
+            # Get the move from the engine
+            if limit == None:
+                engine_move = self.engine.play(self.board, chess.engine.Limit())
+            else:
+                engine_move = self.engine.play(self.board, limit)
+
+            # Move the engine's move
+            self.board.push(engine_move.move)
+
+            # Set the move_to setting so we can update the last-moved square
+            self.move_to = engine_move.move.uci()[2:]
+            self.chessboard.from_string(str(self.board))
+
+            # Update the status labels
+            self._update_status()
+
     def _game_over(self):
         """Handle the status and dialogs for the game's end."""
 
@@ -169,33 +199,6 @@ class Game:
             return True
         else:
             return False
-
-    def _engine_move(self):
-        """Make the engine this turn."""
-
-        if not self.board.is_game_over():
-
-            # # Move the right time for the right turn
-            # if str(self.board.turn) == "True":
-            #     limit = self.white_limit
-            # else:
-            #     limit = self.black_limit
-            # # Get the move from the engine
-            limit = None
-            if limit == None:
-                engine_move = self.engine.play(self.board, chess.engine.Limit())
-            else:
-                engine_move = self.engine.play(self.board, limit)
-
-            # Move the engine's move
-            self.board.push(engine_move.move)
-
-            # Set the move_to setting so we can update the last-moved square
-            self.move_to = engine_move.move.uci()[2:]
-            self.chessboard.from_string(str(self.board))
-
-            # Update the status labels
-            self._update_status()
 
     def _update_status(self):
         """Update the status labels."""
@@ -256,3 +259,11 @@ class Game:
 
         # Update the status
         self._update_status()
+
+    def set_limit(self, white_limit=None, black_limit=None):
+        """Set the limits for the computer."""
+
+        if white_limit is not None:
+            self.white_limit = chess.engine.Limit(depth=white_limit)
+        if black_limit is not None:
+            self.black_limit = chess.engine.Limit(depth=black_limit)

@@ -174,11 +174,11 @@ class App(Gtk.Window):
 
     def on_black_computer_scale(self, scale):
         """Set the black computer's playing power to the scale's value."""
-        print(scale.get_value())
+        self.game.set_limit(black_limit=scale.get_value())
 
     def on_white_computer_scale(self, scale):
         """Set the white computer's playing power to the scale's value."""
-        print(scale.get_value())
+        self.game.set_limit(white_limit=scale.get_value())
 
     def quit(self, *args):
         """Properly close the application."""
