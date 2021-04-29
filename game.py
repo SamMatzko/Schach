@@ -233,11 +233,5 @@ class Game:
             # Play the audio file
             playsound.playsound(AUDIO_FILE_2)
 
-        # Update the board 
-        self.chessboard.from_string(str(self.board))
-
-        # Update the window
-        self.chessboard.root.nametowidget(".").update()
-        
-        # Wait so that we don't freeze the computer
-        time.sleep(0.1)
+            # Update the board 
+            self.chessboard.from_string(str(self.board))

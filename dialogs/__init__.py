@@ -1,16 +1,148 @@
 """The dialogs for Schach."""
 import gi
 
+gi.require_version("Gdk", "3.0")
 gi.require_version("Gtk", "3.0")
 
 from constants import *
-from gi.repository import Gtk
+from gi.repository import Gtk, Gdk
 
-class PromotionDialog(Gtk.Dialog):
+class _Dialog(Gtk.Dialog):
+    """The base class for the dialogs."""
+
+    def __init__(self, *args, **kwargs):
+        Gtk.Dialog.__init__(self, *args, **kwargs)
+        self.set_resizable(False)
+
+        # Connect "escape" so that the dialog closes
+        self.connect("key-press-event", self._on_key_press)
+        self.connect("delete-event", self._destroy)
+
+    def _destroy(self, *args):
+        """Destroy the dialog."""
+        self.destroy()
+
+    def _on_key_press(self, widget, event):
+        """Close the dialog if the key pressed was "escape"."""
+        if event.keyval == Gdk.KEY_Escape:
+            self._destroy()
+
+class NewGameDialog(_Dialog):
+    """The dialog to set the settings for a new game."""
+
+    def __init__(self, parent):
+        _Dialog.__init__(
+            self,
+            title="New Game",
+            transient_for=parent,
+            modal=True
+        )
+        self.set_resizable(True)
+
+        # The default settings
+        self.settings = {
+            "white_mode": "human",
+            "black_mode": "human",
+            "white_computer": 1, 
+            "black_computer": 1
+        }
+
+        # The area to which we can add the grid
+        self.area = self.get_content_area()
+
+        # The grid
+        self.main_box = Gtk.HBox()
+        self.area.pack_start(self.main_box, True, True, 0)
+
+        # The available modes
+        self.modes = ["human", "computer"]
+        self.mode_store = Gtk.ListStore(str)
+        for mode in self.modes:
+            self.mode_store.append([mode])
+
+        # Draw the window
+        self._create_window()
+
+    def _create_white_frame(self):
+        """Create the frame for white's settings."""
+
+        # The main frame for white's settings
+        self.white_frame = Gtk.Frame(label="White")
+        self.main_box.pack_start(self.white_frame, True, True, 0)
+
+        # The spacer boxes
+        self.white_spacer_vbox = Gtk.VBox()
+        self.white_spacer_hbox = Gtk.HBox()
+        self.white_frame.add(self.white_spacer_vbox)
+        self.white_spacer_vbox.pack_start(self.white_spacer_hbox, True, True, 5)
+
+        # The grid for the settings
+        self.white_grid = Gtk.Grid()
+        self.white_spacer_hbox.pack_start(self.white_grid, True, True, 5)
+
+        # The mode combobx
+        self.white_mode_selector = Gtk.ComboBox.new_with_model(self.mode_store)
+        self.white_grid.attach(self.white_mode_selector, 0, 0, 1, 1)
+        self.white_mode_selector.connect("changed", self._on_white_mode_changed)
+        renderer_text = Gtk.CellRendererText()
+        self.white_mode_selector.pack_start(renderer_text, True)
+        self.white_mode_selector.add_attribute(renderer_text, "text", 0)
+        self.white_mode_selector.set_active(0)
+
+        # The computer level slider
+        self.white_computer_scale = Gtk.Scale.new_with_range(
+            Gtk.Orientation.HORIZONTAL,
+            0.0,
+            20.0,
+            1.0
+        )
+        self.white_computer_scale.set_tooltip_text("Computer playing power")
+        self.white_computer_scale.set_sensitive(False)
+        self.white_grid.attach(self.white_computer_scale, 0, 1, 1, 1)
+
+        # The spacer label to make things wider
+        self.white_spacer_label = Gtk.Label(label=" "*80)
+        self.white_grid.attach(self.white_spacer_label, 0, 2, 1, 1)
+
+    def _create_window(self):
+        """Create all the elements of the window."""
+        
+        # Create the white frame
+        self._create_white_frame()
+
+        # Show everything
+        self.show_all()
+
+    def _on_white_mode_changed(self, combo):
+
+        # Configure the combo
+        tree_iter = combo.get_active_iter()
+        if tree_iter is not None:
+            model = combo.get_model()
+            mode = model[tree_iter][0]
+            self.settings["white_mode"] = mode
+        
+        # Configure the scale
+        if mode == "computer":
+            self.white_computer_scale.set_sensitive(True)
+        else:
+            self.white_computer_scale.set_sensitive(False)
+
+    def show_dialog(self):
+        """Run the dilaog and return the user's response."""
+
+        # Run the dialog
+        self.run()
+        self.destroy()
+
+        # Return the variable
+        return self.settings
+
+class PromotionDialog(_Dialog):
     """The dialog that shows when a piece is promoted."""
 
     def __init__(self, parent, color="white"):
-        Gtk.Dialog.__init__(
+        _Dialog.__init__(
             self,
             title="Promotion!",
             transient_for=parent,
@@ -100,18 +232,19 @@ class PromotionDialog(Gtk.Dialog):
 
         # Run the dialog
         self.run()
+        self.destroy()
 
         # Return the variable
         return self.variable_to_return
 
 if __name__ == "__main__":
     window = Gtk.Window()
-    window.maximize()
     window.add(Gtk.Label(label="Press a key to see the dialogs."))
     window.show_all()
     def sd(*args):
-        print(PromotionDialog(window).show_dialog())
-        print(PromotionDialog(window, "black").show_dialog())
+        # print(PromotionDialog(window).show_dialog())
+        # print(PromotionDialog(window, "black").show_dialog())
+        print(NewGameDialog(window).show_dialog())
 
     window.connect("delete-event", Gtk.main_quit)
     window.connect("key-press-event", sd)
