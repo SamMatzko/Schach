@@ -183,6 +183,8 @@ class Square(Gtk.Button):
         self.cr.rectangle(0, 0, self.width, self.height)
         self.cr.fill()
 
+        self.set_tooltip_text(self.get_name())
+
     def get_piece(self):
         """Return a byte representing the chess piece that is currently
         on this square."""
