@@ -128,9 +128,25 @@ class Game:
                             promote_to = dialogs.PromotionDialog(self.chessboard.parent, color=color).show_dialog()
                             self.board.push(chess.Move.from_uci(move + (promote_to.lower())))
                             self.chessboard.from_string(str(self.board))
+                
+                # Check if the game is over, and if so, handle all endgame stuff
+                if self.board.is_game_over():
+                    self._game_over()
 
                 # Update the board
                 self.chessboard.from_string(str(self.board))
+
+    def _game_over(self):
+        """Handle the status and dialogs for the game's end."""
+
+        if self.board.is_checkmate():
+            print("checkmate")
+        elif self.board.is_fivefold_repetition():
+            print("fivefold repetition")
+        elif self.board.is_seventyfive_moves():
+            print("seventyfive moves")
+        elif self.board.is_stalemate():
+            print("stalemate")
 
     def _move_is_legal(self, move):
         """Return True if MOVE is legal."""
