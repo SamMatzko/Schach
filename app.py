@@ -29,6 +29,7 @@ class App(Gtk.Window):
         self.header_bar.set_show_close_button(True)
         self.header_bar.props.title = "Schach"
         self.set_titlebar(self.header_bar)
+        self.maximize()
 
         # Create the header bar
         self.create_header_bar()
