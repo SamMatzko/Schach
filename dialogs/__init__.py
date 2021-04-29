@@ -5,7 +5,7 @@ gi.require_version("Gdk", "3.0")
 gi.require_version("Gtk", "3.0")
 
 from constants import *
-from gi.repository import Gtk, Gdk
+from gi.repository import Gtk, Gdk, GdkPixbuf
 
 class _Dialog(Gtk.Dialog):
     """The base class for the dialogs."""
@@ -26,6 +26,27 @@ class _Dialog(Gtk.Dialog):
         """Close the dialog if the key pressed was "escape"."""
         if event.keyval == Gdk.KEY_Escape:
             self._destroy()
+
+class AbouDialog:
+    """The class that handles the about dialog."""
+
+    def __init__(self, parent, info):
+        self.dialog = Gtk.AboutDialog(
+            transient_for=parent,
+            modal=True
+        )
+        self.dialog.set_artists(info["artists"])
+        self.dialog.set_authors(info["authors"])
+        self.dialog.set_comments(info["comments"])
+        self.dialog.set_copyright(info["copyright"])
+        pixbuf = GdkPixbuf.Pixbuf().new_from_file_at_size(info["logo"], 100, 100)
+        pixbuf
+        self.dialog.set_logo(pixbuf)
+        self.dialog.set_program_name(info["program_name"])
+        self.dialog.set_version(info["version"])
+    
+    def present(self):
+        self.dialog.present()
 
 class NewGameDialog(_Dialog):
     """The dialog to set the settings for a new game."""

@@ -5,5 +5,8 @@
             <separator/>
             <menuitem action="File Quit"/>
         </menu>
+        <menu action="Help Menu">
+            <menuitem action="Help About"/>
+        </menu>
     </menubar>
 </ui>

@@ -2,6 +2,7 @@ import chessboard
 import dialogs
 import game
 import gi
+import json
 import status_frame
 import time
 
@@ -84,7 +85,9 @@ class App(Gtk.Window):
         menu_actions = [
             ("File Menu", None, "File"),
             ("File New", None, "New game...", "<control>N", None, self.new_game),
-            ("File Quit", None, "Quit", "<control>Q", None, self.quit)
+            ("File Quit", None, "Quit", "<control>Q", None, self.quit),
+            ("Help Menu", None, "Help"),
+            ("Help About", None, "About Schach...", None, None, self.show_about)
         ]
 
         action_group.add_actions(menu_actions, user_data=None)
@@ -130,3 +133,11 @@ class App(Gtk.Window):
 
         # Close the window and exit
         Gtk.main_quit()
+
+    def show_about(self, *args):
+        """Show the about dialog."""
+
+        # Get the info from appinfo.json
+        info = json.load(open(f"{ROOT_PATH}json/appinfo.json"))
+        info["logo"] = IMAGE_APPLICATION
+        dialogs.AbouDialog(self, info).present()
