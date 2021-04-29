@@ -151,8 +151,6 @@ class ChessBoard(Gtk.Grid):
                 exec(f"iii = Gtk.Image.new_from_file(IMAGE_{string[sint]})")
                 exec(f"iii.set_name('{string[sint]}')")
                 exec(f"square.reload(iii)")
-
-        self.hide()
         self.show_all()
 
 class Square(Gtk.Button):

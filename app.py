@@ -1,4 +1,5 @@
 import chessboard
+import dialogs
 import game
 import gi
 import time
@@ -75,7 +76,10 @@ class App(Gtk.Window):
 
     def new_game(self, *args):
         """Create a new game."""
-        self.game.new_game()
+
+        # Show the dialog
+        settings = dialogs.NewGameDialog(self).show_dialog()
+        self.game.new_game(settings)
 
     def quit(self, *args):
         """Properly close the application."""

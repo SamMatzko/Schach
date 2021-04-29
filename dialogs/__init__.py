@@ -63,12 +63,54 @@ class NewGameDialog(_Dialog):
         # Draw the window
         self._create_window()
 
+    def _create_black_frame(self):
+        """Create the frame for black's settings."""
+
+        # The main frame for black's settings
+        self.black_frame = Gtk.Frame(label="Black")
+        self.main_box.pack_start(self.black_frame, True, True, 5)
+
+        # The spacer boxes
+        self.black_spacer_vbox = Gtk.VBox()
+        self.black_spacer_hbox = Gtk.HBox()
+        self.black_frame.add(self.black_spacer_vbox)
+        self.black_spacer_vbox.pack_start(self.black_spacer_hbox, True, True, 5)
+
+        # The grid for the settings
+        self.black_grid = Gtk.Grid()
+        self.black_spacer_hbox.pack_start(self.black_grid, True, True, 5)
+
+        # The computer level slider
+        self.black_computer_scale = Gtk.Scale.new_with_range(
+            Gtk.Orientation.HORIZONTAL,
+            0.0,
+            20.0,
+            1.0
+        )
+
+        # The mode combobx
+        self.black_mode_selector = Gtk.ComboBox.new_with_model(self.mode_store)
+        self.black_grid.attach(self.black_mode_selector, 0, 0, 1, 1)
+        self.black_mode_selector.connect("changed", self._on_black_mode_changed)
+        renderer_text = Gtk.CellRendererText()
+        self.black_mode_selector.pack_start(renderer_text, True)
+        self.black_mode_selector.add_attribute(renderer_text, "text", 0)
+        self.black_mode_selector.set_active(0)
+
+        self.black_computer_scale.set_tooltip_text("Computer playing power")
+        self.black_computer_scale.set_sensitive(False)
+        self.black_grid.attach(self.black_computer_scale, 0, 1, 1, 1)
+
+        # The spacer label to make things wider
+        self.black_spacer_label = Gtk.Label(label=" "*80)
+        self.black_grid.attach(self.black_spacer_label, 0, 2, 1, 1)
+
     def _create_white_frame(self):
         """Create the frame for white's settings."""
 
         # The main frame for white's settings
         self.white_frame = Gtk.Frame(label="White")
-        self.main_box.pack_start(self.white_frame, True, True, 0)
+        self.main_box.pack_start(self.white_frame, True, True, 5)
 
         # The spacer boxes
         self.white_spacer_vbox = Gtk.VBox()
@@ -80,6 +122,14 @@ class NewGameDialog(_Dialog):
         self.white_grid = Gtk.Grid()
         self.white_spacer_hbox.pack_start(self.white_grid, True, True, 5)
 
+        # The computer level slider
+        self.white_computer_scale = Gtk.Scale.new_with_range(
+            Gtk.Orientation.HORIZONTAL,
+            0.0,
+            20.0,
+            1.0
+        )
+
         # The mode combobx
         self.white_mode_selector = Gtk.ComboBox.new_with_model(self.mode_store)
         self.white_grid.attach(self.white_mode_selector, 0, 0, 1, 1)
@@ -89,13 +139,6 @@ class NewGameDialog(_Dialog):
         self.white_mode_selector.add_attribute(renderer_text, "text", 0)
         self.white_mode_selector.set_active(0)
 
-        # The computer level slider
-        self.white_computer_scale = Gtk.Scale.new_with_range(
-            Gtk.Orientation.HORIZONTAL,
-            0.0,
-            20.0,
-            1.0
-        )
         self.white_computer_scale.set_tooltip_text("Computer playing power")
         self.white_computer_scale.set_sensitive(False)
         self.white_grid.attach(self.white_computer_scale, 0, 1, 1, 1)
@@ -110,8 +153,36 @@ class NewGameDialog(_Dialog):
         # Create the white frame
         self._create_white_frame()
 
+        # Create the black frame
+        self._create_black_frame()
+
         # Show everything
         self.show_all()
+
+    def _destroy(self, *args):
+        """Close the dialog properly."""
+
+        # Get the settings from the sliders
+        self.settings["white_computer"] = self.white_computer_scale.get_value()
+        self.settings["black_computer"] = self.black_computer_scale.get_value()
+
+        # Destroy the dialog
+        self.destroy()
+
+    def _on_black_mode_changed(self, combo):
+
+        # Configure the combo
+        tree_iter = combo.get_active_iter()
+        if tree_iter is not None:
+            model = combo.get_model()
+            mode = model[tree_iter][0]
+            self.settings["black_mode"] = mode
+        
+        # Configure the scale
+        if mode == "computer":
+            self.black_computer_scale.set_sensitive(True)
+        else:
+            self.black_computer_scale.set_sensitive(False)
 
     def _on_white_mode_changed(self, combo):
 
@@ -133,6 +204,8 @@ class NewGameDialog(_Dialog):
 
         # Run the dialog
         self.run()
+
+        # Destroy the dialog
         self.destroy()
 
         # Return the variable

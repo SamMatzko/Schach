@@ -177,6 +177,13 @@ class Game:
 
             # Set the move_to setting so we can update the last-moved square
             self.move_to = engine_move.move.uci()[2:]
+            self.chessboard.from_string(str(self.board))
+
+            # # If the next move is also the computer, go ahead and move it
+            # if str(self.board.turn) == "True" and self.white_mode == "computer":
+            #     self._engine_move()
+            # elif str(self.board.turn) == "False" and self.black_mode == "computer":
+            #     self._engine_move()
 
     def get_game_status(self):
         """Return various status stuff about the game, like the number of each
@@ -220,18 +227,6 @@ class Game:
         self.white_limit = chess.engine.Limit(depth=settings["white_computer"])
         self.black_limit = chess.engine.Limit(depth=settings["black_computer"])
 
-    def update(self):
-        """Update the board and engine playing for the loop."""
-
-        # Have the engine make the move if it's the engine's turn
-        if ((self.white_mode == "computer" and self.board.turn) or
-            (self.black_mode == "computer" and not self.board.turn)):
-
-            # Have the engine make the move
+        # Run the engine, if it is playing white
+        if self.white_mode == "computer":
             self._engine_move()
-
-            # Play the audio file
-            playsound.playsound(AUDIO_FILE_2)
-
-            # Update the board 
-            self.chessboard.from_string(str(self.board))
