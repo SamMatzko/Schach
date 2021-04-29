@@ -67,7 +67,12 @@ class App(Gtk.Window):
         self.game_box.pack_start(self.black_status_frame, True, True, 5)
 
         # The game manager instance
-        self.game = game.Game(self.chessboard)
+        self.game = game.Game(
+            self.chessboard,
+            self.white_status_frame,
+            self.black_status_frame
+        )
+        self.game._update_status()
 
         self.show_all()
 

@@ -7,7 +7,7 @@ from constants import *
 class Game:
     """The class that manages the chess game."""
 
-    def __init__(self, chessboard):
+    def __init__(self, chessboard, white_frame, black_frame):
     
         # The last square that was clicked
         self.move_from = None
@@ -15,6 +15,10 @@ class Game:
 
         # The chessboard widget
         self.chessboard = chessboard
+        
+        # The status widgets
+        self.white_frame = white_frame
+        self.black_frame = black_frame
 
         # The board
         self.board = chess.Board()
@@ -133,13 +137,20 @@ class Game:
                 if self.board.is_game_over():
                     self._game_over()
 
-                # Update the board
+                # Update the board and status
                 self.chessboard.from_string(str(self.board))
+                self._update_status()
 
     def _game_over(self):
         """Handle the status and dialogs for the game's end."""
 
         if self.board.is_checkmate():
+            if self.board.turn:
+                self.black_frame.set_status(we_won=True)
+                self.white_frame.set_status(we_won=False)
+            else:
+                self.white_frame.set_status(we_won=True)
+                self.black_frame.set_status(we_won=False)
             print("checkmate")
         elif self.board.is_fivefold_repetition():
             print("fivefold repetition")
@@ -181,6 +192,29 @@ class Game:
             self.move_to = engine_move.move.uci()[2:]
             self.chessboard.from_string(str(self.board))
 
+    def _update_status(self):
+        """Update the status labels."""
+
+        self.white_frame.set_status(board=str(self.board))
+        self.black_frame.set_status(board=str(self.board))
+        if self.board.is_check():
+            if self.board.turn:
+                self.white_frame.set_status(check=True)
+            else:
+                self.black_frame.set_status(check=True)
+        else:
+            self.white_frame.set_status(check=False)
+            self.black_frame.set_status(check=False)
+
+            if self.board.is_game_over():
+                self._game_over()
+            else:
+                self.white_frame.set_status(we_won=False)
+                self.black_frame.set_status(we_won=False)
+
+        if self.board.is_game_over():
+                self._game_over()
+
     def get_game_status(self):
         """Return various status stuff about the game, like the number of each
         peice on the board, whether there is a check, whether the game has 
@@ -214,3 +248,6 @@ class Game:
 
         # Reset the chessboard
         self.chessboard.from_string(str(self.board))
+
+        # Update the status
+        self._update_status()
