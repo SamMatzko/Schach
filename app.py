@@ -1,14 +1,18 @@
 import chessboard
 import dialogs
+import filedialogs
 import game
 import gi
 import json
+import os
+import pgn
 import status_frame
 import time
 
 gi.require_version("Gtk", "3.0")
 
 from constants import *
+from dialogs import messagedialog
 from gi.repository import Gio, Gtk
 
 class App(Gtk.Window):
@@ -85,6 +89,7 @@ class App(Gtk.Window):
         menu_actions = [
             ("File Menu", None, "File"),
             ("File New", None, "New game...", "<control>N", None, self.new_game),
+            ("File Save", None, "Save game...", "<control>S", None, self.save_game),
             ("File Quit", None, "Quit", "<control>Q", None, self.quit),
             ("Help Menu", None, "Help"),
             ("Help About", None, "About Schach...", None, None, self.show_about)
@@ -166,6 +171,15 @@ class App(Gtk.Window):
         """Have the computer play for the current turn."""
         self.game._engine_move()
 
+    def exit(self):
+        """Exit the app immediately."""
+
+        # Stop the engine
+        self.game.engine.quit()
+
+        # Close the window and exit
+        Gtk.main_quit()
+
     def new_game(self, *args):
         """Create a new game."""
 
@@ -183,11 +197,27 @@ class App(Gtk.Window):
     def quit(self, *args):
         """Properly close the application."""
 
-        # Stop the engine
-        self.game.engine.quit()
+        # Ask the user if they want to save the game
+        response = messagedialog.ask_yes_no(
+            self,
+            "Game not saved",
+            "The game has not been saved. Save game?"
+        )
 
-        # Close the window and exit
-        Gtk.main_quit()
+        if response == Gtk.ResponseType.NO:
+            self.exit()
+        else:
+            self.save_game()
+            self.exit()
+
+    def save_game(self, *args):
+        """Prompt the user for a file to save the game to."""
+
+        # Get the file
+        file = filedialogs.SaveAs(parent=self, initialdir=os.environ["HOME"]).show()
+        
+        # Save the file
+        pgn.save_game(self.game.board, file)
 
     def show_about(self, *args):
         """Show the about dialog."""
