@@ -51,38 +51,29 @@ class Game:
         square_name = info["location"]
         square_piece = info["piece"]
 
-        print("======NEW MOVE======")
 
         # Only respond if the widget is not disabled
         if square.get_sensitive():
-            print("...square not disabled...")
 
             # Check if we are on the starting square or the ending square of the move
             if self.move_from == None:
-                print("...move_from is none...")
                 self.move_from = square_name
-                print(self.move_from)
                 move = None
             else:
-                print("...move_from is not none...")
                 self.move_to = square_name
                 move = f"{self.move_from}{self.move_to}"
-                print(f"...move: {move}...")
                 move_from = self.move_from
                 self.move_from = None
 
             # Check if the move is legal
             if move != None:
-                print("...move is not none...")
                 legal = self._move_is_legal(move)
             else:
-                print("...move is none...")
                 legal = None
                 
             # If we are on the starting square, make sure that one of our pieces is 
             # actually on it
             if move == None:
-                print("...move is none...")
                 
                 # Get the piece (if there is any) on the starting square
                 # and the color of that piece
@@ -91,25 +82,20 @@ class Game:
 
                 # Is there a piece here?
                 if piece_at_square != "None":
-                    print("...piece is not none...")
 
                     # If so, is it ours?
                     if str(color_at_square) == str(self.board.turn):
-                        print("...piece is ours...")
+                        pass
                     else:
-                        print("...piece is not ours...")
                         self.move_from = None
                 else:
-                    print("...piece is none...")
                     self.move_from = None
 
             # If we are on the last square of the move...
             else:
-                print("...move is not none...")
 
                 # Is the move legal? If so, move it.
                 if legal:
-                    print("...move is legal...")
 
                     # Make the move in the chess.Board
                     self.board.push(chess.Move.from_uci(move))
@@ -117,7 +103,6 @@ class Game:
                 # If the move is not legal, it may be a promotion. Check if this
                 # is so, and if so, promote it.
                 else:
-                    print("...move is not legal...")
                     piece_at_square = str(self.board.piece_at(chess.parse_square(move_from)))
                     color_at_square = self.board.color_at(chess.parse_square(move_from))
 
@@ -125,11 +110,9 @@ class Game:
                     if (
                             color_at_square == chess.WHITE and "8" in self.move_to or
                             color_at_square == chess.BLACK and "1" in self.move_to):
-                        print("...piece is in it's opposite rank...")
 
                         # ...and if we are a pawn...
                         if piece_at_square.lower() == "p":
-                            print("...piece is a pawn...")
                             if color_at_square == chess.WHITE:
                                 color = "white"
                             else:
@@ -182,8 +165,6 @@ class Game:
     def _move_is_legal(self, move):
         """Return True if MOVE is legal."""
 
-        print(chess.Move.from_uci(move))
-        print(self.board.legal_moves)
         if chess.Move.from_uci(move) in self.board.legal_moves:
             return True
         else:
