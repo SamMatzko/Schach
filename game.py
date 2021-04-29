@@ -3,15 +3,19 @@ import chess.engine
 import dialogs
 
 from constants import *
+from dialogs import messagedialog
 
 class Game:
     """The class that manages the chess game."""
 
-    def __init__(self, chessboard, white_frame, black_frame):
+    def __init__(self, window, chessboard, white_frame, black_frame):
     
         # The last square that was clicked
         self.move_from = None
         self.move_to = None
+
+        # The parent window for the dialogs
+        self.window = window
 
         # The chessboard widget
         self.chessboard = chessboard
@@ -22,6 +26,9 @@ class Game:
 
         # The board
         self.board = chess.Board()
+
+        # The variable telling whether the game over dialogs have been aknowledged
+        self.dialog_ok = False
 
         print("Configuring the chess engine...")
 
@@ -148,16 +155,29 @@ class Game:
             if self.board.turn:
                 self.black_frame.set_status(we_won=True)
                 self.white_frame.set_status(we_won=False)
+                # Show the dialog
+                if not self.dialog_ok:
+                    messagedialog.show_game_over_checkmate(self.window, "black")
+                    self.dialog_ok = True
             else:
                 self.white_frame.set_status(we_won=True)
                 self.black_frame.set_status(we_won=False)
-            print("checkmate")
+                # Show the dialog
+                if not self.dialog_ok:
+                    messagedialog.show_game_over_checkmate(self.window, "white")
+                    self.dialog_ok = True
         elif self.board.is_fivefold_repetition():
-            print("fivefold repetition")
+            if not self.dialog_ok:
+                messagedialog.show_game_over_fivefold_repetition(self.window)
+                self.dialog_ok = True
         elif self.board.is_seventyfive_moves():
-            print("seventyfive moves")
+            if not self.dialog_ok:
+                messagedialog.show_game_over_seventyfive_moves(self.window)
+                self.dialog_ok = True
         elif self.board.is_stalemate():
-            print("stalemate")
+            if not self.dialog_ok:
+                messagedialog.show_game_over_stalemate(self.window)
+                self.dialog_ok = True
 
     def _move_is_legal(self, move):
         """Return True if MOVE is legal."""
@@ -217,7 +237,7 @@ class Game:
                 self.black_frame.set_status(we_won=False)
 
         if self.board.is_game_over():
-                self._game_over()
+            self._game_over()
 
     def get_game_status(self):
         """Return various status stuff about the game, like the number of each

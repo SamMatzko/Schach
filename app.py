@@ -68,6 +68,7 @@ class App(Gtk.Window):
 
         # The game manager instance
         self.game = game.Game(
+            self,
             self.chessboard,
             self.white_status_frame,
             self.black_status_frame

@@ -8,9 +8,9 @@ def show_game_over_checkmate(parent, color="white"):
     dialog = Gtk.MessageDialog(
         transient_for=parent,
         message_type=Gtk.MessageType.INFO,
-        title="Checkmate!",
-        text=f"{color.title()} wins!"
+        text="Checkmate!"
     )
+    dialog.format_secondary_markup(f"{color.title()} wins!")
     buttons = (
         (Gtk.STOCK_OK, Gtk.ResponseType.OK),
     )
@@ -23,9 +23,9 @@ def show_game_over_fivefold_repetition(parent):
     dialog = Gtk.MessageDialog(
         transient_for=parent,
         message_type=Gtk.MessageType.INFO,
-        title="Game over!",
-        text="The game ended due to fivefold repetition."
+        text="Game over!"
     )
+    dialog.format_secondary_text("The game ended due to fivefold repetition.")
     buttons = (
         (Gtk.STOCK_OK, Gtk.ResponseType.OK),
     )
@@ -38,9 +38,9 @@ def show_game_over_seventyfive_moves(parent):
     dialog = Gtk.MessageDialog(
         transient_for=parent,
         message_type=Gtk.MessageType.INFO,
-        title="Game over!",
-        text="The game ended due to the seventy-five move rule."
+        text="Game over!"
     )
+    dialog.format_secondary_text("The game ended due to the seventy-five move rule.")
     buttons = (
         (Gtk.STOCK_OK, Gtk.ResponseType.OK),
     )
@@ -53,9 +53,9 @@ def show_game_over_stalemate(parent):
     dialog = Gtk.MessageDialog(
         transient_for=parent,
         message_type=Gtk.MessageType.INFO,
-        title="Stalemate!",
-        text="The game ended in a stalemate."
+        text="Stalemate!"
     )
+    dialog.format_secondary_text("The game ended in a stalemate.")
     buttons = (
         (Gtk.STOCK_OK, Gtk.ResponseType.OK),
     )
