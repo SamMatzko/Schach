@@ -93,7 +93,8 @@ class App(Gtk.Window):
 
         # The play button
         self.play_button = Gtk.Button.new_from_icon_name("media-playback-start-symbolic", 1)
-        self.play_button.set_tooltip_text("Computer play next move")
+        self.play_button.set_tooltip_text("Have computer play this turn")
+        self.play_button.connect("clicked", self.engine_move)
         self.header_bar.pack_start(self.play_button)
 
     def create_ui_manager(self):
@@ -109,6 +110,10 @@ class App(Gtk.Window):
         accelgroup = self.uimanager.get_accel_group()
         self.add_accel_group(accelgroup)
         return self.uimanager
+
+    def engine_move(self, *args):
+        """Have the computer play for the current turn."""
+        self.game._engine_move()
 
     def new_game(self, *args):
         """Create a new game."""
