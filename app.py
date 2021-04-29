@@ -2,6 +2,7 @@ import chessboard
 import dialogs
 import game
 import gi
+import status_frame
 import time
 
 gi.require_version("Gtk", "3.0")
@@ -48,11 +49,22 @@ class App(Gtk.Window):
         self.menu_box.show_all()
         self.main_box.pack_start(self.menu_box, False, False, 0)
 
+        # The box to hold all the game-related stuff (i.e., the status labels 
+        # and the chessboard)
+        self.game_box = Gtk.HBox()
+        self.main_box.pack_start(self.game_box, True, False, 10)
+
         # The chessboard widget
         self.chessboard = chessboard.ChessBoard(parent=self)
-        self.chessboard_box = Gtk.HBox()
-        self.chessboard_box.pack_start(self.chessboard, True, False, 10)
-        self.main_box.pack_start(self.chessboard_box, True, False, 10)
+
+        # The status frames
+        self.white_status_frame = status_frame.WhiteStatusFrame()
+        self.black_status_frame = status_frame.BlackStatusFrame()
+
+        # Add the board and the status frames to the window
+        self.game_box.pack_start(self.white_status_frame, True, True, 5)
+        self.game_box.pack_start(self.chessboard, True, False, 10)
+        self.game_box.pack_start(self.black_status_frame, True, True, 5)
 
         # The game manager instance
         self.game = game.Game(self.chessboard)
