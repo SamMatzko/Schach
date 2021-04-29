@@ -95,11 +95,58 @@ class App(Gtk.Window):
     def create_header_bar(self):
         """Create the header bar's contents."""
 
+        # The game box
+        self.game_settings_box = Gtk.HBox()
+        Gtk.StyleContext.add_class(self.game_settings_box.get_style_context(), "linked")
+        self.header_bar.pack_start(self.game_settings_box)
+
         # The play button
         self.play_button = Gtk.Button.new_from_icon_name("media-playback-start-symbolic", 1)
         self.play_button.set_tooltip_text("Have computer play this turn")
         self.play_button.connect("clicked", self.engine_move)
-        self.header_bar.pack_start(self.play_button)
+        self.game_settings_box.pack_start(self.play_button, False, False, 0)
+
+        # The scales for the popover
+        self.white_computer_scale = Gtk.Scale.new_with_range(
+            Gtk.Orientation.HORIZONTAL,
+            0.0,
+            20.0,
+            1.0
+        )
+        self.white_computer_scale.connect("value-changed", self.on_white_computer_scale)
+        self.white_computer_box = Gtk.HBox()
+        self.white_computer_frame = Gtk.Frame(label="White computer power")
+        self.white_computer_box.pack_start(self.white_computer_frame, True, True, 5)
+        self.white_computer_frame.add(self.white_computer_scale)
+
+        self.black_computer_scale = Gtk.Scale.new_with_range(
+            Gtk.Orientation.HORIZONTAL,
+            0.0,
+            20.0,
+            1.0
+        )
+        self.black_computer_scale.connect("value-changed", self.on_black_computer_scale)
+        self.black_computer_box = Gtk.HBox()
+        self.black_computer_frame = Gtk.Frame(label="Black computer power")
+        self.black_computer_box.pack_start(self.black_computer_frame, True, True, 5)
+        self.black_computer_frame.add(self.black_computer_scale)
+
+        # A label to make the popover wider
+        self.popover_label = Gtk.Label(label=" "*50)
+
+        # The popover
+        self.popover = Gtk.Popover()
+        self.popover_box = Gtk.VBox()
+        self.popover_box.pack_start(self.white_computer_box, False, False, 5)
+        self.popover_box.pack_start(self.black_computer_box, False, False, 5)
+        self.popover_box.pack_start(self.popover_label, False, False, 0)
+
+        self.popover.add(self.popover_box)
+        self.popover_box.show_all()
+
+        # The popover button
+        self.popover_button = Gtk.MenuButton(popover=self.popover)
+        self.game_settings_box.pack_start(self.popover_button, False, False, 0)
 
     def create_ui_manager(self):
         self.uimanager = Gtk.UIManager()
@@ -124,6 +171,14 @@ class App(Gtk.Window):
 
         # Show the dialog
         self.game.new_game()
+
+    def on_black_computer_scale(self, scale):
+        """Set the black computer's playing power to the scale's value."""
+        print(scale.get_value())
+
+    def on_white_computer_scale(self, scale):
+        """Set the white computer's playing power to the scale's value."""
+        print(scale.get_value())
 
     def quit(self, *args):
         """Properly close the application."""
