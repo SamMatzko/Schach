@@ -50,7 +50,9 @@ class App(Gtk.Window):
 
         # The chessboard widget
         self.chessboard = chessboard.ChessBoard(parent=self)
-        self.main_box.pack_start(self.chessboard, False, False, 10)
+        self.chessboard_box = Gtk.HBox()
+        self.chessboard_box.pack_start(self.chessboard, True, False, 10)
+        self.main_box.pack_start(self.chessboard_box, True, False, 10)
 
         # The game manager instance
         self.game = game.Game(self.chessboard)
@@ -95,8 +97,7 @@ class App(Gtk.Window):
         """Create a new game."""
 
         # Show the dialog
-        settings = dialogs.NewGameDialog(self).show_dialog()
-        self.game.new_game(settings)
+        self.game.new_game()
 
     def quit(self, *args):
         """Properly close the application."""

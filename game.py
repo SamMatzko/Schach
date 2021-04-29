@@ -29,20 +29,6 @@ class Game:
             os.system(f"chmod +x {ROOT_PATH}stockfish")
             self.engine = chess.engine.SimpleEngine.popen_uci(f"{ROOT_PATH}stockfish")
 
-        # The game settings
-        self.settings = {
-            "white_mode": "human",
-            "black_mode": "human",
-            "white_computer": 1, 
-            "black_computer": 1
-        }
-
-        # Set the settings variables
-        self.white_mode = self.settings["white_mode"]
-        self.black_mode = self.settings["black_mode"]
-        self.white_limit = chess.engine.Limit(depth=self.settings["white_computer"])
-        self.black_limit = chess.engine.Limit(depth=self.settings["black_computer"])
-
         # Bind the chessboard to the move assertion method
         self.chessboard.bind_squares(self._assert_move)
 
@@ -179,12 +165,6 @@ class Game:
             self.move_to = engine_move.move.uci()[2:]
             self.chessboard.from_string(str(self.board))
 
-            # # If the next move is also the computer, go ahead and move it
-            # if str(self.board.turn) == "True" and self.white_mode == "computer":
-            #     self._engine_move()
-            # elif str(self.board.turn) == "False" and self.black_mode == "computer":
-            #     self._engine_move()
-
     def get_game_status(self):
         """Return various status stuff about the game, like the number of each
         peice on the board, whether there is a check, whether the game has 
@@ -210,23 +190,11 @@ class Game:
         # Update the board
         self.chessboard.from_string(str(self.board))
 
-    def new_game(self, settings):
-        """Create a new game with the given settings."""
+    def new_game(self):
+        """Create a new game."""
 
         # Reset the game
         self.board.reset()
 
         # Reset the chessboard
         self.chessboard.from_string(str(self.board))
-
-        # Set the settings
-        self.settings = settings
-        print(self.settings)
-        self.white_mode = settings["white_mode"]
-        self.black_mode = settings["black_mode"]
-        self.white_limit = chess.engine.Limit(depth=settings["white_computer"])
-        self.black_limit = chess.engine.Limit(depth=settings["black_computer"])
-
-        # Run the engine, if it is playing white
-        if self.white_mode == "computer":
-            self._engine_move()
