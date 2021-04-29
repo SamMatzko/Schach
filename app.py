@@ -15,8 +15,17 @@ class App(Gtk.Window):
     def __init__(self):
         
         # The window and its settings and events
-        Gtk.Window.__init__(self, title="Schach")
+        Gtk.Window.__init__(self)
         self.connect("delete-event", self.quit)
+
+        # The header bar
+        self.header_bar = Gtk.HeaderBar()
+        self.header_bar.set_show_close_button(True)
+        self.header_bar.props.title = "Schach"
+        self.set_titlebar(self.header_bar)
+
+        # Create the header bar
+        self.create_header_bar()
 
         # The main box that everything goes in
         self.main_box = Gtk.VBox()
@@ -59,6 +68,14 @@ class App(Gtk.Window):
         ]
 
         action_group.add_actions(menu_actions, user_data=None)
+
+    def create_header_bar(self):
+        """Create the header bar's contents."""
+
+        # The play button
+        self.play_button = Gtk.Button.new_from_icon_name("media-playback-start-symbolic", 1)
+        self.play_button.set_tooltip_text("Computer play next move")
+        self.header_bar.pack_start(self.play_button)
 
     def create_ui_manager(self):
         self.uimanager = Gtk.UIManager()
