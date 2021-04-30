@@ -1,5 +1,6 @@
 """The dialogs for Schach."""
 import gi
+import json
 import string
 
 gi.require_version("Gdk", "3.0")
@@ -447,16 +448,111 @@ class PromotionDialog(_Dialog):
         # Return the variable
         return self.variable_to_return
 
+class SettingsDialog(_Dialog):
+    """The settings dialog."""
+
+    def __init__(self, parent):
+        _Dialog.__init__(
+            self,
+            title="Schach Preferences"
+        )
+        self.set_default_geometry(500, 500)
+
+        # The area to which we can add stuff
+        self.area = self.get_content_area()
+
+        # Create the window
+        self._create_window()
+
+        # Add the buttons
+        self._create_buttons()
+
+        self.show_all()
+
+    def _create_buttons(self):
+        """Add the buttons to the window."""
+
+        # The buttons
+        buttons = (
+            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL),
+            (Gtk.STOCK_OK, Gtk.ResponseType.OK),
+        )
+
+        for button in buttons:
+            self.add_button(button[0], button[1])
+
+    def _create_window(self):
+        """Add all the elements to the window."""
+
+        # The notebook
+        self.notebook = Gtk.Notebook()
+        self.area.pack_start(self.notebook, True, True, 3)
+
+        # The tabs of the notebook
+
+        # The view tab
+        self.view_box = Gtk.VBox()
+        self._create_view_box()
+        self.notebook.insert_page(self.view_box, Gtk.Label(label="View"), 0)
+
+    def _create_view_box(self):
+        """Add all the elements to the view box."""
+
+        # The status frames checkbutton
+        self.status_frames_checkbutton = Gtk.CheckButton(label="Show status frames:")
+        self.view_box.pack_start(self.status_frames_checkbutton, False, False, 3)
+
+        # Set the window to the settings
+        self._set_to_settings()
+
+    def _destroy(self, *args):
+        """Close the dialog properly."""
+
+        self.destroy()
+
+    def _save_settings(self):
+        """Save the settings in the window to the json file."""
+
+        # Get the settings from the window
+        self.settings["show_status_frames"] = self.status_frames_checkbutton.get_active()
+
+        # Write the file
+        json.dump(self.settings, open(f"{ROOT_PATH}json/settings.json", "w"))
+
+    def _set_to_settings(self):
+        """Set all the window's settings widgets to the settings from settings.json."""
+
+        # Get the settings from settings.json
+        self.settings = json.load(open(f"{ROOT_PATH}/json/settings.json"))
+
+        # Set the widgets
+        self.status_frames_checkbutton.set_active(self.settings["show_status_frames"])
+
+    def show_dialog(self):
+
+        # Run the dialog
+        response = self.run()
+
+        # Save the changes if the user hit OK
+        if response == Gtk.ResponseType.OK:
+            self._save_settings()
+
+        # Destroy the dialog
+        self._destroy()
+
+        return response, self.settings
+
 if __name__ == "__main__":
     window = Gtk.Window()
     window.add(Gtk.Label(label="Press a key to see the dialogs."))
     window.show_all()
     def sd(*args):
         # print(CalendarDialog(window).show_dialog())
-        print(HeadersDialog(window, "1/2 - 1/2").show_dialog())
+        # print(HeadersDialog(window, "1/2 - 1/2").show_dialog())
         # print(PromotionDialog(window).show_dialog())
         # print(PromotionDialog(window, "black").show_dialog())
         # print(NewGameDialog(window).show_dialog())
+        print(SettingsDialog(window).show_dialog())
 
     window.connect("delete-event", Gtk.main_quit)
     window.connect("key-press-event", sd)
