@@ -27,7 +27,7 @@ class _Dialog(Gtk.Dialog):
         if event.keyval == Gdk.KEY_Escape:
             self._destroy()
 
-class AbouDialog:
+class AboutDialog:
     """The class that handles the about dialog."""
 
     def __init__(self, parent, info):

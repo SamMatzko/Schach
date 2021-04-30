@@ -226,4 +226,4 @@ class App(Gtk.Window):
         # Get the info from appinfo.json
         info = json.load(open(f"{ROOT_PATH}json/appinfo.json"))
         info["logo"] = IMAGE_APPLICATION
-        dialogs.AbouDialog(self, info).present()
+        dialogs.AboutDialog(self, info).present()
