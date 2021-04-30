@@ -34,8 +34,6 @@ class Game:
         # The variable telling whether the game over dialogs have been aknowledged
         self.dialog_ok = False
 
-        print("Configuring the chess engine...")
-
         # The chess engine. Set it as an executable if it is not already
         try:
             self.engine = chess.engine.SimpleEngine.popen_uci(f"{ROOT_PATH}stockfish")
