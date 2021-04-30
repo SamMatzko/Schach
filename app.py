@@ -198,7 +198,7 @@ class App(Gtk.Window):
         """Properly close the application."""
 
         # Ask the user if they want to save the game
-        response = messagedialog.ask_yes_no(
+        response = messagedialog.ask_yes_no_cancel(
             self,
             "Game not saved",
             "The game has not been saved. Save game?"
@@ -206,9 +206,13 @@ class App(Gtk.Window):
 
         if response == Gtk.ResponseType.NO:
             self.exit()
+        elif response == Gtk.ResponseType.YES:
+            if self.save_game():
+                return True
+            else:
+                self.exit()
         else:
-            self.save_game()
-            self.exit()
+            return True # This keeps the window from closing anyway
 
     def save_game(self, *args):
         """Prompt the user for a file to save the game to and the headers for the game."""
@@ -237,9 +241,9 @@ class App(Gtk.Window):
                 # Save the file
                 pgn.save_game(self.game.board, file, headers)
             else:
-                pass
+                return True
         else:
-            pass
+            return True
 
     def show_about(self, *args):
         """Show the about dialog."""

@@ -120,6 +120,9 @@ class HeadersDialog(_Dialog):
         # The dictionary containing the headers given by the user
         self.headers = None
 
+        # The default result vaule; this is to prevent errors
+        self.result = "*"
+
         # Whether the result of the game has already been determined
         self.override_result = override_result
 

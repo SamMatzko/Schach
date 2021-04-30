@@ -4,7 +4,7 @@ gi.require_version("Gtk", "3.0")
 
 from gi.repository import Gtk
 
-def ask_yes_no(parent, title, text):
+def ask_yes_no_cancel(parent, title, text):
     dialog = Gtk.MessageDialog(
         transient_for=parent,
         message_type=Gtk.MessageType.QUESTION,
@@ -12,11 +12,13 @@ def ask_yes_no(parent, title, text):
     )
     dialog.format_secondary_text(text)
     buttons = (
+        (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL),
         (Gtk.STOCK_NO, Gtk.ResponseType.NO),
         (Gtk.STOCK_YES, Gtk.ResponseType.YES)
     )
     for button in buttons:
         dialog.add_button(button[0], button[1])
+    dialog.set_default_response(Gtk.ResponseType.CANCEL)
     response = dialog.run()
     dialog.destroy()
     return response
