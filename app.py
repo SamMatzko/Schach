@@ -184,7 +184,6 @@ class App(Gtk.Window):
     def new_game(self, *args):
         """Create a new game."""
 
-        # Show the dialog
         self.game.new_game()
 
     def on_black_computer_scale(self, scale):

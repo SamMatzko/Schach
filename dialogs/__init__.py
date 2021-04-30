@@ -1,5 +1,6 @@
 """The dialogs for Schach."""
 import gi
+import string
 
 gi.require_version("Gdk", "3.0")
 gi.require_version("Gtk", "3.0")
@@ -177,6 +178,7 @@ class HeadersDialog(_Dialog):
         self.date_header_year_entry.set_width_chars(4)
         self.date_header_year_entry.set_max_length(4)
         self.date_header_year_entry.insert_text("????", 0)
+        self.date_header_year_entry.connect("event", self._on_entry_edit)
         self.date_header_entry_box.pack_start(self.date_header_year_entry, False, False, 0)
 
         self.date_header_entry_box.pack_start(Gtk.Label(label="/"), False, False, 1)
@@ -185,6 +187,7 @@ class HeadersDialog(_Dialog):
         self.date_header_month_entry.set_width_chars(2)
         self.date_header_month_entry.set_max_length(2)
         self.date_header_month_entry.insert_text("??", 0)
+        self.date_header_month_entry.connect("event", self._on_entry_edit)
         self.date_header_entry_box.pack_start(self.date_header_month_entry, False, False, 0)
 
         self.date_header_entry_box.pack_start(Gtk.Label(label="/"), False, False, 1)
@@ -193,10 +196,12 @@ class HeadersDialog(_Dialog):
         self.date_header_day_entry.set_width_chars(2)
         self.date_header_day_entry.set_max_length(2)
         self.date_header_day_entry.insert_text("??", 0)
+        self.date_header_day_entry.connect("event", self._on_entry_edit)
         self.date_header_entry_box.pack_start(self.date_header_day_entry, False, False, 0)
 
         # The calendar button
         self.calendar_button = Gtk.Button.new_from_icon_name("x-office-calendar-symbolic", 1)
+        self.calendar_button.connect("clicked", self._on_calendar_clicked)
         self.date_header_entry_box.pack_start(self.calendar_button, False, False, 0)
 
         # The round header
@@ -288,6 +293,33 @@ class HeadersDialog(_Dialog):
         
         # Destroy us
         self.destroy()
+
+    def _on_calendar_clicked(self, button):
+        """Get the date from the calendar."""
+
+        # The calendar dialog
+        dialog = CalendarDialog(self)
+        response, date = dialog.show_dialog()
+
+        # Set the date labels
+        self.date_header_year_entry.set_text(str(date[0]))
+        self.date_header_month_entry.set_text(str(date[1]))
+        self.date_header_day_entry.set_text(str(date[2]))
+
+    def _on_entry_edit(self, w, e):
+        """Remove invalid characters from the date entries."""
+
+        # If the user has left the entry...
+        if e.type == Gdk.EventType.LEAVE_NOTIFY or e.type == Gdk.EventType.FOCUS_CHANGE:
+            
+            # ...for each character in the entry's text...
+            for l in w.get_text():
+                # ...if the character is not a digit...
+                if l not in string.digits and l != "?":
+
+                    # ...set the entry to the default question marks
+                    w.set_text("?" *w.get_max_length())
+                    break
         
     def _on_result_set(self, radio, name):
         
@@ -308,7 +340,7 @@ class HeadersDialog(_Dialog):
         response = self.run()
 
         # Destroy the dialog
-        self.destroy()
+        self._destroy()
 
         # Return the reply
         return response, self.headers
@@ -417,8 +449,8 @@ if __name__ == "__main__":
     window.add(Gtk.Label(label="Press a key to see the dialogs."))
     window.show_all()
     def sd(*args):
-        print(CalendarDialog(window).show_dialog())
-        # print(HeadersDialog(window, "1/2 - 1/2").show_dialog())
+        # print(CalendarDialog(window).show_dialog())
+        print(HeadersDialog(window, "1/2 - 1/2").show_dialog())
         # print(PromotionDialog(window).show_dialog())
         # print(PromotionDialog(window, "black").show_dialog())
         # print(NewGameDialog(window).show_dialog())
