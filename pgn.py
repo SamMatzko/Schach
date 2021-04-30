@@ -3,28 +3,31 @@ import chess.pgn
 import time
 
 
-def save_game(board, file, **kw):
+def save_game(board, file, headers):
     """Save the current game under the file given.
     
     VALID ARGUMENTS:
         event, site, round, white, black"""
     
     # Get the keyword arguments
-    try: event = kw["event"]
+    try: event = headers["Event"]
     except:
         event = None
-    try: site = kw["site"]
+    try: site = headers["Site"]
     except:
         site = None
-    try: roundno = kw["round"]
+    try: roundno = headers["Round"]
     except:
         roundno = None
-    try: white = kw["white"]
+    try: white = headers["White"]
     except:
         white = None
-    try: black = kw["black"]
+    try: black = headers["Black"]
     except:
         black = None
+    try: result = headers["Result"]
+    except:
+        result = None
 
     # Create the pgn.Game
     pgn = chess.pgn.Game.from_board(board)
@@ -44,6 +47,8 @@ def save_game(board, file, **kw):
         pgn.headers["White"] = white
     if black:
         pgn.headers["Black"] = black
+    if result:
+        pgn.headers["Result"] = result
 
     with open(file, "a") as f:
         f.write(str(pgn) + "\n\n\n")

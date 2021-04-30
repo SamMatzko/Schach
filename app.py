@@ -211,13 +211,35 @@ class App(Gtk.Window):
             self.exit()
 
     def save_game(self, *args):
-        """Prompt the user for a file to save the game to."""
+        """Prompt the user for a file to save the game to and the headers for the game."""
 
-        # Get the file
-        file = filedialogs.SaveAs(parent=self, initialdir=os.environ["HOME"]).show()
-        
-        # Save the file
-        pgn.save_game(self.game.board, file)
+        # If the game has ended, set the override the result in the headers
+        if self.game.board.is_game_over():
+            status = self.game.get_game_status()
+            if status["is_checkmate"]:
+                if status["turn"]:
+                    override_result = "0 - 1"
+                else:
+                    override_result = "1 - 0"
+            else:
+                override_result = "1/2 - 1/2"
+        else:
+            override_result = None
+
+        # Get the headers
+        response, headers = dialogs.HeadersDialog(self, override_result).show_dialog()
+        if response == Gtk.ResponseType.OK:
+
+            # Get the file
+            file = filedialogs.SaveAs(parent=self, initialdir=os.environ["HOME"]).show()
+            if file is not None:
+
+                # Save the file
+                pgn.save_game(self.game.board, file, headers)
+            else:
+                pass
+        else:
+            pass
 
     def show_about(self, *args):
         """Show the about dialog."""
