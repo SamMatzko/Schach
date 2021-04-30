@@ -98,6 +98,8 @@ class App(Gtk.Window):
             ("File Save", None, "Save game...", "<control>S", None, self.save_game),
             ("File Quit", None, "Quit", "<control>Q", None, self.quit),
             ("Edit Menu", None, "Edit"),
+            ("Edit Undo", None, "Undo", "<control>Z", None, self.move_undo),
+            ("Edit Redo", None, "Redo", "<control><shift>Z", None, self.move_redo),
             ("Edit Settings", None, "Preferences...", None, None, self.show_settings),
             ("Help Menu", None, "Help"),
             ("Help About", None, "About Schach...", None, None, self.show_about)
@@ -187,6 +189,14 @@ class App(Gtk.Window):
 
         # Close the window and exit
         Gtk.main_quit()
+
+    def move_redo(self, *args):
+        """Redo the last undone move."""
+        self.game.move_redo()
+
+    def move_undo(self, *args):
+        """Undo the last move on the stack."""
+        self.game.move_undo()
 
     def new_game(self, *args):
         """Create a new game."""

@@ -31,6 +31,9 @@ class Game:
         # The board
         self.board = chess.Board()
 
+        # The stack of undone moves
+        self.undo_stack = []
+
         # The variable telling whether the game over dialogs have been aknowledged
         self.dialog_ok = False
 
@@ -101,6 +104,9 @@ class Game:
 
                     # Make the move in the chess.Board
                     self.board.push(chess.Move.from_uci(move))
+                    
+                    # Clear the undo stack
+                    self.undo_stack = []
 
                 # If the move is not legal, it may be a promotion. Check if this
                 # is so, and if so, promote it.
@@ -123,6 +129,7 @@ class Game:
                             # ...promote us!
                             promote_to = dialogs.PromotionDialog(self.chessboard.parent, color=color).show_dialog()
                             self.board.push(chess.Move.from_uci(move + (promote_to.lower())))
+                            self.undo_stack = []
                             self.chessboard.from_string(str(self.board))
                 
                 # Check if the game is over, and if so, handle all endgame stuff
@@ -151,6 +158,9 @@ class Game:
 
             # Move the engine's move
             self.board.push(engine_move.move)
+
+            # Clear the undo stack
+            self.undo_stack = []
 
             # Set the move_to setting so we can update the last-moved square
             self.move_to = engine_move.move.uci()[2:]
@@ -237,11 +247,18 @@ class Game:
             "board": str(self.board)
         }
 
+    def move_redo(self):
+        """Redo the last undone move."""
+
+        if self.undo_stack != []:
+            self.board.push(self.undo_stack.pop())
+        self.chessboard.from_string(str(self.board))
+
     def move_undo(self):
         """Undo the last move on the stack."""
 
         # Undo the game's move
-        self.board.pop()
+        self.undo_stack.append(self.board.pop())
 
         # Update the board
         self.chessboard.from_string(str(self.board))

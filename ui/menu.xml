@@ -7,6 +7,9 @@
             <menuitem action="File Quit"/>
         </menu>
         <menu action="Edit Menu">
+            <menuitem action="Edit Undo"/>
+            <menuitem action="Edit Redo"/>
+            <separator/>
             <menuitem action="Edit Settings"/>
         </menu>
         <menu action="Help Menu">
