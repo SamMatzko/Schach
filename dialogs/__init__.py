@@ -491,16 +491,20 @@ class SettingsDialog(_Dialog):
         # The tabs of the notebook
 
         # The view tab
-        self.view_box = Gtk.VBox()
+        self.window_box = Gtk.VBox()
         self._create_view_box()
-        self.notebook.insert_page(self.view_box, Gtk.Label(label="View"), 0)
+        self.notebook.insert_page(self.window_box, Gtk.Label(label="Window"), 0)
 
     def _create_view_box(self):
         """Add all the elements to the view box."""
 
         # The status frames checkbutton
-        self.status_frames_checkbutton = Gtk.CheckButton(label="Show status frames:")
-        self.view_box.pack_start(self.status_frames_checkbutton, False, False, 3)
+        self.status_frames_checkbutton = Gtk.CheckButton(label="Show status frames")
+        self.window_box.pack_start(self.status_frames_checkbutton, False, False, 3)
+
+        # The maximize on startup checkbutton
+        self.maximize_on_startup_checkbutton = Gtk.CheckButton(label="Maximize on startup")
+        self.window_box.pack_start(self.maximize_on_startup_checkbutton, False, False, 3)
 
         # Set the window to the settings
         self._set_to_settings()
@@ -515,6 +519,7 @@ class SettingsDialog(_Dialog):
 
         # Get the settings from the window
         self.settings["show_status_frames"] = self.status_frames_checkbutton.get_active()
+        self.settings["maximize_on_startup"] = self.maximize_on_startup_checkbutton.get_active()
 
         # Write the file
         json.dump(self.settings, open(f"{ROOT_PATH}json/settings.json", "w"))
@@ -527,6 +532,7 @@ class SettingsDialog(_Dialog):
 
         # Set the widgets
         self.status_frames_checkbutton.set_active(self.settings["show_status_frames"])
+        self.maximize_on_startup_checkbutton.set_active(self.settings["maximize_on_startup"])
 
     def show_dialog(self):
 

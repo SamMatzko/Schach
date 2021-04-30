@@ -29,7 +29,6 @@ class App(Gtk.Window):
         self.header_bar.set_show_close_button(True)
         self.header_bar.props.title = "Schach"
         self.set_titlebar(self.header_bar)
-        self.maximize()
 
         # Create the header bar
         self.create_header_bar()
@@ -81,6 +80,12 @@ class App(Gtk.Window):
         )
         self.game._update_status()
 
+        # Load the settings
+        self.settings = json.load(open(f"{ROOT_PATH}json/settings.json"))
+        if self.settings["maximize_on_startup"]:
+            self.maximize()
+        self.set_settings()
+
         self.show_all()
 
     def add_file_menu_actions(self, action_group):
@@ -92,6 +97,8 @@ class App(Gtk.Window):
             ("File New", None, "New game...", "<control>N", None, self.new_game),
             ("File Save", None, "Save game...", "<control>S", None, self.save_game),
             ("File Quit", None, "Quit", "<control>Q", None, self.quit),
+            ("Edit Menu", None, "Edit"),
+            ("Edit Settings", None, "Preferences...", None, None, self.show_settings),
             ("Help Menu", None, "Help"),
             ("Help About", None, "About Schach...", None, None, self.show_about)
         ]
@@ -245,6 +252,20 @@ class App(Gtk.Window):
         else:
             return True
 
+    def set_settings(self):
+        """Set the window to the current settings in self.settings."""
+
+        if self.settings["show_status_frames"]:
+            self.white_status_frame.set_no_show_all(False)
+            self.white_status_frame.show_all()
+            self.black_status_frame.set_no_show_all(False)
+            self.black_status_frame.show_all()
+        else:
+            self.white_status_frame.hide()
+            self.white_status_frame.set_no_show_all(True)
+            self.black_status_frame.hide()
+            self.black_status_frame.set_no_show_all(True)
+
     def show_about(self, *args):
         """Show the about dialog."""
 
@@ -252,3 +273,20 @@ class App(Gtk.Window):
         info = json.load(open(f"{ROOT_PATH}json/appinfo.json"))
         info["logo"] = IMAGE_APPLICATION
         dialogs.AboutDialog(self, info).present()
+
+    def show_settings(self, *args):
+        """Show the settings dialog."""
+        
+        # Show the dialog
+        response, settings = dialogs.SettingsDialog(self).show_dialog()
+
+        # Set the settings if the user hit OK
+        if response == Gtk.ResponseType.OK:
+
+            # Set the settings to the variable
+            self.settings = settings
+
+            # Set the settings to the window
+            self.set_settings()
+        else:
+            pass
