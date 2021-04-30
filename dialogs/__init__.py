@@ -48,6 +48,55 @@ class AboutDialog:
     def present(self):
         self.dialog.present()
 
+class CalendarDialog(_Dialog):
+    """A dialog to get a date response from the user using a calendar."""
+    
+    def __init__(self, parent):
+        _Dialog.__init__(
+            self,
+            title="Choose a date",
+            transient_for=parent,
+            modal=True
+        )
+
+        # The area to which we can add the calendar
+        self.area = self.get_content_area()
+
+        # The calendar
+        self.calendar = Gtk.Calendar()
+        self.area.add(self.calendar)
+
+        # The buttons
+        buttons = (
+            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL),
+            (Gtk.STOCK_OK, Gtk.ResponseType.OK)
+        )
+
+        # Add the buttons
+        for button in buttons:
+            self.add_button(button[0], button[1])
+
+        self.show_all()
+
+    def show_dialog(self):
+        """Show the dialog."""
+
+        # Run the dialog
+        response = self.run()
+
+        # Get the date from the calendar
+        dateorg = self.calendar.get_date()
+
+        # Set the month to one ahead, because the calendar returns
+        # January as 0, February as 1, etc.
+        date = (dateorg[0], dateorg[1] + 1, dateorg[2])
+
+        # Destory us
+        self.destroy()
+
+        # Return the response and date
+        return response, date
+
 class HeadersDialog(_Dialog):
     """The dialog in which users can edit the game's headers.
     
@@ -146,7 +195,7 @@ class HeadersDialog(_Dialog):
         self.date_header_day_entry.insert_text("??", 0)
         self.date_header_entry_box.pack_start(self.date_header_day_entry, False, False, 0)
 
-        # The calnedar button
+        # The calendar button
         self.calendar_button = Gtk.Button.new_from_icon_name("x-office-calendar-symbolic", 1)
         self.date_header_entry_box.pack_start(self.calendar_button, False, False, 0)
 
@@ -368,7 +417,8 @@ if __name__ == "__main__":
     window.add(Gtk.Label(label="Press a key to see the dialogs."))
     window.show_all()
     def sd(*args):
-        print(HeadersDialog(window, "1/2 - 1/2").show_dialog())
+        print(CalendarDialog(window).show_dialog())
+        # print(HeadersDialog(window, "1/2 - 1/2").show_dialog())
         # print(PromotionDialog(window).show_dialog())
         # print(PromotionDialog(window, "black").show_dialog())
         # print(NewGameDialog(window).show_dialog())
