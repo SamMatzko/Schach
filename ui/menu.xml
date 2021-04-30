@@ -12,6 +12,9 @@
             <separator/>
             <menuitem action="Edit Settings"/>
         </menu>
+        <menu action="Game Menu">
+            <menuitem action="Game ComputerGo"/>
+        </menu>
         <menu action="Help Menu">
             <menuitem action="Help About"/>
         </menu>

@@ -101,6 +101,8 @@ class App(Gtk.Window):
             ("Edit Undo", None, "Undo", "<control>Z", None, self.move_undo),
             ("Edit Redo", None, "Redo", "<control><shift>Z", None, self.move_redo),
             ("Edit Settings", None, "Preferences...", None, None, self.show_settings),
+            ("Game Menu", None, "Game"),
+            ("Game ComputerGo", None, "Engine move", "<control>E", None, self.engine_move),
             ("Help Menu", None, "Help"),
             ("Help About", None, "About Schach...", None, None, self.show_about)
         ]
@@ -117,7 +119,7 @@ class App(Gtk.Window):
 
         # The play button
         self.play_button = Gtk.Button.new_from_icon_name("media-playback-start-symbolic", 1)
-        self.play_button.set_tooltip_text("Have computer play this turn")
+        self.play_button.set_tooltip_text("Engine move (Ctrl+E)")
         self.play_button.connect("clicked", self.engine_move)
         self.game_settings_box.pack_start(self.play_button, False, False, 0)
 
