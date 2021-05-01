@@ -490,13 +490,13 @@ class SettingsDialog(_Dialog):
 
         # The tabs of the notebook
 
-        # The view tab
+        # The window tab
         self.window_box = Gtk.VBox()
-        self._create_view_box()
+        self._create_window_box()
         self.notebook.insert_page(self.window_box, Gtk.Label(label="Window"), 0)
 
-    def _create_view_box(self):
-        """Add all the elements to the view box."""
+    def _create_window_box(self):
+        """Add all the elements to the window box."""
 
         # The status frames checkbutton
         self.status_frames_checkbutton = Gtk.CheckButton(label="Show status frames")
