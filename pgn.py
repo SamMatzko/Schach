@@ -16,6 +16,9 @@ def save_game(board, file, headers):
     try: site = headers["Site"]
     except:
         site = None
+    try: date = headers["Date"]
+    except:
+        date = time.strftime("%Y.%m.%d")
     try: roundno = headers["Round"]
     except:
         roundno = None
@@ -32,15 +35,14 @@ def save_game(board, file, headers):
     # Create the pgn.Game
     pgn = chess.pgn.Game.from_board(board)
 
-    # Get the date for the header
-    date = time.strftime("%Y.%m.%d")
-
     # Set the headers
     pgn.headers["Date"] = date
     if event:
         pgn.headers["Event"] = event
     if site:
         pgn.headers["Site"] = site
+    if date:
+        pgn.headers["Date"] = date
     if roundno:
         pgn.headers["Round"] = roundno
     if white:
