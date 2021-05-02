@@ -153,6 +153,17 @@ class ChessBoard(Gtk.Grid):
                 exec(f"square.reload(iii)")
         self.show_all()
 
+    def get_board_string(self):
+        """Return a string giving the board layout."""
+        s = ""
+        for sq in BOARD_ORDER:          
+            for sq2 in self._get_squares():
+                if sq2.get_name() == sq:
+                    s = s + (sq2.get_piece()) + " "
+        if s[len(s) - 1] == " ":
+            s = s[:len(s) - 1]
+        return s
+
 class Square(Gtk.Button):
     """A custom button for the chess squares."""
 
@@ -189,7 +200,10 @@ class Square(Gtk.Button):
         """Return a byte representing the chess piece that is currently
         on this square."""
 
-        return self.image.get_name()
+        if self.image.get_name() == "GtkImage":
+            return "."
+        else:
+            return self.image.get_name()
 
     def parse_color(self, color):
         """Return the Gdk.RGBA.parse(COLOR).to_string() string."""
