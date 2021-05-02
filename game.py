@@ -90,7 +90,8 @@ class Game:
 
                     # If so, is it ours?
                     if str(color_at_square) == str(self.board.turn):
-                        pass
+                        # Set the color of the square
+                        self._set_square_color(COLOR_MOVEFROM, square_name, False)
                     else:
                         self.move_from = None
                 else:
@@ -103,7 +104,7 @@ class Game:
                 if legal:
 
                     # Make the move in the chess.Board
-                    self.board.push(chess.Move.from_uci(move))
+                    self._push_move(chess.Move.from_uci(move))
                     
                     # Clear the undo stack
                     self.undo_stack = []
@@ -128,7 +129,7 @@ class Game:
 
                             # ...promote us!
                             promote_to = dialogs.PromotionDialog(self.chessboard.parent, color=color).show_dialog()
-                            self.board.push(chess.Move.from_uci(move + (promote_to.lower())))
+                            self._push_move(chess.Move.from_uci(move + (promote_to.lower())))
                             self.undo_stack = []
                             self.chessboard.from_string(str(self.board))
                 
@@ -157,7 +158,7 @@ class Game:
                 engine_move = self.engine.play(self.board, limit)
 
             # Move the engine's move
-            self.board.push(engine_move.move)
+            self._push_move(engine_move.move)
 
             # Clear the undo stack
             self.undo_stack = []
@@ -208,6 +209,37 @@ class Game:
         else:
             return False
 
+    def _push_move(self, move):
+        """Push the move to the board and highlight the ending square of the move."""
+
+        # Push the move on the board
+        self.board.push(move)
+
+        # The last square of the move
+        last_square = move.to_square
+        for square_name in chess.SQUARES:
+            if last_square == square_name:
+                square_name = chess.SQUARE_NAMES[last_square]
+                break
+        
+        # Set the square's color
+        self._set_square_color(COLOR_MOVETO, square_name)
+
+    def _set_square_color(self, color, square_name, isolate=True):
+        """Set the SQUARE to COLOR, and all the other squares 
+        to their default colors if ISOLATE == True"""
+        
+        # Configure that square and set it's color
+        for square in self.chessboard._get_squares():
+            if square.get_name() == square_name:
+                square.set_color(color)
+            else:
+                if isolate:
+                    square.set_color(square.color)
+                else:
+                    if square.rgba.to_string() == square.parse_color(COLOR_MOVEFROM):
+                        square.set_color(square.color)
+
     def _update_status(self):
         """Update the status labels."""
 
@@ -251,7 +283,7 @@ class Game:
         """Redo the last undone move."""
 
         if self.undo_stack != []:
-            self.board.push(self.undo_stack.pop())
+            self._push_move(self.undo_stack.pop())
         self.chessboard.from_string(str(self.board))
 
     def move_undo(self):

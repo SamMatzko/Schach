@@ -14,6 +14,10 @@ ODD_NUMBERS = ["1", "3", "5", "7"]
 # The list of the order in which to write the pieces to the board
 BOARD_ORDER = []
 
+# The square colors
+COLOR_MOVEFROM = "#3333ff"
+COLOR_MOVETO = "#00ffff"
+
 # The order in which to write the pieces to the board
 for rank in ["8", "7", "6", "5", "4", "3", "2", "1"]:
     for file in ["a", "b", "c", "d", "e", "f", "g", "h"]:

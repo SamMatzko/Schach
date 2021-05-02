@@ -191,9 +191,23 @@ class Square(Gtk.Button):
 
         return self.image.get_name()
 
+    def parse_color(self, color):
+        """Return the Gdk.RGBA.parse(COLOR).to_string() string."""
+        rgba = Gdk.RGBA()
+        rgba.parse(color)
+        return rgba.to_string()
+
     def reload(self, image):
         
         self.remove(self.image)
         self.image = image
         self.image.connect("draw", self._on_draw, {"color": self.rgba})
         self.add(self.image)
+
+    def set_color(self, color):
+        """Set the square's color to COLOR."""
+
+        self.rgba = Gdk.RGBA()
+        self.rgba.parse(color)
+
+        self.reload(self.image)
