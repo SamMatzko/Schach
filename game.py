@@ -41,7 +41,6 @@ class Game:
         try:
             self.engine = chess.engine.SimpleEngine.popen_uci(f"{ROOT_PATH}stockfish")
         except PermissionError:
-            print("Setting stockfish to be executable...")
             os.system(f"chmod +x {ROOT_PATH}stockfish")
             self.engine = chess.engine.SimpleEngine.popen_uci(f"{ROOT_PATH}stockfish")
 
@@ -200,6 +199,7 @@ class Game:
             if not self.dialog_ok:
                 messagedialog.show_game_over_stalemate(self.window)
                 self.dialog_ok = True
+        self.chessboard.set_sensitive(False)
 
     def _move_is_legal(self, move):
         """Return True if MOVE is legal."""
@@ -224,6 +224,12 @@ class Game:
         
         # Set the square's color
         self._set_square_color(COLOR_MOVETO, square_name)
+
+    def _reset_square_colors(self):
+        """Set the colors of the squares back to their default."""
+
+        for square in self.chessboard._get_squares():
+            square.set_color(square.color)
 
     def _set_square_color(self, color, square_name, isolate=True):
         """Set the SQUARE to COLOR, and all the other squares 
@@ -302,7 +308,10 @@ class Game:
         self.board.reset()
 
         # Reset the chessboard
+        self.chessboard.set_sensitive(True)
+        self._reset_square_colors()
         self.chessboard.from_string(str(self.board))
+        self.dialog_ok = False
 
         # Update the status
         self._update_status()
