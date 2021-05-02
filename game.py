@@ -1,6 +1,8 @@
 import chess
 import chess.engine
 import dialogs
+import os
+import sys
 
 from constants import *
 from dialogs import messagedialog
@@ -41,8 +43,15 @@ class Game:
         try:
             self.engine = chess.engine.SimpleEngine.popen_uci(f"{ROOT_PATH}stockfish")
         except PermissionError:
-            os.system(f"chmod +x {ROOT_PATH}stockfish")
-            self.engine = chess.engine.SimpleEngine.popen_uci(f"{ROOT_PATH}stockfish")
+
+            # Do this command only if the system is LINUX-related, just to be safe.
+            if "linux" in sys.platform.lower():
+                os.system(f"chmod +x {ROOT_PATH}stockfish")
+                self.engine = chess.engine.SimpleEngine.popen_uci(f"{ROOT_PATH}stockfish")
+            else:
+                print("FATAL ERROR: Cannot set up engine: engine is not executable.")
+                print(f"Please set {ROOT_PATH}stockfish to be executable.")
+                exit()
 
         # Bind the chessboard to the move assertion method
         self.chessboard.bind_squares(self._assert_move)
