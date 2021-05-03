@@ -41,6 +41,7 @@ class AboutDialog:
         self.dialog.set_authors(info["authors"])
         self.dialog.set_comments(info["comments"])
         self.dialog.set_copyright(info["copyright"])
+        self.dialog.set_license(info["license"])
         pixbuf = GdkPixbuf.Pixbuf().new_from_file_at_size(info["logo"], 100, 100)
         pixbuf
         self.dialog.set_logo(pixbuf)
