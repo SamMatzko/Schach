@@ -187,7 +187,20 @@ class Window(Gtk.ApplicationWindow):
         self.play_button = Gtk.Button.new_from_icon_name("media-playback-start-symbolic", 1)
         self.play_button.set_tooltip_text("Engine move (Ctrl+E)")
         self.play_button.connect("clicked", self.engine_move)
+
+        # The undo and redo buttons
+        self.undo_button = Gtk.Button.new_from_icon_name("media-seek-backward-symbolic", 1)
+        self.undo_button.set_tooltip_text("Undo (Ctrl+Z)")
+        self.undo_button.connect("clicked", self.move_undo)
+
+        self.redo_button = Gtk.Button.new_from_icon_name("media-seek-forward-symbolic", 1)
+        self.redo_button.set_tooltip_text("Redo (Shift+Ctrl+Z)")
+        self.redo_button.connect("clicked", self.move_redo)
+
+        # Add the buttons
+        self.game_settings_box.pack_start(self.undo_button, False, False, 0)
         self.game_settings_box.pack_start(self.play_button, False, False, 0)
+        self.game_settings_box.pack_start(self.redo_button, False, False, 0)
 
         # The scales for the popover
         self.white_computer_scale = Gtk.Scale.new_with_range(
