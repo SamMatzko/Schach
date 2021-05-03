@@ -1,3 +1,4 @@
+import app
 import chess
 import chessboard as cb
 import game
@@ -90,6 +91,24 @@ class GameManagerTestCase(unittest.TestCase):
         self.assertEqual(str(game_manager.board), board_string)
         game_manager.move_redo()
         self.assertEqual(str(game_manager.board), board_string2)
+        window.destroy()
+
+class SchachTestCase(unittest.TestCase):
+    """The test case for the main application stuff."""
+
+    def test_settings(self):
+        window = app.App()
+        window.settings = {"show_status_frames": True, "maximize_on_startup": False}
+        window.set_settings()
+        self.assertNotEqual(
+            window.settings["show_status_frames"],
+            window.white_status_frame.get_no_show_all()
+        )
+        self.assertEqual(
+            window.settings["maximize_on_startup"],
+            window.is_maximized()
+        )
+        window.game.engine.quit()
         window.destroy()
 
 if __name__ == "__main__":
