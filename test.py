@@ -80,5 +80,16 @@ class GameManagerTestCase(unittest.TestCase):
         self.assertEqual(game_manager.board.is_checkmate(), True)
         window.destroy()
 
+    def test_undo_redo(self):
+        game_manager, chessboard, window = self.create_test_environment(None)
+        board_string = str(game_manager.board)
+        game_manager._push_move(chess.Move.from_uci("a2a3"))
+        board_string2 = str(game_manager.board)
+        game_manager.move_undo()
+        self.assertEqual(str(game_manager.board), board_string)
+        game_manager.move_redo()
+        self.assertEqual(str(game_manager.board), board_string2)
+        window.destroy()
+
 if __name__ == "__main__":
     unittest.main()
