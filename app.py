@@ -52,29 +52,29 @@ class App(Gtk.Application):
 
     def _create_actions(self):
         """Create all the actions for the application."""
-        file_new = Gio.SimpleAction.new("file-new")
-        file_save = Gio.SimpleAction.new("file-save")
-        file_quit = Gio.SimpleAction.new("file-quit")
+        self.file_new = Gio.SimpleAction.new("file-new")
+        self.file_save = Gio.SimpleAction.new("file-save")
+        self.file_quit = Gio.SimpleAction.new("file-quit")
 
-        edit_undo = Gio.SimpleAction.new("edit-undo")
-        edit_redo = Gio.SimpleAction.new("edit-redo")
-        edit_settings = Gio.SimpleAction.new("edit-settings")
+        self.edit_undo = Gio.SimpleAction.new("edit-undo")
+        self.edit_redo = Gio.SimpleAction.new("edit-redo")
+        self.edit_settings = Gio.SimpleAction.new("edit-settings")
 
-        game_engine_move = Gio.SimpleAction.new("game-engine_move")
+        self.game_engine_move = Gio.SimpleAction.new("game-engine_move")
 
-        help_about = Gio.SimpleAction.new("help-about")
+        self.help_about = Gio.SimpleAction.new("help-about")
 
-        file_new.connect("activate", self.window.new_game)
-        file_save.connect("activate", self.window.save_game)
-        file_quit.connect("activate", self.window.quit)
+        self.file_new.connect("activate", self.window.new_game)
+        self.file_save.connect("activate", self.window.save_game)
+        self.file_quit.connect("activate", self.window.quit)
 
-        edit_undo.connect("activate", self.window.move_undo)
-        edit_redo.connect("activate", self.window.move_redo)
-        edit_settings.connect("activate", self.window.show_settings)
+        self.edit_undo.connect("activate", self.window.move_undo)
+        self.edit_redo.connect("activate", self.window.move_redo)
+        self.edit_settings.connect("activate", self.window.show_settings)
 
-        game_engine_move.connect("activate", self.window.engine_move)
+        self.game_engine_move.connect("activate", self.window.engine_move)
 
-        help_about.connect("activate", self.window.show_about)
+        self.help_about.connect("activate", self.window.show_about)
 
         self.set_accels_for_action("app.file-new", ["<control>N"])
         self.set_accels_for_action("app.file-save", ["<control>S"])
@@ -87,14 +87,14 @@ class App(Gtk.Application):
 
         self.set_accels_for_action("app.edit-undo", ["<control>Z"])
 
-        self.add_action(file_new)
-        self.add_action(file_save)
-        self.add_action(file_quit)
-        self.add_action(edit_undo)
-        self.add_action(edit_redo)
-        self.add_action(edit_settings)
-        self.add_action(game_engine_move)
-        self.add_action(help_about)
+        self.add_action(self.file_new)
+        self.add_action(self.file_save)
+        self.add_action(self.file_quit)
+        self.add_action(self.edit_undo)
+        self.add_action(self.edit_redo)
+        self.add_action(self.edit_settings)
+        self.add_action(self.game_engine_move)
+        self.add_action(self.help_about)
 
     def do_startup(self):
         """Start Schach."""
