@@ -1,6 +1,7 @@
 import app
 import gi
 import json
+import sys
 
 gi.require_version("Gtk", "3.0")
 
@@ -12,5 +13,5 @@ appinfo = json.load(open(f"{ROOT_PATH}json/appinfo.json"))
 print(f"Schach {appinfo['version']}")
 
 if __name__ == "__main__":
-    window = app.App()
-    Gtk.main()
+    app = app.App()
+    app.run(sys.argv)

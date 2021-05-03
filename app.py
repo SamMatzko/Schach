@@ -7,22 +7,107 @@ import json
 import os
 import pgn
 import status_frame
+import sys
 import time
 
 gi.require_version("Gtk", "3.0")
 
 from constants import *
 from dialogs import messagedialog
-from gi.repository import Gio, Gtk
+from gi.repository import Gio, GLib, Gtk, GObject
+with open("%sapplication/menu.xml" % ROOT_PATH) as f:
+    MENU_XML = f.read()
+    f.close()
 
-class App(Gtk.Window):
+class App(Gtk.Application):
+    """The main application."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(
+            *args,
+            application_id="org.schach",
+            **kwargs
+        )
+
+        self.window = None
+
+    def _create_actions(self):
+        """Create all the actions for the application."""
+        file_new = Gio.SimpleAction.new("file-new")
+        file_save = Gio.SimpleAction.new("file-save")
+        file_quit = Gio.SimpleAction.new("file-quit")
+
+        edit_undo = Gio.SimpleAction.new("edit-undo")
+        edit_redo = Gio.SimpleAction.new("edit-redo")
+        edit_settings = Gio.SimpleAction.new("edit-settings")
+
+        game_engine_move = Gio.SimpleAction.new("game-engine_move")
+
+        help_about = Gio.SimpleAction.new("help-about")
+
+        file_new.connect("activate", self.window.new_game)
+        file_save.connect("activate", self.window.save_game)
+        file_quit.connect("activate", self.window.quit)
+
+        edit_undo.connect("activate", self.window.move_undo)
+        edit_redo.connect("activate", self.window.move_redo)
+        edit_settings.connect("activate", self.window.show_settings)
+
+        game_engine_move.connect("activate", self.window.engine_move)
+
+        help_about.connect("activate", self.window.show_about)
+
+        self.set_accels_for_action("app.file-new", ["<control>N"])
+        self.set_accels_for_action("app.file-save", ["<control>S"])
+        self.set_accels_for_action("app.file-quit", ["<control>Q"])
+
+        self.set_accels_for_action("app.edit-undo", ["<control>Z"])
+        self.set_accels_for_action("app.edit-redo", ["<control><shift>Z"])
+
+        self.set_accels_for_action("app.game-engine_move", ["<control>E"])
+
+        self.set_accels_for_action("app.edit-undo", ["<control>Z"])
+
+        self.add_action(file_new)
+        self.add_action(file_save)
+        self.add_action(file_quit)
+        self.add_action(edit_undo)
+        self.add_action(edit_redo)
+        self.add_action(edit_settings)
+        self.add_action(game_engine_move)
+        self.add_action(help_about)
+
+    def do_startup(self):
+        """Start Schach."""
+        Gtk.Application.do_startup(self)
+
+        builder = Gtk.Builder.new_from_string(MENU_XML, -1)
+        main_menu = builder.get_object("app-menu")
+        self.set_menubar(main_menu)
+
+    def do_activate(self):
+        # We only allow a single window and raise any existing ones
+        if not self.window:
+            # Windows are associated with the application
+            # when the last one is closed the application shuts down
+            self.window = Window(application=self, title="Schach")
+
+            self.window.present()
+
+        # Create the actions
+        self._create_actions()
+
+class Window(Gtk.ApplicationWindow):
     """The main window for the Scach."""
 
-    def __init__(self):
+    def __init__(self, application, title):
         
         # The window and its settings and events
-        Gtk.Window.__init__(self)
+        Gtk.ApplicationWindow.__init__(self, application=application, title=title)
         self.connect("delete-event", self.quit)
+
+        # The application
+        self.application = application
 
         # The header bar
         self.header_bar = Gtk.HeaderBar()
@@ -36,23 +121,6 @@ class App(Gtk.Window):
         # The main box that everything goes in
         self.main_box = Gtk.VBox()
         self.add(self.main_box)
-
-        # Set up the ui stuff
-        action_group = Gtk.ActionGroup(name="my_actions")
-        self.add_file_menu_actions(action_group)
-
-        # The ui manager
-        self.uimanager = self.create_ui_manager()
-        self.uimanager.insert_action_group(action_group)
-
-        # The menubar
-        self.menubar = self.uimanager.get_widget("/MenuBar")
-
-        # The box for the menubar
-        self.menu_box = Gtk.VBox()
-        self.menu_box.pack_start(self.menubar, False, False, 0)
-        self.menu_box.show_all()
-        self.main_box.pack_start(self.menu_box, False, False, 0)
 
         # The box to hold all the game-related stuff (i.e., the status labels 
         # and the chessboard)
@@ -81,34 +149,15 @@ class App(Gtk.Window):
         self.game._update_status()
 
         # Load the settings
-        with open(f"{ROOT_PATH}json/settings.json") as f:
-            self.settings = json.load(f)
+        self.settings = json.load(open(f"{ROOT_PATH}json/settings.json"))
         if self.settings["maximize_on_startup"]:
             self.maximize()
         self.set_settings()
 
         self.show_all()
 
-    def add_file_menu_actions(self, action_group):
-        action_filemenu = Gtk.Action(name="FileMenu", label="File")
-        action_group.add_action(action_filemenu)
-
-        menu_actions = [
-            ("File Menu", None, "File"),
-            ("File New", None, "New game...", "<control>N", None, self.new_game),
-            ("File Save", None, "Save game...", "<control>S", None, self.save_game),
-            ("File Quit", None, "Quit", "<control>Q", None, self.quit),
-            ("Edit Menu", None, "Edit"),
-            ("Edit Undo", None, "Undo", "<control>Z", None, self.move_undo),
-            ("Edit Redo", None, "Redo", "<control><shift>Z", None, self.move_redo),
-            ("Edit Settings", None, "Preferences...", None, None, self.show_settings),
-            ("Game Menu", None, "Game"),
-            ("Game ComputerGo", None, "Engine move", "<control>E", None, self.engine_move),
-            ("Help Menu", None, "Help"),
-            ("Help About", None, "About Schach...", None, None, self.show_about)
-        ]
-
-        action_group.add_actions(menu_actions, user_data=None)
+    def change_label(self, *args):
+        print("albell")
 
     def create_header_bar(self):
         """Create the header bar's contents."""
@@ -166,20 +215,6 @@ class App(Gtk.Window):
         self.popover_button = Gtk.MenuButton(popover=self.popover)
         self.game_settings_box.pack_start(self.popover_button, False, False, 0)
 
-    def create_ui_manager(self):
-        self.uimanager = Gtk.UIManager()
-
-        # Open ui/menu.xml and load the menu from it
-        with open(MENU_XML) as f:
-            menu_xml = f.read()
-            f.close()
-        self.uimanager.add_ui_from_string(menu_xml)
-
-        # Add the accelerator group to the toplevel window
-        accelgroup = self.uimanager.get_accel_group()
-        self.add_accel_group(accelgroup)
-        return self.uimanager
-
     def engine_move(self, *args):
         """Have the computer play for the current turn."""
         self.game._engine_move()
@@ -191,7 +226,7 @@ class App(Gtk.Window):
         self.game.engine.quit()
 
         # Close the window and exit
-        Gtk.main_quit()
+        self.application.quit()
 
     def move_redo(self, *args):
         """Redo the last undone move."""
