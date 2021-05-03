@@ -81,7 +81,8 @@ class App(Gtk.Window):
         self.game._update_status()
 
         # Load the settings
-        self.settings = json.load(open(f"{ROOT_PATH}json/settings.json"))
+        with open(f"{ROOT_PATH}json/settings.json") as f:
+            self.settings = json.load(f)
         if self.settings["maximize_on_startup"]:
             self.maximize()
         self.set_settings()
