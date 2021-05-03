@@ -175,9 +175,6 @@ class Window(Gtk.ApplicationWindow):
 
         self.show_all()
 
-    def change_label(self, *args):
-        print("albell")
-
     def create_header_bar(self):
         """Create the header bar's contents."""
 
