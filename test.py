@@ -2,6 +2,7 @@ import chess
 import chessboard as cb
 import game
 import gi
+import json
 import unittest
 
 gi.require_version("Gtk", "3.0")
@@ -12,8 +13,8 @@ from gi.repository import Gtk
 BOARD_STRING = "2b4r/p3p1pp/1p2q3/Q1pn2kP/2bPnp2/1P5p/P1PrBP1P/RN2KBNR w KQkq - 0 1"
 CHECKMATE = "4k3/8/8/8/8/8/1r6/Kq6 w KQkq - 0 67"
 
-class SchachTestCase(unittest.TestCase):
-    """The TestCase for Schach."""
+class ChessboardTestCase(unittest.TestCase):
+    """The TestCase for the chessboard."""
 
     def create_test_chessboard(self):
         """Create a chessboard.ChessBoard widget for testing."""
