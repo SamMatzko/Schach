@@ -330,7 +330,7 @@ class Game:
         # Update the board
         self.chessboard.from_string(str(self.board))
 
-    def new_game(self):
+    def new_game(self, mainline=None):
         """Create a new game."""
 
         # Reset the game
@@ -341,6 +341,12 @@ class Game:
         self._reset_square_colors()
         self.chessboard.from_string(str(self.board))
         self.dialog_ok = False
+
+        # Make the moves in the mainline move stack, if one was given
+        if mainline is not None:
+            for move in mainline:
+                self.board.push(move)
+            self.chessboard.from_string(str(self.board))
 
         # Update the status
         self._update_status()

@@ -190,7 +190,7 @@ class GameSelectorDialog(_Dialog):
         self.show_all()
 
     def _on_row_activated(self, listbox, row):
-        self.game_selected = row.game
+        self.game_selected = row.game_instance
 
     def show_dialog(self):
         

@@ -55,6 +55,7 @@ class App(Gtk.Application):
         """Create all the actions for the application."""
         self.file_new = Gio.SimpleAction.new("file-new")
         self.file_save = Gio.SimpleAction.new("file-save")
+        self.file_open = Gio.SimpleAction.new("file-open")
         self.file_quit = Gio.SimpleAction.new("file-quit")
 
         self.edit_undo = Gio.SimpleAction.new("edit-undo")
@@ -67,6 +68,7 @@ class App(Gtk.Application):
 
         self.file_new.connect("activate", self.window.new_game)
         self.file_save.connect("activate", self.window.save_game)
+        self.file_open.connect("activate", self.window.load_game)
         self.file_quit.connect("activate", self.window.quit)
 
         self.edit_undo.connect("activate", self.window.move_undo)
@@ -79,6 +81,7 @@ class App(Gtk.Application):
 
         self.set_accels_for_action("app.file-new", ["<control>N"])
         self.set_accels_for_action("app.file-save", ["<control>S"])
+        self.set_accels_for_action("app.file-open", ["<control>O"])
         self.set_accels_for_action("app.file-quit", ["<control>Q"])
 
         self.set_accels_for_action("app.edit-undo", ["<control>Z"])
@@ -90,6 +93,7 @@ class App(Gtk.Application):
 
         self.add_action(self.file_new)
         self.add_action(self.file_save)
+        self.add_action(self.file_open)
         self.add_action(self.file_quit)
         self.add_action(self.edit_undo)
         self.add_action(self.edit_redo)
@@ -315,6 +319,26 @@ class Window(Gtk.ApplicationWindow):
 
         # Close the window and exit
         self.application.quit()
+
+    def load_game(self, *args):
+        """Load a game from a pgn file."""
+        
+        # Get the file to load the game from
+        file = filedialogs.Open(parent=self, title="Load a Game").show()
+        if file is not None:
+
+            # Get the contents of the file
+            with open(file) as f:
+                games = f.read()
+                f.close()
+            
+            # Show the game selection dialog
+            response, game = dialogs.GameSelectorDialog(self, games).show_dialog()
+            
+            # Load the selected game if the user clicked OK
+            if response == Gtk.ResponseType.OK:
+                
+                self.game.new_game(game.mainline_moves())
 
     def move_redo(self, *args):
         """Redo the last undone move."""
