@@ -197,6 +197,9 @@ class Window(Gtk.ApplicationWindow):
             self.maximize()
         self.set_settings()
 
+        # Load the theme
+        self.load_theme()
+
         self.show_all()
 
     def copy_game(self, *args):
@@ -363,6 +366,15 @@ class Window(Gtk.ApplicationWindow):
             if response == Gtk.ResponseType.OK:
                 
                 self.game.new_game(game.mainline_moves())
+
+    def load_theme(self):
+        """Load the theme."""
+
+        provider = Gtk.CssProvider.new()
+        display = Gdk.Display.get_default()
+        screen = display.get_default_screen()
+        Gtk.StyleContext.add_provider_for_screen(screen, provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+        provider.load_from_path(ROOT_PATH + "application/schach.css")
 
     def move_redo(self, *args):
         """Redo the last undone move."""
