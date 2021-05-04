@@ -43,8 +43,8 @@ class Open:
             self.parent = None
         
         # The dialog
-        self.dialog = Gtk.FileChooserDialog(title=self.title, parent=self.parent, 
-            action=Gtk.FileChooserAction.OPEN)
+        self.dialog = Gtk.FileChooserDialog(title=self.title, parent=self.parent, transient_for=self.parent,
+            modal=True, action=Gtk.FileChooserAction.OPEN)
         self.dialog.add_buttons("Cancel", Gtk.ResponseType.CANCEL, "OK", Gtk.ResponseType.ACCEPT)
         self.dialog.set_action(Gtk.FileChooserAction.OPEN)
         if self.initialdir:
@@ -83,8 +83,8 @@ class SaveAs:
         except:
             self.parent = None
 
-        self.dialog = Gtk.FileChooserDialog(parent=self.parent, 
-            action=Gtk.FileChooserAction.SAVE)
+        self.dialog = Gtk.FileChooserDialog(parent=self.parent, transient_for=self.parent,
+            modal=True, action=Gtk.FileChooserAction.SAVE)
         self.dialog.add_buttons("Cancel", Gtk.ResponseType.CANCEL, "Save", Gtk.ResponseType.ACCEPT)
         self.dialog.set_action(Gtk.FileChooserAction.SAVE)
         self.dialog.set_do_overwrite_confirmation(True)
