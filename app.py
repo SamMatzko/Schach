@@ -385,7 +385,7 @@ class Window(Gtk.ApplicationWindow):
         else:
             return True # This keeps the window from closing anyway
 
-    def save_game(self, action, something_else, append=None):
+    def save_game(self, action=None, something_else=None, append=None):
         """Prompt the user for a file to save the game to and the headers for the game."""
 
         # If the game has ended, set the override the result in the headers
