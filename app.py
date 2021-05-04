@@ -198,7 +198,8 @@ class Window(Gtk.ApplicationWindow):
         self.set_settings()
 
         # Load the theme
-        self.load_theme()
+        if self.settings["use_app_theme"]:
+            self.load_theme()
 
         self.show_all()
 
