@@ -424,8 +424,8 @@ class Window(Gtk.ApplicationWindow):
         # Ask the user if they want to save the game
         response = messagedialog.ask_yes_no_cancel(
             self,
-            "Game not saved",
-            "The game has not been saved. Save game?"
+            "Game may not be saved",
+            "Do you want to save the game before exiting?"
         )
 
         if response == Gtk.ResponseType.NO:
