@@ -42,6 +42,16 @@
             </section>
             <section>
                 <item>
+                    <attribute name="label">Copy game</attribute>
+                    <attribute name="action">app.edit-copy_game</attribute>
+                </item>
+                <item>
+                    <attribute name="label">Paste game</attribute>
+                    <attribute name="action">app.edit-paste_game</attribute>
+                </item>
+            </section>
+            <section>
+                <item>
                     <attribute name="label">Preferences...</attribute>
                     <attribute name="action">app.edit-settings</attribute>
                 </item>

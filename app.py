@@ -18,11 +18,14 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
     or see <http://www.gnu.org/licenses/>"""
 
+import chess
+import chess.pgn
 import chessboard
 import dialogs
 import filedialogs
 import game
 import gi
+import io
 import json
 import os
 import pgn
@@ -30,11 +33,12 @@ import status_frame
 import sys
 import time
 
+gi.require_version("Gdk", "3.0")
 gi.require_version("Gtk", "3.0")
 
 from constants import *
 from dialogs import messagedialog
-from gi.repository import Gio, GLib, Gtk, GObject
+from gi.repository import Gdk, Gio, GLib, Gtk, GObject
 with open("%sapplication/menu.xml" % ROOT_PATH) as f:
     MENU_XML = f.read()
     f.close()
@@ -61,6 +65,8 @@ class App(Gtk.Application):
 
         self.edit_undo = Gio.SimpleAction.new("edit-undo")
         self.edit_redo = Gio.SimpleAction.new("edit-redo")
+        self.edit_copy_game = Gio.SimpleAction.new("edit-copy_game")
+        self.edit_paste_game = Gio.SimpleAction.new("edit-paste_game")
         self.edit_settings = Gio.SimpleAction.new("edit-settings")
 
         self.game_engine_move = Gio.SimpleAction.new("game-engine_move")
@@ -75,6 +81,8 @@ class App(Gtk.Application):
 
         self.edit_undo.connect("activate", self.window.move_undo)
         self.edit_redo.connect("activate", self.window.move_redo)
+        self.edit_copy_game.connect("activate", self.window.copy_game)
+        self.edit_paste_game.connect("activate", self.window.paste_game)
         self.edit_settings.connect("activate", self.window.show_settings)
 
         self.game_engine_move.connect("activate", self.window.engine_move)
@@ -89,6 +97,8 @@ class App(Gtk.Application):
 
         self.set_accels_for_action("app.edit-undo", ["<control>Z"])
         self.set_accels_for_action("app.edit-redo", ["<control><shift>Z"])
+        self.set_accels_for_action("app.edit-copy_game", ["<control>C"])
+        self.set_accels_for_action("app.edit-paste_game", ["<control>V"])
 
         self.set_accels_for_action("app.game-engine_move", ["<control>E"])
 
@@ -101,6 +111,8 @@ class App(Gtk.Application):
         self.add_action(self.file_quit)
         self.add_action(self.edit_undo)
         self.add_action(self.edit_redo)
+        self.add_action(self.edit_copy_game)
+        self.add_action(self.edit_paste_game)
         self.add_action(self.edit_settings)
         self.add_action(self.game_engine_move)
         self.add_action(self.help_about)
@@ -136,6 +148,9 @@ class Window(Gtk.ApplicationWindow):
 
         # The application
         self.application = application
+
+        # The clipboard
+        self.clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
 
         # The header bar
         self.header_bar = Gtk.HeaderBar()
@@ -183,6 +198,11 @@ class Window(Gtk.ApplicationWindow):
         self.set_settings()
 
         self.show_all()
+
+    def copy_game(self, *args):
+        """Copy the current game to the clipboard."""
+
+        self.clipboard.set_text(str(chess.pgn.Game.from_board(self.game.board)), -1)
 
     def create_application_popover(self):
         """Create the application popover and its contents."""
@@ -355,7 +375,19 @@ class Window(Gtk.ApplicationWindow):
     def new_game(self, *args):
         """Create a new game."""
 
-        self.game.new_game()
+        # Ask the user if they want to save the current game before exiting
+        response = dialogs.messagedialog.ask_yes_no_cancel(
+            self,
+            "Game not saved.",
+            "The current game has not been saved. Save before creating a new one?"
+        )
+        if response == Gtk.ResponseType.OK:
+            self.save_game(append=True)
+            self.game.new_game()
+        elif response == Gtk.ResponseType.NO:
+            self.game.new_game()
+        else:
+            pass
 
     def on_black_computer_scale(self, scale):
         """Set the black computer's playing power to the scale's value."""
@@ -364,6 +396,27 @@ class Window(Gtk.ApplicationWindow):
     def on_white_computer_scale(self, scale):
         """Set the white computer's playing power to the scale's value."""
         self.game.set_limit(white_limit=scale.get_value())
+
+    def paste_game(self, *args):
+        """Paste a game that was copied to the clipboard."""
+        
+        # Get the game stuff
+        game = self.clipboard.wait_for_text()
+        game_instance = chess.pgn.read_game(io.StringIO(game))
+
+        # Make sure that the user wants to quit the current game
+        response = dialogs.messagedialog.ask_yes_no_cancel(
+            self,
+            "Game not saved.",
+            "The current game has not been saved. Save before pasting a new one?"
+        )
+        if response == Gtk.ResponseType.NO:
+            self.game.new_game(game_instance.mainline_moves())
+        elif response == Gtk.ResponseType.YES:
+            self.save_game(append=True)
+            self.game.new_game(game_instance.mainline_moves())
+        else:
+            pass
 
     def quit(self, *args):
         """Properly close the application."""
