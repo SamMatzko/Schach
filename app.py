@@ -55,7 +55,7 @@ class App(Gtk.Application):
 
         self.window = None
 
-    def _create_actions(self):
+    def create_actions(self):
         """Create all the actions for the application."""
         self.file_new = Gio.SimpleAction.new("file-new")
         self.file_save = Gio.SimpleAction.new("file-save")
@@ -135,7 +135,7 @@ class App(Gtk.Application):
             self.window.present()
 
         # Create the actions
-        self._create_actions()
+        self.create_actions()
 
 class Window(Gtk.ApplicationWindow):
     """The main window for the Scach."""
