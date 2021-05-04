@@ -378,7 +378,7 @@ class Window(Gtk.ApplicationWindow):
         if response == Gtk.ResponseType.NO:
             self.exit()
         elif response == Gtk.ResponseType.YES:
-            if self.save_game():
+            if self.save_game(append=True):
                 return True
             else:
                 self.exit()
