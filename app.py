@@ -201,6 +201,8 @@ class Window(Gtk.ApplicationWindow):
         if self.settings["use_app_theme"]:
             self.load_theme()
 
+        self.set_position(Gtk.WindowPosition.CENTER)
+
         self.show_all()
 
     def copy_game(self, *args):
