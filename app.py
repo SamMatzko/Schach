@@ -175,27 +175,49 @@ class Window(Gtk.ApplicationWindow):
 
         self.show_all()
 
-    def create_header_bar(self):
-        """Create the header bar's contents."""
+    def create_application_popover(self):
+        """Create the application popover and its contents."""
 
-        # The game box
-        self.game_settings_box = Gtk.HBox()
-        Gtk.StyleContext.add_class(self.game_settings_box.get_style_context(), "linked")
-        self.header_bar.pack_start(self.game_settings_box)
+        # The popover
+        self.app_popover = Gtk.Popover()
+        self.app_popover_base_box = Gtk.VBox()
+        self.app_popover_hbox = Gtk.HBox()
+        self.app_popover_vbox = Gtk.VBox()
+        self.app_popover_base_box.pack_start(self.app_popover_hbox, True, True, 3)
+        self.app_popover_hbox.pack_start(self.app_popover_vbox, True, True, 3)
+        self.app_popover.add(self.app_popover_base_box)
 
-        # The play button
-        self.play_button = Gtk.Button.new_from_icon_name("media-playback-start-symbolic", 1)
-        self.play_button.set_tooltip_text("Engine move (Ctrl+E)")
-        self.play_button.connect("clicked", self.engine_move)
+        # The View expander
+        self.app_popover_view_expander = Gtk.Expander(label="View")
+        self.app_popover_vbox.add(self.app_popover_view_expander)
 
-        # The undo and redo buttons
-        self.undo_button = Gtk.Button.new_from_icon_name("media-seek-backward-symbolic", 1)
-        self.undo_button.set_tooltip_text("Undo (Ctrl+Z)")
-        self.undo_button.connect("clicked", self.move_undo)
+        # The view expander's elements
+        self.create_view_expander()
 
-        self.redo_button = Gtk.Button.new_from_icon_name("media-seek-forward-symbolic", 1)
-        self.redo_button.set_tooltip_text("Redo (Shift+Ctrl+Z)")
-        self.redo_button.connect("clicked", self.move_redo)
+        # The Preferences button
+        self.app_popover_settings_button = Gtk.ModelButton(label=("Preferences".ljust(50, " ")))
+        self.app_popover_settings_button.connect("clicked", self.show_settings)
+        self.app_popover_vbox.add(self.app_popover_settings_button)
+
+        self.app_popover_vbox.add(Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL))
+
+        # The about button
+        self.app_popover_about_button = Gtk.ModelButton(label=("About Schach".ljust(50, " ")))
+        self.app_popover_about_button.connect("clicked", self.show_about)
+        self.app_popover_vbox.add(self.app_popover_about_button)
+
+        self.app_popover_base_box.show_all()
+        self.app_popover_hbox.show_all()
+        self.app_popover_vbox.show_all()
+
+        # The button
+        self.app_popover_button = Gtk.MenuButton(popover=self.app_popover)
+        self.app_popover_image = Gtk.Image.new_from_icon_name("open-menu-symbolic", 1)
+        self.app_popover_button.set_image(self.app_popover_image)
+        self.header_bar.pack_end(self.app_popover_button)
+
+    def create_engine_popover(self):
+        """Create the engine popover and its contents."""
 
         # Add the buttons
         self.game_settings_box.pack_start(self.undo_button, False, False, 0)
@@ -228,21 +250,57 @@ class Window(Gtk.ApplicationWindow):
         self.black_computer_frame.add(self.black_computer_scale)
 
         # A label to make the popover wider
-        self.popover_label = Gtk.Label(label=" "*50)
+        self.engine_popover_label = Gtk.Label(label=" "*50)
 
         # The popover
-        self.popover = Gtk.Popover()
-        self.popover_box = Gtk.VBox()
-        self.popover_box.pack_start(self.white_computer_box, False, False, 5)
-        self.popover_box.pack_start(self.black_computer_box, False, False, 5)
-        self.popover_box.pack_start(self.popover_label, False, False, 0)
+        self.engine_popover = Gtk.Popover()
+        self.engine_popover_box = Gtk.VBox()
+        self.engine_popover_box.pack_start(self.white_computer_box, False, False, 5)
+        self.engine_popover_box.pack_start(self.black_computer_box, False, False, 5)
+        self.engine_popover_box.pack_start(self.engine_popover_label, False, False, 0)
 
-        self.popover.add(self.popover_box)
-        self.popover_box.show_all()
+        self.engine_popover.add(self.engine_popover_box)
+        self.engine_popover_box.show_all()
 
         # The popover button
-        self.popover_button = Gtk.MenuButton(popover=self.popover)
-        self.game_settings_box.pack_start(self.popover_button, False, False, 0)
+        self.engine_popover_button = Gtk.MenuButton(popover=self.engine_popover)
+        self.game_settings_box.pack_start(self.engine_popover_button, False, False, 0)
+
+    def create_header_bar(self):
+        """Create the header bar's contents."""
+
+        # The game box
+        self.game_settings_box = Gtk.HBox()
+        Gtk.StyleContext.add_class(self.game_settings_box.get_style_context(), "linked")
+        self.header_bar.pack_start(self.game_settings_box)
+
+        # The play button
+        self.play_button = Gtk.Button.new_from_icon_name("media-playback-start-symbolic", 1)
+        self.play_button.set_tooltip_text("Engine move (Ctrl+E)")
+        self.play_button.connect("clicked", self.engine_move)
+
+        # The undo and redo buttons
+        self.undo_button = Gtk.Button.new_from_icon_name("media-seek-backward-symbolic", 1)
+        self.undo_button.set_tooltip_text("Undo (Ctrl+Z)")
+        self.undo_button.connect("clicked", self.move_undo)
+
+        self.redo_button = Gtk.Button.new_from_icon_name("media-seek-forward-symbolic", 1)
+        self.redo_button.set_tooltip_text("Redo (Shift+Ctrl+Z)")
+        self.redo_button.connect("clicked", self.move_redo)
+
+        # Create the engine popover
+        self.create_engine_popover()
+
+        # Create the application popover
+        self.create_application_popover()
+
+    def create_view_expander(self):
+        """Create and add all the items of the View expander."""
+
+        # The show status frames checkbutton
+        self.view_show_status_frames_checkbutton = Gtk.CheckButton(label="Show status frames")
+        self.view_show_status_frames_checkbutton.connect("toggled", self.set_settings_from_popover)
+        self.app_popover_view_expander.add(self.view_show_status_frames_checkbutton)
 
     def engine_move(self, *args):
         """Have the computer play for the current turn."""
@@ -342,6 +400,17 @@ class Window(Gtk.ApplicationWindow):
             self.white_status_frame.set_no_show_all(True)
             self.black_status_frame.hide()
             self.black_status_frame.set_no_show_all(True)
+
+        self.view_show_status_frames_checkbutton.set_active(self.settings["show_status_frames"])
+
+        # Write the file
+        json.dump(self.settings, open(f"{ROOT_PATH}json/settings.json", "w"))
+
+    def set_settings_from_popover(self, *args):
+        """Set the settings based on the checkbuttons in the app_popover."""
+
+        self.settings["show_status_frames"] = self.view_show_status_frames_checkbutton.get_active()
+        self.set_settings()
 
     def show_about(self, *args):
         """Show the about dialog."""
