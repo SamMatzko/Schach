@@ -17,7 +17,10 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
     or see <http://www.gnu.org/licenses/>"""
+import chess
+import chess.pgn
 import gi
+import io
 import json
 import string
 
@@ -117,6 +120,87 @@ class CalendarDialog(_Dialog):
 
         # Return the response and date
         return response, date
+
+class GameSelectorDialog(_Dialog):
+    """The dialog to prompt the user to choose a game from a loaded file."""
+
+    def __init__(self, parent, games):
+        _Dialog.__init__(
+            self,
+            title="Select a Game",
+            transient_for=parent,
+            modal=True
+        )
+        self.set_default_size(500, 300)
+
+        # The area to which we can add the list of games in the file
+        self.area = self.get_content_area()
+
+        # The games file
+        self.games_file = games
+
+        # The list of the games' strings
+        self.game_strings = self.games_file.split("\n\n\n")
+
+        # The list of chess.pgn.Game instances
+        self.games = []
+        for game in self.game_strings:
+            game_instance = chess.pgn.read_game(io.StringIO(game))
+            if game_instance is not None:
+                self.games.append(game_instance)
+
+        # The listbox for the games
+        self.listbox = Gtk.ListBox()
+        self.listbox.set_selection_mode(Gtk.SelectionMode.SINGLE)
+        self.listbox.connect("row-activated", self._on_row_activated)
+
+        self.listbox_box = Gtk.ScrolledWindow()
+        self.listbox_box.add(self.listbox)
+        self.area.pack_start(self.listbox_box, True, True, 0)
+
+        # The list of rows
+        self.rows = []
+
+        # Add the games to the listbox
+        for game in self.games:
+            row = Gtk.ListBoxRow()
+            self.rows.append(row)
+            row.game_instance = game
+            hbox = Gtk.HBox()
+            hbox.add(
+                Gtk.Label(
+                    label="%s vs. %s" % (game.headers["White"], game.headers["Black"])
+                )
+            )
+            hbox.show_all()
+            row.add(hbox)
+            self.listbox.add(row)
+
+        self.listbox.select_row(self.rows[0])
+        self.game_selected = self.games[0]
+
+        # Add the buttons
+        buttons = (
+            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL),
+            (Gtk.STOCK_OK, Gtk.ResponseType.OK)
+        )
+        for button in buttons:
+            self.add_button(button[0], button[1])
+
+        self.show_all()
+
+    def _on_row_activated(self, listbox, row):
+        self.game_selected = row.game
+
+    def show_dialog(self):
+        
+        # Run us
+        response = self.run()
+
+        # Destroy us
+        self.destroy()
+
+        return response, self.game_selected
 
 class HeadersDialog(_Dialog):
     """The dialog in which users can edit the game's headers.
@@ -573,11 +657,12 @@ if __name__ == "__main__":
     window.show_all()
     def sd(*args):
         # print(CalendarDialog(window).show_dialog())
+        print(GameSelectorDialog(window).show_dialog())
         # print(HeadersDialog(window, "1/2 - 1/2").show_dialog())
         # print(PromotionDialog(window).show_dialog())
         # print(PromotionDialog(window, "black").show_dialog())
         # print(NewGameDialog(window).show_dialog())
-        print(SettingsDialog(window).show_dialog())
+        # print(SettingsDialog(window).show_dialog())
 
     window.connect("delete-event", Gtk.main_quit)
     window.connect("key-press-event", sd)
