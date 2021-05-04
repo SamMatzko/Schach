@@ -208,10 +208,10 @@ class HeadersDialog(_Dialog):
     Valid results for OVERRIDE_RESULT are:
         1 - 0, 0 - 1, 1/2 - 1/2, and *"""
 
-    def __init__(self, parent, override_result=None):
+    def __init__(self, parent, title, override_result=None):
         _Dialog.__init__(
             self,
-            title="Save: Add New Game",
+            title=title,
             transient_for=parent,
             modal=True)
 

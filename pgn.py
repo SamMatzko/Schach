@@ -22,8 +22,60 @@ import chess
 import chess.pgn
 import time
 
-
 def save_game(board, file, headers):
+    """Save the current game under the file given, replacing the file's contents.
+
+    VALID ARGUMENTS:
+        event, site, round, white, black"""
+    
+    # Get the keyword arguments
+    try: event = headers["Event"]
+    except:
+        event = None
+    try: site = headers["Site"]
+    except:
+        site = None
+    try: date = headers["Date"]
+    except:
+        date = time.strftime("%Y.%m.%d")
+    try: roundno = headers["Round"]
+    except:
+        roundno = None
+    try: white = headers["White"]
+    except:
+        white = None
+    try: black = headers["Black"]
+    except:
+        black = None
+    try: result = headers["Result"]
+    except:
+        result = None
+
+    # Create the pgn.Game
+    pgn = chess.pgn.Game.from_board(board)
+
+    # Set the headers
+    pgn.headers["Date"] = date
+    if event:
+        pgn.headers["Event"] = event
+    if site:
+        pgn.headers["Site"] = site
+    if date:
+        pgn.headers["Date"] = date
+    if roundno:
+        pgn.headers["Round"] = roundno
+    if white:
+        pgn.headers["White"] = white
+    if black:
+        pgn.headers["Black"] = black
+    if result:
+        pgn.headers["Result"] = result
+
+    with open(file, "w") as f:
+        f.write(str(pgn) + "\n\n\n")
+        f.close()
+
+def save_game_append(board, file, headers):
     """Save the current game under the file given.
     
     VALID ARGUMENTS:

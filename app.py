@@ -55,6 +55,7 @@ class App(Gtk.Application):
         """Create all the actions for the application."""
         self.file_new = Gio.SimpleAction.new("file-new")
         self.file_save = Gio.SimpleAction.new("file-save")
+        self.file_save_append = Gio.SimpleAction.new("file-save-append")
         self.file_open = Gio.SimpleAction.new("file-open")
         self.file_quit = Gio.SimpleAction.new("file-quit")
 
@@ -67,7 +68,8 @@ class App(Gtk.Application):
         self.help_about = Gio.SimpleAction.new("help-about")
 
         self.file_new.connect("activate", self.window.new_game)
-        self.file_save.connect("activate", self.window.save_game)
+        self.file_save.connect("activate", self.window.save_game, False)
+        self.file_save_append.connect("activate", self.window.save_game, True)
         self.file_open.connect("activate", self.window.load_game)
         self.file_quit.connect("activate", self.window.quit)
 
@@ -81,6 +83,7 @@ class App(Gtk.Application):
 
         self.set_accels_for_action("app.file-new", ["<control>N"])
         self.set_accels_for_action("app.file-save", ["<control>S"])
+        self.set_accels_for_action("app.file-save-append", ["<control><shift>S"])
         self.set_accels_for_action("app.file-open", ["<control>O"])
         self.set_accels_for_action("app.file-quit", ["<control>Q"])
 
@@ -93,6 +96,7 @@ class App(Gtk.Application):
 
         self.add_action(self.file_new)
         self.add_action(self.file_save)
+        self.add_action(self.file_save_append)
         self.add_action(self.file_open)
         self.add_action(self.file_quit)
         self.add_action(self.edit_undo)
@@ -381,7 +385,7 @@ class Window(Gtk.ApplicationWindow):
         else:
             return True # This keeps the window from closing anyway
 
-    def save_game(self, *args):
+    def save_game(self, action, something_else, append=None):
         """Prompt the user for a file to save the game to and the headers for the game."""
 
         # If the game has ended, set the override the result in the headers
@@ -397,8 +401,19 @@ class Window(Gtk.ApplicationWindow):
         else:
             override_result = None
 
+        # Set the title for the dialog
+        if append:
+            title = "Save: Add Game"
+        else:
+            title = "Save: Replace Game"
+
         # Get the headers
-        response, headers = dialogs.HeadersDialog(self, override_result).show_dialog()
+        response, headers = dialogs.HeadersDialog(
+            self,
+            title=title,
+            override_result=override_result
+        ).show_dialog()
+
         if response == Gtk.ResponseType.OK:
 
             # Get the file
@@ -406,7 +421,10 @@ class Window(Gtk.ApplicationWindow):
             if file is not None:
 
                 # Save the file
-                pgn.save_game(self.game.board, file, headers)
+                if append:
+                    pgn.save_game_append(self.game.board, file, headers)
+                else:
+                    pgn.save_game(self.game.board, file, headers)
             else:
                 return True
         else:
