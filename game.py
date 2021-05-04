@@ -228,6 +228,10 @@ class Game:
             if not self.dialog_ok:
                 messagedialog.show_game_over_stalemate(self.window)
                 self.dialog_ok = True
+        else:
+            if not self.dialog_ok:
+                messagedialog.show_game_over_king_king(self.window)
+                self.dialog_ok = True
         self.chessboard.set_sensitive(False)
 
     def _move_is_legal(self, move):
