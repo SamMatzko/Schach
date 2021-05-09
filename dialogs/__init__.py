@@ -605,6 +605,10 @@ class SettingsDialog(_Dialog):
         self.status_frames_checkbutton = Gtk.CheckButton(label="Show status frames")
         self.window_box.pack_start(self.status_frames_checkbutton, False, False, 3)
 
+        # The status bar checkbutton
+        self.status_bar_checkbutton = Gtk.CheckButton(label="Show status bar")
+        self.window_box.pack_start(self.status_bar_checkbutton, False, False, 3)
+
         # The maximize on startup checkbutton
         self.maximize_on_startup_checkbutton = Gtk.CheckButton(label="Maximize on startup")
         self.window_box.pack_start(self.maximize_on_startup_checkbutton, False, False, 3)
@@ -626,6 +630,7 @@ class SettingsDialog(_Dialog):
 
         # Get the settings from the window
         self.settings["show_status_frames"] = self.status_frames_checkbutton.get_active()
+        self.settings["show_status_bar"] = self.status_bar_checkbutton.get_active()
         self.settings["maximize_on_startup"] = self.maximize_on_startup_checkbutton.get_active()
         self.settings["use_app_theme"] = self.use_app_theme_checkbutton.get_active()
 
@@ -640,6 +645,7 @@ class SettingsDialog(_Dialog):
 
         # Set the widgets
         self.status_frames_checkbutton.set_active(self.settings["show_status_frames"])
+        self.status_bar_checkbutton.set_active(self.settings["show_status_bar"])
         self.maximize_on_startup_checkbutton.set_active(self.settings["maximize_on_startup"])
         self.use_app_theme_checkbutton.set_active(self.settings["use_app_theme"])
 

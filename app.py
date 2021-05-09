@@ -228,6 +228,8 @@ class Window(Gtk.ApplicationWindow):
 
         # The View expander
         self.app_popover_view_expander = Gtk.Expander(label="View")
+        self.app_popover_view_expander_box = Gtk.VBox()
+        self.app_popover_view_expander.add(self.app_popover_view_expander_box)
         self.app_popover_vbox.add(self.app_popover_view_expander)
 
         # The view expander's elements
@@ -339,7 +341,12 @@ class Window(Gtk.ApplicationWindow):
         # The show status frames checkbutton
         self.view_show_status_frames_checkbutton = Gtk.CheckButton(label="Show status frames")
         self.view_show_status_frames_checkbutton.connect("toggled", self.set_settings_from_popover)
-        self.app_popover_view_expander.add(self.view_show_status_frames_checkbutton)
+        self.app_popover_view_expander_box.add(self.view_show_status_frames_checkbutton)
+
+        # The show status bar checkbutton
+        self.view_show_status_bar_checkbutton = Gtk.CheckButton(label="Show status bar")
+        self.view_show_status_bar_checkbutton.connect("toggled", self.set_settings_from_popover)
+        self.app_popover_view_expander_box.add(self.view_show_status_bar_checkbutton)
 
     def engine_move(self, *args):
         """Have the computer play for the current turn."""
@@ -516,6 +523,13 @@ class Window(Gtk.ApplicationWindow):
             self.black_status_frame.hide()
             self.black_status_frame.set_no_show_all(True)
 
+        if self.settings["show_status_bar"]:
+            self.status_bar.set_no_show_all(False)
+            self.status_bar.show_all()
+        else:
+            self.status_bar.set_no_show_all(True)
+            self.status_bar.hide()
+
         self.view_show_status_frames_checkbutton.set_active(self.settings["show_status_frames"])
 
         # Write the file
@@ -525,6 +539,7 @@ class Window(Gtk.ApplicationWindow):
         """Set the settings based on the checkbuttons in the app_popover."""
 
         self.settings["show_status_frames"] = self.view_show_status_frames_checkbutton.get_active()
+        self.settings["show_status_bar"] = self.view_show_status_bar_checkbutton.get_active()
         self.set_settings()
 
     def show_about(self, *args):
