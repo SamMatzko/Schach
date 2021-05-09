@@ -21,11 +21,13 @@
 import chess
 import chess.engine
 import dialogs
+import gi
 import os
 import sys
 
 from constants import *
 from dialogs import messagedialog
+from gi.repository import Gtk
 
 class Game:
     """The class that manages the chess game."""
@@ -278,11 +280,22 @@ class Game:
 
         if not self.board.is_game_over():
 
+            # Set the spinner going
+            while Gtk.events_pending():
+                Gtk.main_iteration()
+
             # Move the right time for the right turn
             if self.board.turn:
                 limit = self.white_limit
+                self.white_frame.set_status(thinking=True)
             else:
                 limit = self.black_limit
+                self.black_frame.set_status(thinking=True)
+
+            # Show the spinners
+            while Gtk.events_pending():
+                Gtk.main_iteration()
+
             # Get the move from the engine
             if limit == None:
                 engine_move = self.engine.play(self.board, chess.engine.Limit())
@@ -298,6 +311,10 @@ class Game:
             # Set the move_to setting so we can update the last-moved square
             self.move_to = engine_move.move.uci()[2:]
             self.chessboard.from_string(str(self.board))
+
+            # Hide the spinners
+            self.white_frame.set_status(thinking=False)
+            self.black_frame.set_status(thinking=False)
 
             # Update the status labels
             self._update_status()
