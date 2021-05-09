@@ -29,6 +29,7 @@ import io
 import json
 import os
 import pgn
+import status_bar
 import status_frame
 import sys
 import time
@@ -177,10 +178,13 @@ class Window(Gtk.ApplicationWindow):
         self.white_status_frame = status_frame.WhiteStatusFrame()
         self.black_status_frame = status_frame.BlackStatusFrame()
 
-        # Add the board and the status frames to the window
+        # Add the board, the status frames, and the status bars to the window
         self.game_box.pack_start(self.white_status_frame, True, True, 5)
         self.game_box.pack_start(self.chessboard, True, False, 10)
         self.game_box.pack_start(self.black_status_frame, True, True, 5)
+        
+        self.status_bar = status_bar.StatusBar()
+        self.main_box.pack_end(self.status_bar, False, True, 0)
 
         # The game manager instance
         self.game = game.Game(
