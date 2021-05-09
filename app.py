@@ -29,7 +29,6 @@ import io
 import json
 import os
 import pgn
-import status_bar
 import status_frame
 import sys
 import time
@@ -182,9 +181,6 @@ class Window(Gtk.ApplicationWindow):
         self.game_box.pack_start(self.white_status_frame, True, True, 5)
         self.game_box.pack_start(self.chessboard, True, False, 10)
         self.game_box.pack_start(self.black_status_frame, True, True, 5)
-        
-        self.status_bar = status_bar.StatusBar()
-        self.main_box.pack_end(self.status_bar, False, True, 0)
 
         # The game manager instance
         self.game = game.Game(
@@ -342,11 +338,6 @@ class Window(Gtk.ApplicationWindow):
         self.view_show_status_frames_checkbutton = Gtk.CheckButton(label="Show status frames")
         self.view_show_status_frames_checkbutton.connect("toggled", self.set_settings_from_popover)
         self.app_popover_view_expander_box.add(self.view_show_status_frames_checkbutton)
-
-        # The show status bar checkbutton
-        self.view_show_status_bar_checkbutton = Gtk.CheckButton(label="Show status bar")
-        self.view_show_status_bar_checkbutton.connect("toggled", self.set_settings_from_popover)
-        self.app_popover_view_expander_box.add(self.view_show_status_bar_checkbutton)
 
     def engine_move(self, *args):
         """Have the computer play for the current turn."""
@@ -523,13 +514,6 @@ class Window(Gtk.ApplicationWindow):
             self.black_status_frame.hide()
             self.black_status_frame.set_no_show_all(True)
 
-        if self.settings["show_status_bar"]:
-            self.status_bar.set_no_show_all(False)
-            self.status_bar.show_all()
-        else:
-            self.status_bar.set_no_show_all(True)
-            self.status_bar.hide()
-
         self.view_show_status_frames_checkbutton.set_active(self.settings["show_status_frames"])
 
         # Write the file
@@ -539,7 +523,6 @@ class Window(Gtk.ApplicationWindow):
         """Set the settings based on the checkbuttons in the app_popover."""
 
         self.settings["show_status_frames"] = self.view_show_status_frames_checkbutton.get_active()
-        self.settings["show_status_bar"] = self.view_show_status_bar_checkbutton.get_active()
         self.set_settings()
 
     def show_about(self, *args):
