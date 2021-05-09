@@ -169,35 +169,6 @@ class Game:
                 self.chessboard.from_string(str(self.board))
                 self._update_status()
 
-    def _engine_move(self):
-        """Make the engine this turn."""
-
-        if not self.board.is_game_over():
-
-            # Move the right time for the right turn
-            if self.board.turn:
-                limit = self.white_limit
-            else:
-                limit = self.black_limit
-            # Get the move from the engine
-            if limit == None:
-                engine_move = self.engine.play(self.board, chess.engine.Limit())
-            else:
-                engine_move = self.engine.play(self.board, limit)
-
-            # Move the engine's move
-            self._push_move(engine_move.move)
-
-            # Clear the undo stack
-            self.undo_stack = []
-
-            # Set the move_to setting so we can update the last-moved square
-            self.move_to = engine_move.move.uci()[2:]
-            self.chessboard.from_string(str(self.board))
-
-            # Update the status labels
-            self._update_status()
-
     def _game_over(self):
         """Handle the status and dialogs for the game's end."""
 
@@ -301,6 +272,35 @@ class Game:
 
         if self.board.is_game_over():
             self._game_over()
+
+    def engine_move(self):
+        """Make the engine this turn."""
+
+        if not self.board.is_game_over():
+
+            # Move the right time for the right turn
+            if self.board.turn:
+                limit = self.white_limit
+            else:
+                limit = self.black_limit
+            # Get the move from the engine
+            if limit == None:
+                engine_move = self.engine.play(self.board, chess.engine.Limit())
+            else:
+                engine_move = self.engine.play(self.board, limit)
+
+            # Move the engine's move
+            self._push_move(engine_move.move)
+
+            # Clear the undo stack
+            self.undo_stack = []
+
+            # Set the move_to setting so we can update the last-moved square
+            self.move_to = engine_move.move.uci()[2:]
+            self.chessboard.from_string(str(self.board))
+
+            # Update the status labels
+            self._update_status()
 
     def get_game_status(self):
         """Return various status stuff about the game, like the number of each

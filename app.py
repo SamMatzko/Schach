@@ -70,7 +70,7 @@ class App(Gtk.Application):
         self.edit_paste_game = Gio.SimpleAction.new("edit-paste_game")
         self.edit_settings = Gio.SimpleAction.new("edit-settings")
 
-        self.game_engine_move = Gio.SimpleAction.new("game-engine_move")
+        self.gameengine_move = Gio.SimpleAction.new("game-engine_move")
 
         self.help_about = Gio.SimpleAction.new("help-about")
 
@@ -86,7 +86,7 @@ class App(Gtk.Application):
         self.edit_paste_game.connect("activate", self.window.paste_game)
         self.edit_settings.connect("activate", self.window.show_settings)
 
-        self.game_engine_move.connect("activate", self.window.engine_move)
+        self.gameengine_move.connect("activate", self.window.engine_move)
 
         self.help_about.connect("activate", self.window.show_about)
 
@@ -115,7 +115,7 @@ class App(Gtk.Application):
         self.add_action(self.edit_copy_game)
         self.add_action(self.edit_paste_game)
         self.add_action(self.edit_settings)
-        self.add_action(self.game_engine_move)
+        self.add_action(self.gameengine_move)
         self.add_action(self.help_about)
 
     def do_startup(self):
@@ -350,7 +350,7 @@ class Window(Gtk.ApplicationWindow):
 
     def engine_move(self, *args):
         """Have the computer play for the current turn."""
-        self.game._engine_move()
+        self.game.engine_move()
 
     def exit(self):
         """Exit the app immediately."""
