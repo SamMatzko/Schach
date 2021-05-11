@@ -69,6 +69,8 @@ class App(Gtk.Application):
         self.edit_paste_game = Gio.SimpleAction.new("edit-paste_game")
         self.edit_settings = Gio.SimpleAction.new("edit-settings")
 
+        self.view_flip_chessboard = Gio.SimpleAction.new("view-flip_chessboard")
+
         self.gameengine_move = Gio.SimpleAction.new("game-engine_move")
 
         self.help_about = Gio.SimpleAction.new("help-about")
@@ -85,6 +87,8 @@ class App(Gtk.Application):
         self.edit_paste_game.connect("activate", self.window.paste_game)
         self.edit_settings.connect("activate", self.window.show_settings)
 
+        self.view_flip_chessboard.connect("activate", self.window.flip_chessboard, True)
+
         self.gameengine_move.connect("activate", self.window.engine_move)
 
         self.help_about.connect("activate", self.window.show_about)
@@ -100,6 +104,8 @@ class App(Gtk.Application):
         self.set_accels_for_action("app.edit-copy_game", ["<control>C"])
         self.set_accels_for_action("app.edit-paste_game", ["<control>V"])
 
+        self.set_accels_for_action("app.view-flip_chessboard", ["<control>D"])
+
         self.set_accels_for_action("app.game-engine_move", ["<control>E"])
 
         self.set_accels_for_action("app.edit-undo", ["<control>Z"])
@@ -114,6 +120,7 @@ class App(Gtk.Application):
         self.add_action(self.edit_copy_game)
         self.add_action(self.edit_paste_game)
         self.add_action(self.edit_settings)
+        self.add_action(self.view_flip_chessboard)
         self.add_action(self.gameengine_move)
         self.add_action(self.help_about)
 
@@ -360,6 +367,68 @@ class Window(Gtk.ApplicationWindow):
         # Close the window and exit
         self.application.quit()
 
+    def flip_chessboard(self, one, two, menu_trigger):
+        """Flip the chessboard."""
+
+        if menu_trigger:
+
+            self.last_chessboard_flipped = not self.last_chessboard_flipped
+            self.view_flip_chessboard_button.set_active(self.last_chessboard_flipped)
+
+            # Set the chessboard flipped or not
+            self.game_box.remove(self.chessboard)
+            for square in self.chessboard._get_squares():
+                del square
+            del self.chessboard
+            self.chessboard = chessboard.ChessBoard(self, flipped=self.last_chessboard_flipped)
+
+            # Remove and replace the frames and chessboard
+            self.game_box.remove(self.white_status_frame)
+            self.game_box.remove(self.black_status_frame)
+            
+            self.game_box.pack_start(self.white_status_frame, True, True, 5)
+            self.game_box.pack_start(self.chessboard, True, False, 10)
+            self.game_box.pack_start(self.black_status_frame, True, True, 5)
+
+            # Set up the board and bind the squares
+            self.chessboard.from_string(str(self.game.board))
+            self.chessboard.bind_squares(self.game._assert_move)
+            self.game.chessboard = self.chessboard
+
+            self.chessboard.show_all()
+            while Gtk.events_pending():
+                Gtk.main_iteration()
+
+        else:
+            # Compare the last value of the chessboard to the current one
+            if self.last_chessboard_flipped != self.view_flip_chessboard_button.get_active():
+
+                self.last_chessboard_flipped = self.view_flip_chessboard_button.get_active()
+
+                # Set the chessboard flipped or not
+                self.game_box.remove(self.chessboard)
+                for square in self.chessboard._get_squares():
+                    del square
+                del self.chessboard
+                self.chessboard = chessboard.ChessBoard(self, flipped=self.last_chessboard_flipped)
+
+                # Remove and replace the frames and chessboard
+                self.game_box.remove(self.white_status_frame)
+                self.game_box.remove(self.black_status_frame)
+                
+                self.game_box.pack_start(self.white_status_frame, True, True, 5)
+                self.game_box.pack_start(self.chessboard, True, False, 10)
+                self.game_box.pack_start(self.black_status_frame, True, True, 5)
+
+                # Set up the board and bind the squares
+                self.chessboard.from_string(str(self.game.board))
+                self.chessboard.bind_squares(self.game._assert_move)
+                self.game.chessboard = self.chessboard
+
+                self.chessboard.show_all()
+                while Gtk.events_pending():
+                    Gtk.main_iteration()
+
     def load_game(self, *args):
         """Load a game from a pgn file."""
         
@@ -534,35 +603,7 @@ class Window(Gtk.ApplicationWindow):
         self.settings["show_status_frames"] = self.view_show_status_frames_checkbutton.get_active()
         self.set_settings()
 
-        # Compare the last value of the chessboard to the current one
-        if self.last_chessboard_flipped != self.view_flip_chessboard_button.get_active():
-
-            self.last_chessboard_flipped = self.view_flip_chessboard_button.get_active()
-            print("heloo")
-
-            # Set the chessboard flipped or not
-            self.game_box.remove(self.chessboard)
-            for square in self.chessboard._get_squares():
-                del square
-            del self.chessboard
-            self.chessboard = chessboard.ChessBoard(self, flipped=self.last_chessboard_flipped)
-
-            # Remove and replace the frames and chessboard
-            self.game_box.remove(self.white_status_frame)
-            self.game_box.remove(self.black_status_frame)
-            
-            self.game_box.pack_start(self.white_status_frame, True, True, 5)
-            self.game_box.pack_start(self.chessboard, True, False, 10)
-            self.game_box.pack_start(self.black_status_frame, True, True, 5)
-
-            # Set up the board and bind the squares
-            self.chessboard.from_string(str(self.game.board))
-            self.chessboard.bind_squares(self.game._assert_move)
-            self.game.chessboard = self.chessboard
-
-            self.chessboard.show_all()
-            while Gtk.events_pending():
-                Gtk.main_iteration()
+        self.flip_chessboard(None, None, False)
 
     def show_about(self, *args):
         """Show the about dialog."""

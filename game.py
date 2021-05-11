@@ -89,7 +89,6 @@ class Game:
 
         # Only respond if the widget is not disabled
         if square.get_sensitive():
-            print("yay")
 
             # Check if we are on the starting square or the ending square of the move
             if self.move_from == None:
