@@ -191,6 +191,9 @@ class Window(Gtk.ApplicationWindow):
         )
         self.game._update_status()
 
+        # The variable containing the last value of the checkbutton
+        self.last_chessboard_flipped = False
+
         # Load the settings
         self.settings = json.load(open(f"{ROOT_PATH}json/settings.json"))
         if self.settings["maximize_on_startup"]:
@@ -338,6 +341,11 @@ class Window(Gtk.ApplicationWindow):
         self.view_show_status_frames_checkbutton = Gtk.CheckButton(label="Show status frames")
         self.view_show_status_frames_checkbutton.connect("toggled", self.set_settings_from_popover)
         self.app_popover_view_expander_box.add(self.view_show_status_frames_checkbutton)
+
+        # The flip chessboard checkbutton
+        self.view_flip_chessboard_button = Gtk.CheckButton(label="Flip Board")
+        self.view_flip_chessboard_button.connect("toggled", self.set_settings_from_popover)
+        self.app_popover_view_expander_box.add(self.view_flip_chessboard_button)
 
     def engine_move(self, *args):
         """Have the computer play for the current turn."""
@@ -521,9 +529,19 @@ class Window(Gtk.ApplicationWindow):
 
     def set_settings_from_popover(self, *args):
         """Set the settings based on the checkbuttons in the app_popover."""
-
+        
+        # Show or hide the status frames
         self.settings["show_status_frames"] = self.view_show_status_frames_checkbutton.get_active()
         self.set_settings()
+
+        # Compare the last value of the chessboard to the current one
+        if self.last_chessboard_flipped != self.view_flip_chessboard_button.get_active():
+
+            self.last_chessboard_flipped = self.view_flip_chessboard_button.get_active()
+
+            # Set the chessboard flipped or not
+            self.chessboard.flip()
+            self.chessboard.bind_squares(self.game._assert_move)
 
     def show_about(self, *args):
         """Show the about dialog."""

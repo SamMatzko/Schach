@@ -156,7 +156,7 @@ class ChessBoard(Gtk.Grid):
             square.connect("clicked", self._bound_method)
 
         # Set the square_function to be called by the squares
-        self.square_function = func        
+        self.square_function = func
 
     def from_string(self, string):
         """Rearrange the board according to STRING."""
