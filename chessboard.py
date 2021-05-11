@@ -29,9 +29,14 @@ from gi.repository import Gdk, Gtk
 class ChessBoard(Gtk.Grid):
     """The chessboard widget."""
 
-    def __init__(self, parent=None, string=None):
+    def __init__(self, parent=None, string=None, flipped=False):
 
         Gtk.Grid.__init__(self)
+
+        # Whether we are flipped or not
+        self.flipped = flipped
+
+        # Create the board
         self._create_squares()
         self.set_no_show_all(False)
 
@@ -61,7 +66,11 @@ class ChessBoard(Gtk.Grid):
         else:
             raise TypeError("Cannot call type 'None'.")
 
-    def _create_squares(self):
+    def _create_squares(self, flipped=False):
+        LETTERS = LETTERS_REVERSED
+        NUMBERS = NUMBERS_REVERSED
+        LETTERS.reverse()
+        NUMBERS.reverse()
         for c in LETTERS:
             for r in NUMBERS:
 
@@ -135,6 +144,8 @@ class ChessBoard(Gtk.Grid):
                 exec(f"self.{c}{r}.color = '{color}'")
                 exec(f"self.attach(self.{c}{r}, {cindex + 1}, {rindex + 1}, 1, 1)")
 
+        self.show_all()
+
     def _get_squares(self):
         """Return a list of the squares."""
 
@@ -149,14 +160,14 @@ class ChessBoard(Gtk.Grid):
 
     def bind_squares(self, func):
         """Bind all the squares at a "clicked" event to a call of function FUNC."""
+
+        # Set the square_function to be called by the squares
+        self.square_function = func
         
         # Go through and bind all the squares to self._bound_method.
         # This method then calls func when it is called.
         for square in self._get_squares():
             square.connect("clicked", self._bound_method)
-
-        # Set the square_function to be called by the squares
-        self.square_function = func
 
     def from_string(self, string):
         """Rearrange the board according to STRING."""

@@ -27,6 +27,10 @@ ROOT_PATH = f"{os.path.dirname(__file__)}/"
 LETTERS = ["a", "b", "c", "d", "e", "f", "g", "h"]
 NUMBERS = ["1", "2", "3", "4", "5", "6", "7", "8"]
 
+# The reversed list of letter and numbers
+LETTERS_REVERSED = ['h', 'g', 'f', 'e', 'd', 'c', 'b', 'a']
+NUMBERS_REVERSED = ['8', '7', '6', '5', '4', '3', '2', '1']
+
 # The lists of the odd LETTERS and numbers
 ODD_LETTERS = ["a", "c", "e", "g"]
 ODD_NUMBERS = ["1", "3", "5", "7"]

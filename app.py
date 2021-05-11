@@ -171,7 +171,7 @@ class Window(Gtk.ApplicationWindow):
         self.main_box.pack_start(self.game_box, True, False, 10)
 
         # The chessboard widget
-        self.chessboard = chessboard.ChessBoard(parent=self)
+        self.chessboard = chessboard.ChessBoard(parent=self, flipped=True)
 
         # The status frames
         self.white_status_frame = status_frame.WhiteStatusFrame()
@@ -538,10 +538,31 @@ class Window(Gtk.ApplicationWindow):
         if self.last_chessboard_flipped != self.view_flip_chessboard_button.get_active():
 
             self.last_chessboard_flipped = self.view_flip_chessboard_button.get_active()
+            print("heloo")
 
             # Set the chessboard flipped or not
-            self.chessboard.flip()
+            self.game_box.remove(self.chessboard)
+            for square in self.chessboard._get_squares():
+                del square
+            del self.chessboard
+            self.chessboard = chessboard.ChessBoard(self, flipped=self.last_chessboard_flipped)
+
+            # Remove and replace the frames and chessboard
+            self.game_box.remove(self.white_status_frame)
+            self.game_box.remove(self.black_status_frame)
+            
+            self.game_box.pack_start(self.white_status_frame, True, True, 5)
+            self.game_box.pack_start(self.chessboard, True, False, 10)
+            self.game_box.pack_start(self.black_status_frame, True, True, 5)
+
+            # Set up the board and bind the squares
+            self.chessboard.from_string(str(self.game.board))
             self.chessboard.bind_squares(self.game._assert_move)
+            self.game.chessboard = self.chessboard
+
+            self.chessboard.show_all()
+            while Gtk.events_pending():
+                Gtk.main_iteration()
 
     def show_about(self, *args):
         """Show the about dialog."""
