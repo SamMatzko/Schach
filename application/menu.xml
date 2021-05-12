@@ -61,6 +61,12 @@
             <attribute name="label">View</attribute>
             <section>
                 <item>
+                    <attribute name="label">Toggle Status Frames</attribute>
+                    <attribute name="action">app.view-toggle_status_frames</attribute>
+                </item>
+            </section>
+            <section>
+                <item>
                     <attribute name="label">Flip Board</attribute>
                     <attribute name="action">app.view-flip_chessboard</attribute>
                 </item>

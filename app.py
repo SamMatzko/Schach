@@ -80,6 +80,7 @@ class App(Gtk.Application):
         self.edit_paste_game = Gio.SimpleAction.new("edit-paste_game")
         self.edit_settings = Gio.SimpleAction.new("edit-settings")
 
+        self.view_toggle_status_frames = Gio.SimpleAction.new("view-toggle_status_frames")
         self.view_flip_chessboard = Gio.SimpleAction.new("view-flip_chessboard")
 
         self.gameengine_move = Gio.SimpleAction.new("game-engine_move")
@@ -98,6 +99,7 @@ class App(Gtk.Application):
         self.edit_paste_game.connect("activate", self.window.paste_game)
         self.edit_settings.connect("activate", self.window.show_settings)
 
+        self.view_toggle_status_frames.connect("activate", self.window.toggle_status_frames)
         self.view_flip_chessboard.connect("activate", self.window.flip_chessboard, True)
 
         self.gameengine_move.connect("activate", self.window.engine_move)
@@ -131,6 +133,7 @@ class App(Gtk.Application):
         self.add_action(self.edit_copy_game)
         self.add_action(self.edit_paste_game)
         self.add_action(self.edit_settings)
+        self.add_action(self.view_toggle_status_frames)
         self.add_action(self.view_flip_chessboard)
         self.add_action(self.gameengine_move)
         self.add_action(self.help_about)
@@ -677,3 +680,9 @@ class Window(Gtk.ApplicationWindow):
             self.set_settings()
         else:
             pass
+
+    def toggle_status_frames(self, *args):
+        
+        self.view_show_status_frames_checkbutton.set_active(not self.view_show_status_frames_checkbutton.get_active())
+        self.settings["show_status_frames"] = self.view_show_status_frames_checkbutton.get_active()
+        self.set_settings()
