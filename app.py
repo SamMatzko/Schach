@@ -58,7 +58,7 @@ class App(Gtk.Application):
         self.add_main_option(
             "open",
             ord("o"),
-            GLib.OptionFlags.FILENAME,
+            GLib.OptionFlags.NONE,
             GLib.OptionArg.FILENAME,
             "File to open",
             None
