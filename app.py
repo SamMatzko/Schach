@@ -30,6 +30,7 @@ import json
 import os
 import pgn
 import status_frame
+import string
 import sys
 import time
 
@@ -50,7 +51,17 @@ class App(Gtk.Application):
         super().__init__(
             *args,
             application_id="org.schach",
+            flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE,
             **kwargs
+        )
+
+        self.add_main_option(
+            "open",
+            ord("o"),
+            GLib.OptionFlags.FILENAME,
+            GLib.OptionArg.FILENAME,
+            "File to open",
+            None
         )
 
         self.window = None
@@ -124,14 +135,6 @@ class App(Gtk.Application):
         self.add_action(self.gameengine_move)
         self.add_action(self.help_about)
 
-    def do_startup(self):
-        """Start Schach."""
-        Gtk.Application.do_startup(self)
-
-        builder = Gtk.Builder.new_from_string(MENU_XML, -1)
-        main_menu = builder.get_object("app-menu")
-        self.set_menubar(main_menu)
-
     def do_activate(self):
         # We only allow a single window and raise any existing ones
         if not self.window:
@@ -143,6 +146,43 @@ class App(Gtk.Application):
 
         # Create the actions
         self.create_actions()
+
+    def do_command_line(self, command_line):
+
+        # Get the command dictionary
+        options = command_line.get_options_dict()
+        options = options.end().unpack()
+
+        # If there was a file given, get the file path
+        try: unicode_file = options["open"]
+        except:
+            unicode_file = None
+
+        if unicode_file is not None:
+
+            # The variable containing the file path
+            file = ""     
+            for c in unicode_file:
+                if chr(c) in string.printable:
+                    file = file + chr(c)
+            file.strip()
+        
+        # Activate the application
+        self.activate()
+
+        # Load the file
+        self.window.load_game(file=file)
+        self.window.activate_focus()
+        
+        return 0
+        
+    def do_startup(self):
+        """Start Schach."""
+        Gtk.Application.do_startup(self)
+
+        builder = Gtk.Builder.new_from_string(MENU_XML, -1)
+        main_menu = builder.get_object("app-menu")
+        self.set_menubar(main_menu)
 
 class Window(Gtk.ApplicationWindow):
     """The main window for the Scach."""
@@ -429,11 +469,15 @@ class Window(Gtk.ApplicationWindow):
                 while Gtk.events_pending():
                     Gtk.main_iteration()
 
-    def load_game(self, *args):
+    def load_game(self, *args, file=None):
         """Load a game from a pgn file."""
         
         # Get the file to load the game from
-        file = filedialogs.Open(parent=self, title="Load a Game").show()
+
+        if file is not None:
+            file = file
+        else:
+            file = filedialogs.Open(parent=self, title="Load a Game").show()
         if file is not None:
 
             # Get the contents of the file
