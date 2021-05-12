@@ -175,7 +175,7 @@ class App(Gtk.Application):
 
             # Load the file
             self.window.load_game(file=file)
-        
+
         else:
 
             # Activate the application
@@ -523,7 +523,7 @@ class Window(Gtk.ApplicationWindow):
         # Ask the user if they want to save the current game before exiting
         response = dialogs.messagedialog.ask_yes_no_cancel(
             self,
-            "Save game?.",
+            "Save game?",
             "Save the current game before creating a new one?"
         )
         if response == Gtk.ResponseType.OK:
@@ -552,7 +552,7 @@ class Window(Gtk.ApplicationWindow):
         # Make sure that the user wants to quit the current game
         response = dialogs.messagedialog.ask_yes_no_cancel(
             self,
-            "Save game?.",
+            "Save game?",
             "Save the current game before pasting a new one?"
         )
         if response == Gtk.ResponseType.NO:
@@ -569,7 +569,7 @@ class Window(Gtk.ApplicationWindow):
         # Ask the user if they want to save the game
         response = messagedialog.ask_yes_no_cancel(
             self,
-            "Save game?.",
+            "Save game?",
             "Save the current game before exiting?"
         )
 
