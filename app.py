@@ -523,8 +523,8 @@ class Window(Gtk.ApplicationWindow):
         # Ask the user if they want to save the current game before exiting
         response = dialogs.messagedialog.ask_yes_no_cancel(
             self,
-            "Game not saved.",
-            "The current game has not been saved. Save before creating a new one?"
+            "Save game?.",
+            "Save the current game before creating a new one?"
         )
         if response == Gtk.ResponseType.OK:
             self.save_game(append=True)
@@ -552,8 +552,8 @@ class Window(Gtk.ApplicationWindow):
         # Make sure that the user wants to quit the current game
         response = dialogs.messagedialog.ask_yes_no_cancel(
             self,
-            "Game not saved.",
-            "The current game has not been saved. Save before pasting a new one?"
+            "Save game?.",
+            "Save the current game before pasting a new one?"
         )
         if response == Gtk.ResponseType.NO:
             self.game.new_game(game_instance.mainline_moves())
@@ -569,8 +569,8 @@ class Window(Gtk.ApplicationWindow):
         # Ask the user if they want to save the game
         response = messagedialog.ask_yes_no_cancel(
             self,
-            "Game may not be saved",
-            "Do you want to save the game before exiting?"
+            "Save game?.",
+            "Save the current game before exiting?"
         )
 
         if response == Gtk.ResponseType.NO:
