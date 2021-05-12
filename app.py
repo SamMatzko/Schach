@@ -167,12 +167,16 @@ class App(Gtk.Application):
                     file = file + chr(c)
             file.strip()
         
-        # Activate the application
-        self.activate()
+            # Activate the application
+            self.activate()
 
-        # Load the file
-        self.window.load_game(file=file)
-        self.window.activate_focus()
+            # Load the file
+            self.window.load_game(file=file)
+        
+        else:
+
+            # Activate the application
+            self.activate()
         
         return 0
         
