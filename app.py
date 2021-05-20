@@ -83,7 +83,8 @@ class App(Gtk.Application):
         self.view_toggle_status_frames = Gio.SimpleAction.new("view-toggle_status_frames")
         self.view_flip_chessboard = Gio.SimpleAction.new("view-flip_chessboard")
 
-        self.gameengine_move = Gio.SimpleAction.new("game-engine_move")
+        self.game_engine_move = Gio.SimpleAction.new("game-engine_move")
+        self.game_type_move = Gio.SimpleAction.new("game-type_move")
 
         self.help_about = Gio.SimpleAction.new("help-about")
 
@@ -102,7 +103,8 @@ class App(Gtk.Application):
         self.view_toggle_status_frames.connect("activate", self.window.toggle_status_frames)
         self.view_flip_chessboard.connect("activate", self.window.flip_chessboard, True)
 
-        self.gameengine_move.connect("activate", self.window.engine_move)
+        self.game_engine_move.connect("activate", self.window.engine_move)
+        self.game_type_move.connect("activate", self.window.focus_move_entry)
 
         self.help_about.connect("activate", self.window.show_about)
 
@@ -120,6 +122,7 @@ class App(Gtk.Application):
         self.set_accels_for_action("app.view-flip_chessboard", ["<control>D"])
 
         self.set_accels_for_action("app.game-engine_move", ["<control>E"])
+        self.set_accels_for_action("app.game-type_move", ["<control>M"])
 
         self.set_accels_for_action("app.edit-undo", ["<control>Z"])
 
@@ -135,7 +138,8 @@ class App(Gtk.Application):
         self.add_action(self.edit_settings)
         self.add_action(self.view_toggle_status_frames)
         self.add_action(self.view_flip_chessboard)
-        self.add_action(self.gameengine_move)
+        self.add_action(self.game_engine_move)
+        self.add_action(self.game_type_move)
         self.add_action(self.help_about)
 
     def do_activate(self):
@@ -382,6 +386,21 @@ class Window(Gtk.ApplicationWindow):
         self.game_settings_box.pack_start(self.play_button, False, False, 0)
         self.game_settings_box.pack_start(self.redo_button, False, False, 0)
 
+        # The move entry box
+        self.move_entry_box = Gtk.HBox()
+        self.header_bar.pack_start(self.move_entry_box)
+
+        # The move entry
+        self.move_entry = Gtk.Entry()
+        self.move_entry_box.pack_start(self.move_entry, True, True, 3)
+        self.move_entry.set_max_length(5)
+        self.move_entry.set_placeholder_text("Type a move...")
+        self.move_entry.set_tooltip_text("Type a move")
+        self.move_entry.connect("activate", self.on_move_entry_activate)
+
+        self.move_entry.show_all()
+        self.move_entry_box.show_all()
+
         # Create the engine popover
         self.create_engine_popover()
 
@@ -476,6 +495,10 @@ class Window(Gtk.ApplicationWindow):
                 while Gtk.events_pending():
                     Gtk.main_iteration()
 
+    def focus_move_entry(self, *args):
+        """Set the focus to the move entry."""
+        self.move_entry.grab_focus()
+
     def load_game(self, *args, file=None):
         """Load a game from a pgn file."""
         
@@ -537,6 +560,29 @@ class Window(Gtk.ApplicationWindow):
     def on_black_computer_scale(self, scale):
         """Set the black computer's playing power to the scale's value."""
         self.game.set_limit(black_limit=scale.get_value())
+
+    def on_move_entry_activate(self, entry):
+        """Move the move in the entry, if it is valid."""
+
+        uci = entry.get_text()
+        move_failed = False
+
+        try: move = chess.Move.from_uci(uci)
+        except:
+            move_failed = True
+
+        if not move_failed and move in self.game.board.legal_moves:
+            self.game._push_move(move)
+            self.game._update_status()
+            self.chessboard.from_string(str(self.game.board))
+            entry.get_buffer().delete_text(0, 5)
+        else:
+            dialogs.messagedialog.show_info(
+                self,
+                "Invalid Move",
+                "The given move was invalid. Please try a different one."
+            )
+            entry.get_buffer().delete_text(0, 5)
 
     def on_white_computer_scale(self, scale):
         """Set the white computer's playing power to the scale's value."""

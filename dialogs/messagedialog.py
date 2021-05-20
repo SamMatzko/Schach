@@ -98,6 +98,21 @@ def show_game_over_stalemate(parent):
     dialog.run()
     dialog.destroy()
 
+def show_info(parent, text="Info", secondary_text="Here is some info."):
+    dialog = Gtk.MessageDialog(
+        transient_for=parent,
+        message_type=Gtk.MessageType.INFO,
+        text=text
+    )
+    dialog.format_secondary_text(secondary_text)
+    buttons = (
+        (Gtk.STOCK_OK, Gtk.ResponseType.OK),
+    )
+    for button in buttons:
+        dialog.add_button(button[0], button[1])
+    dialog.run()
+    dialog.destroy()
+
 if __name__ == "__main__":
     window = Gtk.Window()
     def show(*args):
