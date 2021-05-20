@@ -313,11 +313,6 @@ class Window(Gtk.ApplicationWindow):
     def create_engine_popover(self):
         """Create the engine popover and its contents."""
 
-        # Add the buttons
-        self.game_settings_box.pack_start(self.undo_button, False, False, 0)
-        self.game_settings_box.pack_start(self.play_button, False, False, 0)
-        self.game_settings_box.pack_start(self.redo_button, False, False, 0)
-
         # The scales for the popover
         self.white_computer_scale = Gtk.Scale.new_with_range(
             Gtk.Orientation.HORIZONTAL,
@@ -381,6 +376,11 @@ class Window(Gtk.ApplicationWindow):
         self.redo_button = Gtk.Button.new_from_icon_name("media-seek-forward-symbolic", 1)
         self.redo_button.set_tooltip_text("Redo (Shift+Ctrl+Z)")
         self.redo_button.connect("clicked", self.move_redo)
+
+        # Add the buttons
+        self.game_settings_box.pack_start(self.undo_button, False, False, 0)
+        self.game_settings_box.pack_start(self.play_button, False, False, 0)
+        self.game_settings_box.pack_start(self.redo_button, False, False, 0)
 
         # Create the engine popover
         self.create_engine_popover()
