@@ -395,7 +395,7 @@ class Window(Gtk.ApplicationWindow):
         self.move_entry_box.pack_start(self.move_entry, True, True, 3)
         self.move_entry.set_max_length(5)
         self.move_entry.set_placeholder_text("Type a move...")
-        self.move_entry.set_tooltip_text("Type a move")
+        self.move_entry.set_tooltip_text("Type a move (Ctrl+M)")
         self.move_entry.connect("activate", self.on_move_entry_activate)
 
         self.move_entry.show_all()
