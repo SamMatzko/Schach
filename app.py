@@ -66,8 +66,20 @@ class App(Gtk.Application):
             "File to open",
             None
         )
+        self.add_main_option(
+            "newWindow",
+            ord("n"),
+            GLib.OptionFlags.NONE,
+            GLib.OptionFlags.NONE,
+            "Create a new window",
+            None
+        )
 
-        self.window = None
+        # The list of windows
+        self.windows = []
+
+        # The name of the currently focused window
+        self.window = ""
 
     def create_actions(self):
         """Create all the actions for the application."""
@@ -91,25 +103,25 @@ class App(Gtk.Application):
 
         self.help_about = Gio.SimpleAction.new("help-about")
 
-        self.file_new.connect("activate", self.window.new_game)
-        self.file_save.connect("activate", self.window.save_game, False)
-        self.file_save_append.connect("activate", self.window.save_game, True)
-        self.file_open.connect("activate", self.window.load_game)
-        self.file_quit.connect("activate", self.window.quit)
+        self.file_new.connect("activate", self.windows[0].new_game)
+        self.file_save.connect("activate", self.windows[0].save_game, False)
+        self.file_save_append.connect("activate", self.windows[0].save_game, True)
+        self.file_open.connect("activate", self.windows[0].load_game)
+        self.file_quit.connect("activate", self.windows[0].quit)
 
-        self.edit_undo.connect("activate", self.window.move_undo)
-        self.edit_redo.connect("activate", self.window.move_redo)
-        self.edit_copy_game.connect("activate", self.window.copy_game)
-        self.edit_paste_game.connect("activate", self.window.paste_game)
-        self.edit_settings.connect("activate", self.window.show_settings)
+        self.edit_undo.connect("activate", self.windows[0].move_undo)
+        self.edit_redo.connect("activate", self.windows[0].move_redo)
+        self.edit_copy_game.connect("activate", self.windows[0].copy_game)
+        self.edit_paste_game.connect("activate", self.windows[0].paste_game)
+        self.edit_settings.connect("activate", self.windows[0].show_settings)
 
-        self.view_toggle_status_frames.connect("activate", self.window.toggle_status_frames)
-        self.view_flip_chessboard.connect("activate", self.window.flip_chessboard, True)
+        self.view_toggle_status_frames.connect("activate", self.windows[0].toggle_status_frames)
+        self.view_flip_chessboard.connect("activate", self.windows[0].flip_chessboard, True)
 
-        self.game_engine_move.connect("activate", self.window.engine_move)
-        self.game_type_move.connect("activate", self.window.focus_move_entry)
+        self.game_engine_move.connect("activate", self.windows[0].engine_move)
+        self.game_type_move.connect("activate", self.windows[0].focus_move_entry)
 
-        self.help_about.connect("activate", self.window.show_about)
+        self.help_about.connect("activate", self.windows[0].show_about)
 
         self.set_accels_for_action("app.file-new", ["<control>N"])
         self.set_accels_for_action("app.file-save", ["<control>S"])
@@ -146,13 +158,12 @@ class App(Gtk.Application):
         self.add_action(self.help_about)
 
     def do_activate(self):
-        # We only allow a single window and raise any existing ones
-        if not self.window:
-            # Windows are associated with the application
-            # when the last one is closed the application shuts down
-            self.window = Window(application=self, title="Schach")
 
-            self.window.present()
+        # Add a new window to the list of windows
+        window = Window(application=self, title="Schach", name="%s" % len(self.windows))
+        self.windows.append(window)
+        self.window = window.name
+        window.present()
 
         # Create the actions
         self.create_actions()
@@ -167,6 +178,11 @@ class App(Gtk.Application):
         try: unicode_file = options["open"]
         except:
             unicode_file = None
+        
+        # Get if we were told to open a new window
+        try: new_window = options["newWindow"]
+        except:
+            new_window = None
 
         if unicode_file is not None:
 
@@ -181,7 +197,15 @@ class App(Gtk.Application):
             self.activate()
 
             # Load the file
-            self.window.load_game(file=file)
+            self.windows[0].load_game(file=file)
+
+        elif new_window is not None:
+
+            # Create a new window
+            self.new_window()
+
+            # Activate the application
+            self.activate()
 
         else:
 
@@ -189,6 +213,13 @@ class App(Gtk.Application):
             self.activate()
         
         return 0
+
+    def new_window(self):
+        """Create a new window."""
+        window = Window(self, "Schach", "%s" % len(self.windows))
+        self.windows.append(window)
+        self.window = window.name
+        window.present()
         
     def do_startup(self):
         """Start Schach."""
@@ -198,10 +229,16 @@ class App(Gtk.Application):
         main_menu = builder.get_object("app-menu")
         self.set_menubar(main_menu)
 
+    def do_window_activated(self, window_name):
+        """Set the current window to the window with the name WINDOW_NAME."""
+
+        self.window = window_name
+        print(self.window)
+
 class Window(Gtk.ApplicationWindow):
     """The main window for the Scach."""
 
-    def __init__(self, application, title):
+    def __init__(self, application, title, name):
         
         # The window and its settings and events
         Gtk.ApplicationWindow.__init__(self, application=application, title=title)
@@ -209,6 +246,12 @@ class Window(Gtk.ApplicationWindow):
 
         # The application
         self.application = application
+
+        # The window's name
+        self.name = name
+
+        # This is so that the application can keep track of the current window
+        self.connect("event", self.window_focused)
 
         # The clipboard
         self.clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
@@ -740,3 +783,7 @@ class Window(Gtk.ApplicationWindow):
         self.view_show_status_frames_checkbutton.set_active(not self.view_show_status_frames_checkbutton.get_active())
         self.settings["show_status_frames"] = self.view_show_status_frames_checkbutton.get_active()
         self.set_settings()
+
+    def window_focused(self, widget, event):
+        if event.type == Gdk.EventType.WINDOW_STATE and self.has_toplevel_focus():
+            self.application.do_window_activated(self.name)
