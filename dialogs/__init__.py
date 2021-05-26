@@ -562,7 +562,7 @@ class SettingsDialog(_Dialog):
             self,
             title="Schach Preferences"
         )
-        self.set_default_geometry(500, 500)
+        self.set_default_size(500, 500)
 
         # The area to which we can add stuff
         self.area = self.get_content_area()
