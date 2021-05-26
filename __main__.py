@@ -31,7 +31,7 @@ from constants import *
 from gi.repository import Gtk
 
 # Print the Scach version
-appinfo = json.load(open(f"{ROOT_PATH}json/appinfo.json"))
+appinfo = json.load(open(APP_INFO))
 print(f"Schach {appinfo['version']}")
 
 if __name__ == "__main__":

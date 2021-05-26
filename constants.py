@@ -83,3 +83,6 @@ AUDIO_FILE_2 = f"{ROOT_PATH}audio/move2.wav"
 
 # The menu .xml file
 MENU_XML = f"{ROOT_PATH}ui/menu.xml"
+
+# The application info file
+APP_INFO = f"{ROOT_PATH}json/appinfo.json"

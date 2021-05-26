@@ -708,7 +708,7 @@ class Window(Gtk.ApplicationWindow):
         """Show the about dialog."""
 
         # Get the info from appinfo.json
-        info = json.load(open(f"{ROOT_PATH}json/appinfo.json"))
+        info = json.load(open(APP_INFO"))
         info["logo"] = IMAGE_APPLICATION
         dialogs.AboutDialog(self, info).present()
 
