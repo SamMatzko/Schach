@@ -103,25 +103,25 @@ class App(Gtk.Application):
 
         self.help_about = Gio.SimpleAction.new("help-about")
 
-        self.file_new.connect("activate", self.windows[0].new_game)
-        self.file_save.connect("activate", self.windows[0].save_game, False)
-        self.file_save_append.connect("activate", self.windows[0].save_game, True)
-        self.file_open.connect("activate", self.windows[0].load_game)
-        self.file_quit.connect("activate", self.windows[0].quit)
+        self.file_new.connect("activate", self.window_new_game)
+        self.file_save.connect("activate", self.window_save_game, False)
+        self.file_save_append.connect("activate", self.window_save_game, True)
+        self.file_open.connect("activate", self.window_load_game)
+        self.file_quit.connect("activate", self.window_quit)
 
-        self.edit_undo.connect("activate", self.windows[0].move_undo)
-        self.edit_redo.connect("activate", self.windows[0].move_redo)
-        self.edit_copy_game.connect("activate", self.windows[0].copy_game)
-        self.edit_paste_game.connect("activate", self.windows[0].paste_game)
-        self.edit_settings.connect("activate", self.windows[0].show_settings)
+        self.edit_undo.connect("activate", self.window_move_undo)
+        self.edit_redo.connect("activate", self.window_move_redo)
+        self.edit_copy_game.connect("activate", self.window_copy_game)
+        self.edit_paste_game.connect("activate", self.window_paste_game)
+        self.edit_settings.connect("activate", self.window_show_settings)
 
-        self.view_toggle_status_frames.connect("activate", self.windows[0].toggle_status_frames)
-        self.view_flip_chessboard.connect("activate", self.windows[0].flip_chessboard, True)
+        self.view_toggle_status_frames.connect("activate", self.window_toggle_status_frames)
+        self.view_flip_chessboard.connect("activate", self.window_flip_chessboard, True)
 
-        self.game_engine_move.connect("activate", self.windows[0].engine_move)
-        self.game_type_move.connect("activate", self.windows[0].focus_move_entry)
+        self.game_engine_move.connect("activate", self.window_engine_move)
+        self.game_type_move.connect("activate", self.window_focus_move_entry)
 
-        self.help_about.connect("activate", self.windows[0].show_about)
+        self.help_about.connect("activate", self.window_show_about)
 
         self.set_accels_for_action("app.file-new", ["<control>N"])
         self.set_accels_for_action("app.file-save", ["<control>S"])
@@ -197,7 +197,7 @@ class App(Gtk.Application):
             self.activate()
 
             # Load the file
-            self.windows[0].load_game(file=file)
+            self.window_load_game(file=file)
 
         elif new_window is not None:
 
@@ -234,6 +234,66 @@ class App(Gtk.Application):
 
         self.window = window_name
         print(self.window)
+
+    def get_current_window_instance(self):
+        """Return the current widnow instance."""
+        return self.windows[int(self.window)]
+
+    def window_new_game(self):
+        """Invoke the current window's new game method."""
+        self.get_current_window_instance().new_game()
+
+    def window_save_game(self, parameter):
+        """Invoke the current window's save_game method."""
+        self.get_current_window_instance().save_game(parameter)
+
+    def window_load_game(self):
+        """Invoke the current window's load_game method."""
+        self.get_current_window_instance().load_game()
+
+    def window_quit(self):
+        """Invoke the current window's quit method."""
+        self.get_current_window_instance().quit()
+
+    def window_move_undo(self):
+        """Invoke the current window's move_undo method."""
+        self.get_current_window_instance().move_undo()
+
+    def window_move_redo(self):
+        """Invoke the current window's move_redo method."""
+        self.get_current_window_instance().move_redo()
+
+    def window_copy_game(self):
+        """Invoke the current_window's copy_game method."""
+        self.get_current_window_instance().copy_game()
+
+    def window_paste_game(self):
+        """Invoke the current window's paste_game method."""
+        self.get_current_window_instance().paste_game()
+
+    def window_show_settings(self):
+        """Invoke the current window's show_settings method."""
+        self.get_current_window_instance().show_settings()
+
+    def window_toggle_status_frames(self):
+        """Invoke the current window's toggle_status_frames_method."""
+        self.get_current_window_instance().toggle_status_frames()
+
+    def window_flip_chessboard(self, parameter):
+        """Invoke the current window's flip_chessboard method."""
+        self.get_current_window_instance().flip_chessboard(parameter)
+
+    def window_engine_move(self):
+        """Invoke the current window's engine_move method."""
+        self.get_current_window_instance().engine_move()
+
+    def focus_move_entry(self):
+        """Invoke the current window's move_entry method."""
+        self.get_current_window_instance().focus_move_entry()
+
+    def window_show_about(self):
+        """Invoke the current widnow's show_about method."""
+        self.get_current_window_instance().show_about()
 
 class Window(Gtk.ApplicationWindow):
     """The main window for the Scach."""
