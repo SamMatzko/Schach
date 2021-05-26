@@ -31,6 +31,7 @@ import io
 import json
 import os
 import pgn
+import status_bar
 import status_frame
 import string
 import sys
@@ -237,7 +238,11 @@ class Window(Gtk.ApplicationWindow):
         self.white_status_frame = status_frame.WhiteStatusFrame()
         self.black_status_frame = status_frame.BlackStatusFrame()
 
-        # Add the board, the status frames, and the status bars to the window
+        # The status bar
+        self.status_bar = status_bar.StatusBar()
+        self.main_box.pack_start(self.status_bar, False, True, 0)
+
+        # Add the board, the status frames, and the status bar to the window
         self.game_box.pack_start(self.white_status_frame, True, True, 5)
         self.game_box.pack_start(self.chessboard, True, False, 10)
         self.game_box.pack_start(self.black_status_frame, True, True, 5)
@@ -247,7 +252,8 @@ class Window(Gtk.ApplicationWindow):
             self,
             self.chessboard,
             self.white_status_frame,
-            self.black_status_frame
+            self.black_status_frame,
+            self.status_bar
         )
         self.game._update_status()
 
@@ -708,7 +714,7 @@ class Window(Gtk.ApplicationWindow):
         """Show the about dialog."""
 
         # Get the info from appinfo.json
-        info = json.load(open(APP_INFO"))
+        info = json.load(open(APP_INFO))
         info["logo"] = IMAGE_APPLICATION
         dialogs.AboutDialog(self, info).present()
 

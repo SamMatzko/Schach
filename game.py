@@ -34,7 +34,7 @@ from gi.repository import Gtk
 class Game:
     """The class that manages the chess game."""
 
-    def __init__(self, window, chessboard, white_frame, black_frame):
+    def __init__(self, window, chessboard, white_frame, black_frame, status_bar):
     
         # The last square that was clicked
         self.move_from = None
@@ -49,6 +49,7 @@ class Game:
         # The status widgets
         self.white_frame = white_frame
         self.black_frame = black_frame
+        self.status_bar = status_bar
 
         # The limits for the computer
         self.white_limit = None
@@ -259,23 +260,24 @@ class Game:
 
         self.white_frame.set_status(board=str(self.board))
         self.black_frame.set_status(board=str(self.board))
-        if self.board.is_check():
-            if self.board.turn:
+        
+        self.status_bar.set_status(turn=self.board.turn)
+        if self.board.turn:
+            if self.board.is_check():
                 self.white_frame.set_status(check=True)
             else:
-                self.black_frame.set_status(check=True)
+                self.white_frame.set_status(check=False)                    
         else:
-            self.white_frame.set_status(check=False)
-            self.black_frame.set_status(check=False)
-
-            if self.board.is_game_over():
-                self._game_over()
+            if self.board.is_check():
+                self.black_frame.set_status(check=True)
             else:
-                self.white_frame.set_status(we_won=False)
-                self.black_frame.set_status(we_won=False)
+                self.black_frame.set_status(check=False)
 
         if self.board.is_game_over():
             self._game_over()
+        else:
+            self.white_frame.set_status(we_won=False)
+            self.black_frame.set_status(we_won=False)
 
     def engine_move(self):
         """Make the engine this turn."""
@@ -290,9 +292,11 @@ class Game:
             if self.board.turn:
                 limit = self.white_limit
                 self.white_frame.set_status(thinking=True)
+                self.status_bar.set_status(turn=self.board.turn, thinking=True)
             else:
                 limit = self.black_limit
                 self.black_frame.set_status(thinking=True)
+                self.status_bar.set_status(turn=self.board.turn, thinking=True)
 
             # Show the spinners
             while Gtk.events_pending():
