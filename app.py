@@ -168,7 +168,6 @@ class App(Gtk.Application):
 
             # Create the actions
             self.create_actions()
-            print(self.windows)
 
     def do_command_line(self, command_line):
 
@@ -185,14 +184,16 @@ class App(Gtk.Application):
         try: new_window = options["newWindow"]
         except:
             new_window = None
-        print(new_window, unicode_file)
 
         # The variable containing the file path
-        file = ""     
-        for c in unicode_file:
-            if chr(c) in string.printable:
-                file = file + chr(c)
-        file.strip()
+        try:
+            file = ""     
+            for c in unicode_file:
+                if chr(c) in string.printable:
+                    file = file + chr(c)
+            file.strip()
+        except TypeError:
+            file = "thisisnotafile"
 
         if os.path.isfile(file):
 
@@ -239,7 +240,6 @@ class App(Gtk.Application):
         """Set the current window to the window with the name WINDOW_NAME."""
 
         self.window = window_name
-        print(self.window)
 
     def do_window_closed(self, window_name):
         """Remove the window with name WINDOW_NAME from the list."""
@@ -636,7 +636,7 @@ class Window(Gtk.ApplicationWindow):
         """Set the focus to the move entry."""
         self.move_entry.grab_focus()
 
-    def load_game(self, *args, file=None):
+    def load_game(self, file=None, *args):
         """Load a game from a pgn file."""
         
         # Get the file to load the game from
