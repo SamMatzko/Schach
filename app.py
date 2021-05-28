@@ -883,5 +883,5 @@ class Window(Gtk.ApplicationWindow):
         self.set_settings()
 
     def window_focused(self, widget, event):
-        if event.type == Gdk.EventType.WINDOW_STATE and self.has_toplevel_focus():
+        if self.has_toplevel_focus():
             self.application.do_window_activated(self.name)
