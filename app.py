@@ -264,59 +264,59 @@ class App(Gtk.Application):
         """Return the current widnow instance."""
         return self.windows[int(self.window)]
 
-    def window_new_game(self):
+    def window_new_game(self, *args):
         """Invoke the current window's new game method."""
         self.get_current_window_instance().new_game()
 
-    def window_save_game(self, parameter):
+    def window_save_game(self, parameter, *args):
         """Invoke the current window's save_game method."""
         self.get_current_window_instance().save_game(parameter)
 
-    def window_load_game(self, file=None):
+    def window_load_game(self, file=None, *args):
         """Invoke the current window's load_game method."""
         self.get_current_window_instance().load_game(file)
 
-    def window_quit(self):
+    def window_quit(self, *args):
         """Invoke the current window's quit method."""
         self.get_current_window_instance().quit()
 
-    def window_move_undo(self):
+    def window_move_undo(self, *args):
         """Invoke the current window's move_undo method."""
         self.get_current_window_instance().move_undo()
 
-    def window_move_redo(self):
+    def window_move_redo(self, *args):
         """Invoke the current window's move_redo method."""
         self.get_current_window_instance().move_redo()
 
-    def window_copy_game(self):
+    def window_copy_game(self, *args):
         """Invoke the current_window's copy_game method."""
         self.get_current_window_instance().copy_game()
 
-    def window_paste_game(self):
+    def window_paste_game(self, *args):
         """Invoke the current window's paste_game method."""
         self.get_current_window_instance().paste_game()
 
-    def window_show_settings(self):
+    def window_show_settings(self, *args):
         """Invoke the current window's show_settings method."""
         self.get_current_window_instance().show_settings()
 
-    def window_toggle_status_frames(self):
+    def window_toggle_status_frames(self, *args):
         """Invoke the current window's toggle_status_frames_method."""
         self.get_current_window_instance().toggle_status_frames()
 
-    def window_flip_chessboard(self, parameter):
+    def window_flip_chessboard(self, parameter, *args):
         """Invoke the current window's flip_chessboard method."""
-        self.get_current_window_instance().flip_chessboard(parameter)
+        self.get_current_window_instance().flip_chessboard(None, None, parameter)
 
-    def window_engine_move(self):
+    def window_engine_move(self, *args):
         """Invoke the current window's engine_move method."""
         self.get_current_window_instance().engine_move()
 
-    def window_focus_move_entry(self):
+    def window_focus_move_entry(self, *args):
         """Invoke the current window's move_entry method."""
         self.get_current_window_instance().focus_move_entry()
 
-    def window_show_about(self):
+    def window_show_about(self, *args):
         """Invoke the current widnow's show_about method."""
         self.get_current_window_instance().show_about()
 
