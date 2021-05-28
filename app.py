@@ -159,14 +159,16 @@ class App(Gtk.Application):
 
     def do_activate(self):
 
-        # Add a new window to the list of windows
-        window = Window(application=self, title="Schach", name="%s" % len(self.windows))
-        self.windows.append(window)
-        self.window = window.name
-        window.present()
+        # If the window list is empty, dd a new window to the list of windows
+        if len(self.windows) == 0:
+            window = Window(application=self, title="Schach", name="%s" % len(self.windows))
+            self.windows.append(window)
+            self.window = window.name
+            window.present()
 
-        # Create the actions
-        self.create_actions()
+            # Create the actions
+            self.create_actions()
+            print(self.windows)
 
     def do_command_line(self, command_line):
 
@@ -183,8 +185,12 @@ class App(Gtk.Application):
         try: new_window = options["newWindow"]
         except:
             new_window = None
+        print(new_window, unicode_file)
 
         if unicode_file is not None:
+
+            # Create a new window
+            self.new_window()
 
             # The variable containing the file path
             file = ""     
@@ -226,14 +232,33 @@ class App(Gtk.Application):
         Gtk.Application.do_startup(self)
 
         builder = Gtk.Builder.new_from_string(MENU_XML, -1)
-        main_menu = builder.get_object("app-menu")
-        self.set_menubar(main_menu)
+        main_menubar = builder.get_object("app-menubar")
+        self.set_menubar(main_menubar)
 
     def do_window_activated(self, window_name):
         """Set the current window to the window with the name WINDOW_NAME."""
 
         self.window = window_name
         print(self.window)
+
+    def do_window_closed(self, window_name):
+        """Remove the window with name WINDOW_NAME from the list."""
+
+        # Remove the window
+        self.windows.pop(int(window_name))
+
+        # If there are any windows left...
+        if len(self.windows) > 0:
+            
+            # ...reassign all the window names...
+            for window in self.windows:
+                window.name = str(self.windows.index(window))
+
+        # ...but if not...
+        else:
+            
+            # ...exit the app.
+            self.quit()
 
     def get_current_window_instance(self):
         """Return the current widnow instance."""
@@ -247,9 +272,9 @@ class App(Gtk.Application):
         """Invoke the current window's save_game method."""
         self.get_current_window_instance().save_game(parameter)
 
-    def window_load_game(self):
+    def window_load_game(self, file=None):
         """Invoke the current window's load_game method."""
-        self.get_current_window_instance().load_game()
+        self.get_current_window_instance().load_game(file)
 
     def window_quit(self):
         """Invoke the current window's quit method."""
@@ -287,7 +312,7 @@ class App(Gtk.Application):
         """Invoke the current window's engine_move method."""
         self.get_current_window_instance().engine_move()
 
-    def focus_move_entry(self):
+    def window_focus_move_entry(self):
         """Invoke the current window's move_entry method."""
         self.get_current_window_instance().focus_move_entry()
 
@@ -541,8 +566,9 @@ class Window(Gtk.ApplicationWindow):
         # Stop the engine
         self.game.engine.quit()
 
-        # Close the window and exit
-        self.application.quit()
+        # Close the window and give the application the name of the closed window
+        self.application.do_window_closed(self.name)
+        self.destroy()
 
     def flip_chessboard(self, one, two, menu_trigger):
         """Flip the chessboard."""
