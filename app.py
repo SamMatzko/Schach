@@ -223,6 +223,9 @@ class App(Gtk.Application):
 
         elif new_window is not None:
 
+            if not self.actions_created:
+                self.create_actions()
+
             # Create a new window
             self.new_window()
 
