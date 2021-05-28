@@ -105,6 +105,7 @@ class App(Gtk.Application):
         self.game_engine_move = Gio.SimpleAction.new("game-engine_move")
         self.game_type_move = Gio.SimpleAction.new("game-type_move")
 
+        self.help_license = Gio.SimpleAction.new("help-license")
         self.help_about = Gio.SimpleAction.new("help-about")
 
         self.file_new.connect("activate", self.window_new_game)
@@ -126,6 +127,7 @@ class App(Gtk.Application):
         self.game_engine_move.connect("activate", self.window_engine_move)
         self.game_type_move.connect("activate", self.window_focus_move_entry)
 
+        self.help_license.connect("activate", self.show_license)
         self.help_about.connect("activate", self.window_show_about)
 
         self.set_accels_for_action("app.file-new", ["<control>N"])
@@ -162,6 +164,7 @@ class App(Gtk.Application):
         self.add_action(self.view_flip_chessboard)
         self.add_action(self.game_engine_move)
         self.add_action(self.game_type_move)
+        self.add_action(self.help_license)
         self.add_action(self.help_about)
 
         self.actions_created = True
@@ -275,6 +278,10 @@ class App(Gtk.Application):
     def get_current_window_instance(self):
         """Return the current widnow instance."""
         return self.windows[int(self.window)]
+
+    def show_license(self, *args):
+        """Show the dialog displaying GPU license."""
+        dialogs.LicenseDialog(self.windows[int(self.window)]).show_dialog()
 
     def window_new_game(self, *args):
         """Invoke the current window's new game method."""
