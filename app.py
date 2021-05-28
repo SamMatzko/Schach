@@ -58,6 +58,9 @@ class App(Gtk.Application):
             **kwargs
         )
 
+        # Whether we have created the actions or not
+        self.actions_created = False
+
         self.add_main_option(
             "open",
             ord("o"),
@@ -157,6 +160,8 @@ class App(Gtk.Application):
         self.add_action(self.game_type_move)
         self.add_action(self.help_about)
 
+        self.actions_created = True
+
     def do_activate(self):
 
         # If the window list is empty, dd a new window to the list of windows
@@ -196,6 +201,9 @@ class App(Gtk.Application):
             file = "thisisnotafile"
 
         if os.path.isfile(file):
+
+            if not self.actions_created:
+                self.create_actions()
 
             # Create a new window
             self.new_window()
