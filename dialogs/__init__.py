@@ -455,6 +455,44 @@ class HeadersDialog(_Dialog):
         # Return the reply
         return response, self.headers
 
+class LicenseDialog(_Dialog):
+    """The dialog that show the license."""
+
+    def __init__(self, parent):
+        _Dialog.__init__(
+            self,
+            title="License",
+            transient_for=parent,
+            modal=True
+        )
+        self.set_resizable(True)
+        self.set_default_size(500, 500)
+
+        # The area to which we can add the text box
+        self.area = self.get_content_area()
+
+        # The scrolled window for the text box
+        self.scrolledwindow = Gtk.ScrolledWindow()
+        self.textview = Gtk.TextView()
+
+        # Open the lisense file
+        with open("%sGPL-license.txt" % ROOT_PATH) as f:
+            text = f.read()
+            f.close()
+        
+        self.area.pack_start(self.scrolledwindow, True, True, 0)
+        self.scrolledwindow.add(self.textview)
+        self.textview.do_insert_at_cursor(self.textview, text)
+        self.textview.set_editable(False)
+        self.textview.show_all()
+        self.show_all()
+
+    def show_dialog(self):
+        """Show the dialog."""
+        response = self.run()
+        self.destroy()
+        return response
+
 class PromotionDialog(_Dialog):
     """The dialog that shows when a piece is promoted."""
 
@@ -668,10 +706,11 @@ if __name__ == "__main__":
         # print(CalendarDialog(window).show_dialog())
         # print(GameSelectorDialog(window).show_dialog())
         # print(HeadersDialog(window, "1/2 - 1/2").show_dialog())
+        print(LicenseDialog(window).show_dialog())
         # print(PromotionDialog(window).show_dialog())
         # print(PromotionDialog(window, "black").show_dialog())
         # print(NewGameDialog(window).show_dialog())
-        print(SettingsDialog(window).show_dialog())
+        # print(SettingsDialog(window).show_dialog())
 
     window.connect("delete-event", Gtk.main_quit)
     window.connect("key-press-event", sd)
