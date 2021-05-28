@@ -187,17 +187,17 @@ class App(Gtk.Application):
             new_window = None
         print(new_window, unicode_file)
 
-        if unicode_file is not None:
+        # The variable containing the file path
+        file = ""     
+        for c in unicode_file:
+            if chr(c) in string.printable:
+                file = file + chr(c)
+        file.strip()
+
+        if os.path.isfile(file):
 
             # Create a new window
             self.new_window()
-
-            # The variable containing the file path
-            file = ""     
-            for c in unicode_file:
-                if chr(c) in string.printable:
-                    file = file + chr(c)
-            file.strip()
         
             # Activate the application
             self.activate()
