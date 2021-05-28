@@ -87,6 +87,7 @@ class App(Gtk.Application):
     def create_actions(self):
         """Create all the actions for the application."""
         self.file_new = Gio.SimpleAction.new("file-new")
+        self.file_new_window = Gio.SimpleAction.new("file-new_window")
         self.file_save = Gio.SimpleAction.new("file-save")
         self.file_save_append = Gio.SimpleAction.new("file-save-append")
         self.file_open = Gio.SimpleAction.new("file-open")
@@ -107,6 +108,7 @@ class App(Gtk.Application):
         self.help_about = Gio.SimpleAction.new("help-about")
 
         self.file_new.connect("activate", self.window_new_game)
+        self.file_new_window.connect("activate", self.new_window)
         self.file_save.connect("activate", self.window_save_game, False)
         self.file_save_append.connect("activate", self.window_save_game, True)
         self.file_open.connect("activate", self.window_load_game)
@@ -127,6 +129,7 @@ class App(Gtk.Application):
         self.help_about.connect("activate", self.window_show_about)
 
         self.set_accels_for_action("app.file-new", ["<control>N"])
+        self.set_accels_for_action("app.file-new_window", ["<control><shift>N"])
         self.set_accels_for_action("app.file-save", ["<control>S"])
         self.set_accels_for_action("app.file-save-append", ["<control><shift>S"])
         self.set_accels_for_action("app.file-open", ["<control>O"])
@@ -145,6 +148,7 @@ class App(Gtk.Application):
         self.set_accels_for_action("app.edit-undo", ["<control>Z"])
 
         self.add_action(self.file_new)
+        self.add_action(self.file_new_window)
         self.add_action(self.file_save)
         self.add_action(self.file_save_append)
         self.add_action(self.file_open)
@@ -229,7 +233,7 @@ class App(Gtk.Application):
         
         return 0
 
-    def new_window(self):
+    def new_window(self, *args):
         """Create a new window."""
         window = Window(self, "Schach", "%s" % len(self.windows))
         self.windows.append(window)

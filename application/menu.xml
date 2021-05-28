@@ -9,6 +9,10 @@
                     <attribute name="action">app.file-new</attribute>
                 </item>
                 <item>
+                    <attribute name="label">New window</attribute>
+                    <attribute name="action">app.file-new_window</attribute>
+                </item>
+                <item>
                     <attribute name="label">Load game...</attribute>
                     <attribute name="action">app.file-open</attribute>
                 </item>
