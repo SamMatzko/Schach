@@ -351,11 +351,14 @@ class Game:
     def move_undo(self):
         """Undo the last move on the stack."""
 
-        # Undo the game's move
-        self.undo_stack.append(self.board.pop())
+        try:
+            # Undo the game's move
+            self.undo_stack.append(self.board.pop())
 
-        # Update the board
-        self.chessboard.from_string(str(self.board))
+            # Update the board
+            self.chessboard.from_string(str(self.board))
+        except IndexError:
+            pass
 
     def new_game(self, mainline=None):
         """Create a new game."""
