@@ -378,6 +378,25 @@ class Game:
         # Update the status
         self._update_status()
 
+    def new_game_from_fen(self, fen=None):
+        """Create a new game from a fen string."""
+
+        # Reset the game
+        self.board.reset()
+
+        # Reset the chessboard
+        self.chessboard.set_sensitive(True)
+        self._reset_square_colors()
+        self.chessboard.from_string(str(self.board))
+        self.dialog_ok = False
+
+        # Make the board
+        self.board.set_board_fen(fen)
+        self.chessboard.from_string(str(self.board))
+
+        # Update the status
+        self._update_status()
+
     def set_limit(self, white_limit=None, black_limit=None):
         """Set the limits for the computer."""
 

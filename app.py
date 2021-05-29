@@ -98,6 +98,8 @@ class App(Gtk.Application):
         self.edit_copy_game = Gio.SimpleAction.new("edit-copy_game")
         self.edit_paste_game = Gio.SimpleAction.new("edit-paste_game")
         self.edit_settings = Gio.SimpleAction.new("edit-settings")
+        self.edit_copy_game_fen = Gio.SimpleAction.new("edit-copy_game_fen")
+        self.edit_paste_game_fen = Gio.SimpleAction.new("edit-paste_game_fen")
 
         self.view_toggle_status_frames = Gio.SimpleAction.new("view-toggle_status_frames")
         self.view_flip_chessboard = Gio.SimpleAction.new("view-flip_chessboard")
@@ -118,7 +120,9 @@ class App(Gtk.Application):
         self.edit_undo.connect("activate", self.window_move_undo)
         self.edit_redo.connect("activate", self.window_move_redo)
         self.edit_copy_game.connect("activate", self.window_copy_game)
-        self.edit_paste_game.connect("activate", self.window_paste_game)
+        self.edit_paste_game.connect("activate", self.window_copy_game_fen)
+        self.edit_copy_game_fen.connect("activate", self.window_copy_game_fen)
+        self.edit_paste_game_fen.connect("activate", self.window_paste_game_fen)
         self.edit_settings.connect("activate", self.window_show_settings)
 
         self.view_toggle_status_frames.connect("activate", self.window_toggle_status_frames)
@@ -141,6 +145,8 @@ class App(Gtk.Application):
         self.set_accels_for_action("app.edit-redo", ["<control><shift>Z"])
         self.set_accels_for_action("app.edit-copy_game", ["<control>C"])
         self.set_accels_for_action("app.edit-paste_game", ["<control>V"])
+        self.set_accels_for_action("app.edit-copy_game_fen", ["<control><shift>C"])
+        self.set_accels_for_action("app.edit-paste_game_fen", ["<control><shift>V"])
 
         self.set_accels_for_action("app.view-flip_chessboard", ["<control>D"])
 
@@ -159,6 +165,8 @@ class App(Gtk.Application):
         self.add_action(self.edit_redo)
         self.add_action(self.edit_copy_game)
         self.add_action(self.edit_paste_game)
+        self.add_action(self.edit_copy_game_fen)
+        self.add_action(self.edit_paste_game_fen)
         self.add_action(self.edit_settings)
         self.add_action(self.view_toggle_status_frames)
         self.add_action(self.view_flip_chessboard)
@@ -279,7 +287,7 @@ class App(Gtk.Application):
             self.quit()
 
     def get_current_window_instance(self):
-        """Return the current widnow instance."""
+        """Return the current window instance."""
         return self.windows[int(self.window)]
 
     def show_license(self, *args):
@@ -311,12 +319,20 @@ class App(Gtk.Application):
         self.get_current_window_instance().move_redo()
 
     def window_copy_game(self, *args):
-        """Invoke the current_window's copy_game method."""
+        """Invoke the current window's copy_game method."""
         self.get_current_window_instance().copy_game()
 
     def window_paste_game(self, *args):
         """Invoke the current window's paste_game method."""
         self.get_current_window_instance().paste_game()
+
+    def window_copy_game_fen(self, *args):
+        """Invoke the current window's copy_fen method."""
+        self.get_current_window_instance().copy_fen()
+
+    def window_paste_game_fen(self, *args):
+        """Invoke the current window's copy_fen method."""
+        self.get_current_window_instance().paste_fen()
 
     def window_show_settings(self, *args):
         """Invoke the current window's show_settings method."""
@@ -339,7 +355,7 @@ class App(Gtk.Application):
         self.get_current_window_instance().focus_move_entry()
 
     def window_show_about(self, *args):
-        """Invoke the current widnow's show_about method."""
+        """Invoke the current window's show_about method."""
         self.get_current_window_instance().show_about()
 
 class Window(Gtk.ApplicationWindow):
@@ -423,6 +439,11 @@ class Window(Gtk.ApplicationWindow):
         self.set_position(Gtk.WindowPosition.CENTER)
 
         self.show_all()
+
+    def copy_fen(self, *args):
+        """Copy the current game to the clipboard as a fen."""
+
+        self.clipboard.set_text(str(self.game.board.board_fen()), -1)
 
     def copy_game(self, *args):
         """Copy the current game to the clipboard."""
@@ -746,6 +767,26 @@ class Window(Gtk.ApplicationWindow):
     def on_white_computer_scale(self, scale):
         """Set the white computer's playing power to the scale's value."""
         self.game.set_limit(white_limit=scale.get_value())
+
+    def paste_fen(self, *args):
+        """Paste a game from a copied fen string."""
+
+        # Get the game stuff
+        fen = self.clipboard.wait_for_text()
+
+        # Make sure that the user wants to quit the current game
+        response = dialogs.messagedialog.ask_yes_no_cancel(
+            self,
+            "Save game?",
+            "Save the current game before pasting a new one?"
+        )
+        if response == Gtk.ResponseType.NO:
+            self.game.new_game_from_fen(fen)
+        elif response == Gtk.ResponseType.YES:
+            self.save_game(append=True)
+            self.game.new_game_from_fen(fen)
+        else:
+            pass
 
     def paste_game(self, *args):
         """Paste a game that was copied to the clipboard."""

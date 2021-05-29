@@ -53,6 +53,14 @@
                     <attribute name="label">Paste game</attribute>
                     <attribute name="action">app.edit-paste_game</attribute>
                 </item>
+                <item>
+                    <attribute name="label">Copy game fen</attribute>
+                    <attribute name="action">app.edit-copy_game_fen</attribute>
+                </item>
+                <item>
+                    <attribute name="label">Paste game fen</attribute>
+                    <attribute name="action">app.edit-paste_game_fen</attribute>
+                </item>
             </section>
             <section>
                 <item>
