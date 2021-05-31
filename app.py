@@ -423,7 +423,7 @@ class Window(Gtk.ApplicationWindow):
 
         # Add the board, the status frames, and the status bar to the window
         self.game_box.pack_start(self.white_status_frame, True, True, 5)
-        self.game_box.pack_start(self.chessboard, True, False, 10)
+        self.game_box.pack_start(self.chessboard, True, False, 5)
         self.game_box.pack_start(self.black_status_frame, True, True, 5)
 
         # The game manager instance
