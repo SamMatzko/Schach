@@ -336,7 +336,20 @@ class App(Gtk.Application):
 
     def window_show_settings(self, *args):
         """Invoke the current window's show_settings method."""
-        self.get_current_window_instance().show_settings()
+        # Show the dialog
+        response, settings = dialogs.SettingsDialog(self).show_dialog()
+
+        # Set the settings if the user hit OK
+        if response == Gtk.ResponseType.OK:
+            
+            for window in self.windows:
+                # Set the settings to the variable
+                window.settings = settings
+
+                # Set the settings to the window
+                window.set_settings()
+        else:
+            pass
 
     def window_toggle_status_frames(self, *args):
         """Invoke the current window's toggle_status_frames_method."""
@@ -473,7 +486,7 @@ class Window(Gtk.ApplicationWindow):
 
         # The Preferences button
         self.app_popover_settings_button = Gtk.ModelButton(label=("Preferences".ljust(50, " ")))
-        self.app_popover_settings_button.connect("clicked", self.show_settings)
+        self.app_popover_settings_button.connect("clicked", self.application.window_show_settings)
         self.app_popover_vbox.add(self.app_popover_settings_button)
 
         self.app_popover_vbox.add(Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL))
@@ -909,23 +922,6 @@ class Window(Gtk.ApplicationWindow):
         info = json.load(open(APP_INFO))
         info["logo"] = IMAGE_APPLICATION
         dialogs.AboutDialog(self, info).present()
-
-    def show_settings(self, *args):
-        """Show the settings dialog."""
-        
-        # Show the dialog
-        response, settings = dialogs.SettingsDialog(self).show_dialog()
-
-        # Set the settings if the user hit OK
-        if response == Gtk.ResponseType.OK:
-
-            # Set the settings to the variable
-            self.settings = settings
-
-            # Set the settings to the window
-            self.set_settings()
-        else:
-            pass
 
     def toggle_status_frames(self, *args):
         
