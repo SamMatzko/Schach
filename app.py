@@ -31,6 +31,7 @@ import io
 import json
 import os
 import pgn
+import random
 import status_bar
 import status_frame
 import string
@@ -105,6 +106,7 @@ class App(Gtk.Application):
         self.view_flip_chessboard = Gio.SimpleAction.new("view-flip_chessboard")
 
         self.game_engine_move = Gio.SimpleAction.new("game-engine_move")
+        self.game_random_move = Gio.SimpleAction.new("game-random_move")
         self.game_type_move = Gio.SimpleAction.new("game-type_move")
 
         self.help_license = Gio.SimpleAction.new("help-license")
@@ -129,6 +131,7 @@ class App(Gtk.Application):
         self.view_flip_chessboard.connect("activate", self.window_flip_chessboard, True)
 
         self.game_engine_move.connect("activate", self.window_engine_move)
+        self.game_random_move.connect("activate", self.window_random_move)
         self.game_type_move.connect("activate", self.window_focus_move_entry)
 
         self.help_license.connect("activate", self.show_license)
@@ -151,6 +154,7 @@ class App(Gtk.Application):
         self.set_accels_for_action("app.view-flip_chessboard", ["<control>D"])
 
         self.set_accels_for_action("app.game-engine_move", ["<control>E"])
+        self.set_accels_for_action("app.game-random_move", ["<control>R"])
         self.set_accels_for_action("app.game-type_move", ["<control>M"])
 
         self.set_accels_for_action("app.edit-undo", ["<control>Z"])
@@ -171,6 +175,7 @@ class App(Gtk.Application):
         self.add_action(self.view_toggle_status_frames)
         self.add_action(self.view_flip_chessboard)
         self.add_action(self.game_engine_move)
+        self.add_action(self.game_random_move)
         self.add_action(self.game_type_move)
         self.add_action(self.help_license)
         self.add_action(self.help_about)
@@ -362,6 +367,10 @@ class App(Gtk.Application):
     def window_engine_move(self, *args):
         """Invoke the current window's engine_move method."""
         self.get_current_window_instance().engine_move()
+
+    def window_random_move(self, *args):
+        """Invoke the current window's random_move method."""
+        self.get_current_window_instance().random_move()
 
     def window_focus_move_entry(self, *args):
         """Invoke the current window's move_entry method."""
@@ -564,6 +573,11 @@ class Window(Gtk.ApplicationWindow):
         self.play_button.set_tooltip_text("Engine move (Ctrl+E)")
         self.play_button.connect("clicked", self.engine_move)
 
+        # The random move button
+        self.random_button = Gtk.Button.new_from_icon_name("mail-send-receive-symbolic", 1)
+        self.random_button.set_tooltip_text("Random move (Ctrl+R)")
+        self.random_button.connect("clicked", self.random_move)
+
         # The undo and redo buttons
         self.undo_button = Gtk.Button.new_from_icon_name("media-seek-backward-symbolic", 1)
         self.undo_button.set_tooltip_text("Undo (Ctrl+Z)")
@@ -576,6 +590,7 @@ class Window(Gtk.ApplicationWindow):
         # Add the buttons
         self.game_settings_box.pack_start(self.undo_button, False, False, 0)
         self.game_settings_box.pack_start(self.play_button, False, False, 0)
+        self.game_settings_box.pack_start(self.random_button, False, False, 0)
         self.game_settings_box.pack_start(self.redo_button, False, False, 0)
 
         # The move entry box
@@ -841,6 +856,17 @@ class Window(Gtk.ApplicationWindow):
                 self.exit()
         else:
             return True # This keeps the window from closing anyway
+
+    def random_move(self, *args):
+        """Make a random move."""
+        
+        legal_moves = []
+        for move in self.game.board.legal_moves:
+            legal_moves.append(move.uci())
+        random_move = random.choice(legal_moves)
+        self.game._push_move(chess.Move.from_uci(random_move))
+        self.chessboard.from_string(str(self.game.board))
+        self.game._update_status()
 
     def save_game(self, action=None, something_else=None, append=None):
         """Prompt the user for a file to save the game to and the headers for the game."""
