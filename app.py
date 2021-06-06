@@ -114,8 +114,8 @@ class App(Gtk.Application):
 
         self.file_new.connect("activate", self.window_new_game)
         self.file_new_window.connect("activate", self.new_window)
-        self.file_save.connect("activate", self.window_save_game, False)
-        self.file_save_append.connect("activate", self.window_save_game, True)
+        self.file_save.connect("activate", self.window_save_game)
+        self.file_save_append.connect("activate", self.window_save_game_append)
         self.file_open.connect("activate", self.window_load_game)
         self.file_quit.connect("activate", self.window_quit)
 
@@ -303,11 +303,15 @@ class App(Gtk.Application):
         """Invoke the current window's new game method."""
         self.get_current_window_instance().new_game()
 
-    def window_save_game(self, parameter, *args):
+    def window_save_game(self, *args):
         """Invoke the current window's save_game method."""
-        self.get_current_window_instance().save_game(parameter)
+        self.get_current_window_instance().save_game(append=False)
 
-    def window_load_game(self, file=None, *args):
+    def window_save_game_append(self, *args):
+        """Invoke the current window's save_game method."""
+        self.get_current_window_instance().save_game(append=True)
+
+    def window_load_game(self, *args, file=None):
         """Invoke the current window's load_game method."""
         self.get_current_window_instance().load_game(file)
 
@@ -860,13 +864,14 @@ class Window(Gtk.ApplicationWindow):
     def random_move(self, *args):
         """Make a random move."""
         
-        legal_moves = []
-        for move in self.game.board.legal_moves:
-            legal_moves.append(move.uci())
-        random_move = random.choice(legal_moves)
-        self.game._push_move(chess.Move.from_uci(random_move))
-        self.chessboard.from_string(str(self.game.board))
-        self.game._update_status()
+        if not self.game.board.is_game_over():
+            legal_moves = []
+            for move in self.game.board.legal_moves:
+                legal_moves.append(move.uci())
+            random_move = random.choice(legal_moves)
+            self.game._push_move(chess.Move.from_uci(random_move))
+            self.chessboard.from_string(str(self.game.board))
+            self.game._update_status()
 
     def save_game(self, action=None, something_else=None, append=None):
         """Prompt the user for a file to save the game to and the headers for the game."""
