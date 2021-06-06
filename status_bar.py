@@ -55,11 +55,17 @@ class StatusBar(Gtk.Frame):
         self.version_label = Gtk.Label(label=self.app_info["version"])
         self.box.pack_end(self.version_label, False, False, 3)
 
+        # The fen label
+        self.fen_label = Gtk.Label()
+        self.box.pack_end(self.fen_label, False, False, 20)
+
         self.box.show_all()
         self.show_all()
 
-    def set_status(self, turn=None, check=False, game_over="", thinking=False):
+    def set_status(self, fen=None, turn=None, check=False, game_over="", thinking=False):
         """Set the status bar to the given game status."""
+        if fen is not None:
+            self.fen_label.set_label(fen)
         if turn is not None:
             if turn:
                 self.turn_label.set_label("White")
