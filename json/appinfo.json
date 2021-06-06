@@ -2,7 +2,7 @@
     "authors": ["Samuel Matzko"],
     "artists": ["Samuel Matzko"],
     "program_name": "Schach",
-    "version": "3.2.4",
+    "version": "3.2.5",
     "comments": "A chess app that uses the Stockfish engine.",
     "copyright": "\u00a92021 Samuel Matzko",
     "license": "Schach is free software; you can redistribute it and/or modify\nit under the terms of the GNU General Public License as published by\nthe Free Software Foundation; either version 3 of the License, or\n(at your option) any later version.\n\nSchach is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\nGNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public License\nalong with Schach; if not, write to the Free Software Foundation, Inc.,\n51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA"
