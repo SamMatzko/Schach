@@ -447,7 +447,7 @@ class Window(Gtk.ApplicationWindow):
             self.black_status_frame,
             self.status_bar
         )
-        self.game._update_status()
+        self.game.update_status()
 
         # The variable containing the last value of the checkbutton
         self.last_chessboard_flipped = False
@@ -785,7 +785,7 @@ class Window(Gtk.ApplicationWindow):
 
         if not move_failed and move in self.game.board.legal_moves:
             self.game._push_move(move)
-            self.game._update_status()
+            self.game.update_status()
             self.chessboard.from_string(str(self.game.board))
             entry.get_buffer().delete_text(0, 5)
         else:
@@ -871,7 +871,7 @@ class Window(Gtk.ApplicationWindow):
             random_move = random.choice(legal_moves)
             self.game._push_move(chess.Move.from_uci(random_move))
             self.chessboard.from_string(str(self.game.board))
-            self.game._update_status()
+            self.game.update_status()
 
     def save_game(self, action=None, something_else=None, append=None):
         """Prompt the user for a file to save the game to and the headers for the game."""

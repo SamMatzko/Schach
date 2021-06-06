@@ -172,7 +172,7 @@ class Game:
 
                 # Update the board and status
                 self.chessboard.from_string(str(self.board))
-                self._update_status()
+                self.update_status()
 
     def _game_over(self):
         """Handle the status and dialogs for the game's end."""
@@ -260,34 +260,6 @@ class Game:
                     if square.rgba.to_string() == square.parse_color(COLOR_MOVEFROM):
                         square.set_color(square.color)
 
-    def _update_status(self):
-        """Update the status labels."""
-
-        self.white_frame.set_status(board=str(self.board))
-        self.black_frame.set_status(board=str(self.board))
-        
-        self.status_bar.set_status(fen=self.board.board_fen(), turn=self.board.turn)
-
-        if self.board.is_game_over():
-            self._game_over()
-        else:
-            self.white_frame.set_status(we_won=False)
-            self.black_frame.set_status(we_won=False)
-            if self.board.turn:
-                if self.board.is_check():
-                    self.white_frame.set_status(check=True)
-                    self.status_bar.set_status(check=True)
-                else:
-                    self.white_frame.set_status(check=False)
-                    self.status_bar.set_status(check=False)
-            else:
-                if self.board.is_check():
-                    self.black_frame.set_status(check=True)
-                    self.status_bar.set_status(check=True)
-                else:
-                    self.black_frame.set_status(check=False)
-                    self.status_bar.set_status(check=False)
-
     def engine_move(self):
         """Make the engine this turn."""
 
@@ -332,7 +304,7 @@ class Game:
             self.black_frame.set_status(thinking=False)
 
             # Update the status labels
-            self._update_status()
+            self.update_status()
 
     def get_game_status(self):
         """Return various status stuff about the game, like the number of each
@@ -388,7 +360,7 @@ class Game:
             self.chessboard.from_string(str(self.board))
 
         # Update the status
-        self._update_status()
+        self.update_status()
 
     def new_game_from_fen(self, fen=None):
         """Create a new game from a fen string."""
@@ -407,7 +379,7 @@ class Game:
         self.chessboard.from_string(str(self.board))
 
         # Update the status
-        self._update_status()
+        self.update_status()
 
     def set_limit(self, white_limit=None, black_limit=None):
         """Set the limits for the computer."""
@@ -416,3 +388,31 @@ class Game:
             self.white_limit = chess.engine.Limit(depth=white_limit)
         if black_limit is not None:
             self.black_limit = chess.engine.Limit(depth=black_limit)
+
+    def update_status(self):
+        """Update the status labels."""
+
+        self.white_frame.set_status(board=str(self.board))
+        self.black_frame.set_status(board=str(self.board))
+        
+        self.status_bar.set_status(fen=self.board.board_fen(), turn=self.board.turn)
+
+        if self.board.is_game_over():
+            self._game_over()
+        else:
+            self.white_frame.set_status(we_won=False)
+            self.black_frame.set_status(we_won=False)
+            if self.board.turn:
+                if self.board.is_check():
+                    self.white_frame.set_status(check=True)
+                    self.status_bar.set_status(check=True)
+                else:
+                    self.white_frame.set_status(check=False)
+                    self.status_bar.set_status(check=False)
+            else:
+                if self.board.is_check():
+                    self.black_frame.set_status(check=True)
+                    self.status_bar.set_status(check=True)
+                else:
+                    self.black_frame.set_status(check=False)
+                    self.status_bar.set_status(check=False)
