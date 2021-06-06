@@ -98,7 +98,7 @@
             </section>
         </submenu>
         <submenu>
-        <attribute name="label">_Help</attribute>
+            <attribute name="label">_Help</attribute>
             <section>
                 <item>
                     <attribute name="label">License</attribute>
@@ -113,5 +113,32 @@
                 </item>
             </section>
         </submenu>
+    </menu>
+    <menu id="app-popover">
+        <section>
+            <submenu>
+                <attribute name="label">View</attribute>
+                <item>
+                    <attribute name="label">Toggle Status Frames</attribute>
+                    <attribute name="action">app.view-toggle_status_frames</attribute>
+                </item>
+                <item>
+                    <attribute name="label">Flip Board</attribute>
+                    <attribute name="action">app.view-flip_chessboard</attribute>
+                </item>
+            </submenu>
+        </section>
+        <section>
+            <item>
+                <attribute name="label">Preferences</attribute>
+                <attribute name="action">app.edit-settings</attribute>
+            </item>
+        </section>
+        <section>
+            <item>
+                <attribute name="label">About</attribute>
+                <attribute name="action">app.help-about</attribute>
+            </item>
+        </section>
     </menu>
 </interface>

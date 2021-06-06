@@ -449,9 +449,6 @@ class Window(Gtk.ApplicationWindow):
         )
         self.game.update_status()
 
-        # The variable containing the last value of the checkbutton
-        self.last_chessboard_flipped = False
-
         # Load the settings
         self.settings = json.load(open(f"{ROOT_PATH}json/settings.json"))
         if self.settings["maximize_on_startup"]:
@@ -479,42 +476,12 @@ class Window(Gtk.ApplicationWindow):
     def create_application_popover(self):
         """Create the application popover and its contents."""
 
-        # The popover
-        self.app_popover = Gtk.Popover()
-        self.app_popover_base_box = Gtk.VBox()
-        self.app_popover_hbox = Gtk.HBox()
-        self.app_popover_vbox = Gtk.VBox()
-        self.app_popover_base_box.pack_start(self.app_popover_hbox, True, True, 3)
-        self.app_popover_hbox.pack_start(self.app_popover_vbox, True, True, 3)
-        self.app_popover.add(self.app_popover_base_box)
-
-        # The View expander
-        self.app_popover_view_expander = Gtk.Expander(label="View")
-        self.app_popover_view_expander_box = Gtk.VBox()
-        self.app_popover_view_expander.add(self.app_popover_view_expander_box)
-        self.app_popover_vbox.add(self.app_popover_view_expander)
-
-        # The view expander's elements
-        self.create_view_expander()
-
-        # The Preferences button
-        self.app_popover_settings_button = Gtk.ModelButton(label=("Preferences".ljust(50, " ")))
-        self.app_popover_settings_button.connect("clicked", self.application.window_show_settings)
-        self.app_popover_vbox.add(self.app_popover_settings_button)
-
-        self.app_popover_vbox.add(Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL))
-
-        # The about button
-        self.app_popover_about_button = Gtk.ModelButton(label=("About Schach".ljust(50, " ")))
-        self.app_popover_about_button.connect("clicked", self.show_about)
-        self.app_popover_vbox.add(self.app_popover_about_button)
-
-        self.app_popover_base_box.show_all()
-        self.app_popover_hbox.show_all()
-        self.app_popover_vbox.show_all()
+        # The menu model
+        builder = Gtk.Builder.new_from_string(MENU_XML, -1)
+        popover_menu = builder.get_object("app-popover")
 
         # The button
-        self.app_popover_button = Gtk.MenuButton(popover=self.app_popover)
+        self.app_popover_button = Gtk.MenuButton(menu_model=popover_menu)
         self.app_popover_image = Gtk.Image.new_from_icon_name("open-menu-symbolic", 1)
         self.app_popover_button.set_image(self.app_popover_image)
         self.header_bar.pack_end(self.app_popover_button)
@@ -618,19 +585,6 @@ class Window(Gtk.ApplicationWindow):
         # Create the application popover
         self.create_application_popover()
 
-    def create_view_expander(self):
-        """Create and add all the items of the View expander."""
-
-        # The show status frames checkbutton
-        self.view_show_status_frames_checkbutton = Gtk.CheckButton(label="Show status frames")
-        self.view_show_status_frames_checkbutton.connect("toggled", self.set_settings_from_popover)
-        self.app_popover_view_expander_box.add(self.view_show_status_frames_checkbutton)
-
-        # The flip chessboard checkbutton
-        self.view_flip_chessboard_button = Gtk.CheckButton(label="Flip Board")
-        self.view_flip_chessboard_button.connect("toggled", self.set_settings_from_popover)
-        self.app_popover_view_expander_box.add(self.view_flip_chessboard_button)
-
     def engine_move(self, *args):
         """Have the computer play for the current turn."""
         self.game.engine_move()
@@ -648,64 +602,29 @@ class Window(Gtk.ApplicationWindow):
     def flip_chessboard(self, one, two, menu_trigger):
         """Flip the chessboard."""
 
-        if menu_trigger:
+        # Set the chessboard flipped or not
+        self.game_box.remove(self.chessboard)
+        for square in self.chessboard._get_squares():
+            del square
+        del self.chessboard
+        self.chessboard = chessboard.ChessBoard(self, flipped=True)
 
-            self.last_chessboard_flipped = not self.last_chessboard_flipped
-            self.view_flip_chessboard_button.set_active(self.last_chessboard_flipped)
+        # Remove and replace the frames and chessboard
+        self.game_box.remove(self.white_status_frame)
+        self.game_box.remove(self.black_status_frame)
+        
+        self.game_box.pack_start(self.white_status_frame, True, True, 5)
+        self.game_box.pack_start(self.chessboard, True, False, 10)
+        self.game_box.pack_start(self.black_status_frame, True, True, 5)
 
-            # Set the chessboard flipped or not
-            self.game_box.remove(self.chessboard)
-            for square in self.chessboard._get_squares():
-                del square
-            del self.chessboard
-            self.chessboard = chessboard.ChessBoard(self, flipped=self.last_chessboard_flipped)
+        # Set up the board and bind the squares
+        self.chessboard.from_string(str(self.game.board))
+        self.chessboard.bind_squares(self.game._assert_move)
+        self.game.chessboard = self.chessboard
 
-            # Remove and replace the frames and chessboard
-            self.game_box.remove(self.white_status_frame)
-            self.game_box.remove(self.black_status_frame)
-            
-            self.game_box.pack_start(self.white_status_frame, True, True, 5)
-            self.game_box.pack_start(self.chessboard, True, False, 10)
-            self.game_box.pack_start(self.black_status_frame, True, True, 5)
-
-            # Set up the board and bind the squares
-            self.chessboard.from_string(str(self.game.board))
-            self.chessboard.bind_squares(self.game._assert_move)
-            self.game.chessboard = self.chessboard
-
-            self.chessboard.show_all()
-            while Gtk.events_pending():
-                Gtk.main_iteration()
-
-        else:
-            # Compare the last value of the chessboard to the current one
-            if self.last_chessboard_flipped != self.view_flip_chessboard_button.get_active():
-
-                self.last_chessboard_flipped = self.view_flip_chessboard_button.get_active()
-
-                # Set the chessboard flipped or not
-                self.game_box.remove(self.chessboard)
-                for square in self.chessboard._get_squares():
-                    del square
-                del self.chessboard
-                self.chessboard = chessboard.ChessBoard(self, flipped=self.last_chessboard_flipped)
-
-                # Remove and replace the frames and chessboard
-                self.game_box.remove(self.white_status_frame)
-                self.game_box.remove(self.black_status_frame)
-                
-                self.game_box.pack_start(self.white_status_frame, True, True, 5)
-                self.game_box.pack_start(self.chessboard, True, False, 10)
-                self.game_box.pack_start(self.black_status_frame, True, True, 5)
-
-                # Set up the board and bind the squares
-                self.chessboard.from_string(str(self.game.board))
-                self.chessboard.bind_squares(self.game._assert_move)
-                self.game.chessboard = self.chessboard
-
-                self.chessboard.show_all()
-                while Gtk.events_pending():
-                    Gtk.main_iteration()
+        self.chessboard.show_all()
+        while Gtk.events_pending():
+            Gtk.main_iteration()
 
     def focus_move_entry(self, *args):
         """Set the focus to the move entry."""
@@ -932,19 +851,8 @@ class Window(Gtk.ApplicationWindow):
             self.black_status_frame.hide()
             self.black_status_frame.set_no_show_all(True)
 
-        self.view_show_status_frames_checkbutton.set_active(self.settings["show_status_frames"])
-
         # Write the file
         json.dump(self.settings, open(f"{ROOT_PATH}json/settings.json", "w"))
-
-    def set_settings_from_popover(self, *args):
-        """Set the settings based on the checkbuttons in the app_popover."""
-        
-        # Show or hide the status frames
-        self.settings["show_status_frames"] = self.view_show_status_frames_checkbutton.get_active()
-        self.set_settings()
-
-        self.flip_chessboard(None, None, False)
 
     def show_about(self, *args):
         """Show the about dialog."""
@@ -956,8 +864,7 @@ class Window(Gtk.ApplicationWindow):
 
     def toggle_status_frames(self, *args):
         
-        self.view_show_status_frames_checkbutton.set_active(not self.view_show_status_frames_checkbutton.get_active())
-        self.settings["show_status_frames"] = self.view_show_status_frames_checkbutton.get_active()
+        self.settings["show_status_frames"] = not self.settings["show_status_frames"]
         self.set_settings()
 
     def window_focused(self, widget, event):
