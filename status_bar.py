@@ -58,6 +58,7 @@ class StatusBar(Gtk.Frame):
         # The fen label
         self.fen_label = Gtk.Label()
         self.box.pack_end(self.fen_label, False, False, 20)
+        self.fen_label.set_selectable(True)
 
         self.box.show_all()
         self.show_all()
