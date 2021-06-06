@@ -49,7 +49,7 @@ class StatusBar(Gtk.Frame):
 
         # The status label
         self.status_label = Gtk.Label()
-        self.box.pack_start(self.status_label, False, False, 3)
+        self.box.pack_start(self.status_label, False, False, 20)
 
         # The Schach version label
         self.version_label = Gtk.Label(label=self.app_info["version"])
@@ -58,13 +58,18 @@ class StatusBar(Gtk.Frame):
         self.box.show_all()
         self.show_all()
 
-    def set_status(self, turn=True, check=False, thinking=False):
+    def set_status(self, turn=None, check=False, thinking=False):
         """Set the status bar to the given game status."""
-
-        if turn:
-            self.turn_label.set_label("White")
-        else:
-            self.turn_label.set_label("Black")
+        if turn is not None:
+            if turn:
+                self.turn_label.set_label("White")
+            else:
+                self.turn_label.set_label("Black")
         if thinking:
             self.turn_label.set_label("%s..." % self.turn_label.get_text())
+        if check:
+            self.status_label.set_label("Check")
+        else:
+            self.status_label.set_label("")
         self.turn_label.show_all()
+        self.status_label.show_all()

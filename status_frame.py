@@ -182,14 +182,14 @@ class _StatusFrame(Gtk.Frame):
                 self.king_label.spinner.start()
             else:
                 self.king_label.spinner.stop()
-        if check is not None:
-            if check:
-                self.status_label.set_label("Check!")
-            else:
-                self.status_label.set_label("")
         if we_won is not None:
             if we_won:
                 self.status_label.set_label("Victory!")
+            else:
+                self.status_label.set_label("")
+        if check is not None:
+            if check:
+                self.status_label.set_label("Check!")
             else:
                 self.status_label.set_label("")
 

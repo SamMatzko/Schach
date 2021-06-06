@@ -262,22 +262,25 @@ class Game:
         self.black_frame.set_status(board=str(self.board))
         
         self.status_bar.set_status(turn=self.board.turn)
-        if self.board.turn:
-            if self.board.is_check():
-                self.white_frame.set_status(check=True)
-            else:
-                self.white_frame.set_status(check=False)                    
-        else:
-            if self.board.is_check():
-                self.black_frame.set_status(check=True)
-            else:
-                self.black_frame.set_status(check=False)
-
         if self.board.is_game_over():
             self._game_over()
         else:
             self.white_frame.set_status(we_won=False)
             self.black_frame.set_status(we_won=False)
+            if self.board.turn:
+                if self.board.is_check():
+                    self.white_frame.set_status(check=True)
+                    self.status_bar.set_status(check=True)
+                else:
+                    self.white_frame.set_status(check=False)
+                    self.status_bar.set_status(check=False)
+            else:
+                if self.board.is_check():
+                    self.black_frame.set_status(check=True)
+                    self.status_bar.set_status(check=True)
+                else:
+                    self.black_frame.set_status(check=False)
+                    self.status_bar.set_status(check=False)
 
     def engine_move(self):
         """Make the engine this turn."""
