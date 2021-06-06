@@ -178,6 +178,7 @@ class Game:
         """Handle the status and dialogs for the game's end."""
 
         if self.board.is_checkmate():
+            self.status_bar.set_status(game_over="Checkmate")
             if self.board.turn:
                 self.black_frame.set_status(we_won=True)
                 self.white_frame.set_status(we_won=False)
@@ -193,18 +194,22 @@ class Game:
                     messagedialog.show_game_over_checkmate(self.window, "white")
                     self.dialog_ok = True
         elif self.board.is_fivefold_repetition():
+            self.status_bar.set_status(game_over="Draw (fivefold repetition)")
             if not self.dialog_ok:
                 messagedialog.show_game_over_fivefold_repetition(self.window)
                 self.dialog_ok = True
         elif self.board.is_seventyfive_moves():
+            self.status_bar.set_status(game_over="Draw (seventy-five moves)")
             if not self.dialog_ok:
                 messagedialog.show_game_over_seventyfive_moves(self.window)
                 self.dialog_ok = True
         elif self.board.is_stalemate():
+            self.status_bar.set_status(game_over="Stalemate")
             if not self.dialog_ok:
                 messagedialog.show_game_over_stalemate(self.window)
                 self.dialog_ok = True
         else:
+            self.status_bar.set_status(game_over="Draw (only kings)")
             if not self.dialog_ok:
                 messagedialog.show_game_over_king_king(self.window)
                 self.dialog_ok = True

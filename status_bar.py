@@ -58,7 +58,7 @@ class StatusBar(Gtk.Frame):
         self.box.show_all()
         self.show_all()
 
-    def set_status(self, turn=None, check=False, thinking=False):
+    def set_status(self, turn=None, check=False, game_over="", thinking=False):
         """Set the status bar to the given game status."""
         if turn is not None:
             if turn:
@@ -71,5 +71,7 @@ class StatusBar(Gtk.Frame):
             self.status_label.set_label("Check")
         else:
             self.status_label.set_label("")
+        if game_over != "":
+            self.status_label.set_label(game_over)
         self.turn_label.show_all()
         self.status_label.show_all()
