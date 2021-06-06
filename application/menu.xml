@@ -22,7 +22,7 @@
                 </item>
                 <item>
                     <attribute name="label">Save: Add Game...</attribute>
-                    <attribute name="action">app.file-save-append</attribute>
+                    <attribute name="action">app.file-save_append</attribute>
                 </item>
             </section>
             <section>
@@ -115,6 +115,52 @@
         </submenu>
     </menu>
     <menu id="app-popover">
+        <section>
+            <item>
+                <attribute name="label">New Game</attribute>
+                <attribute name="action">app.file-new</attribute>
+            </item>
+            <item>
+                <attribute name="label">New Window</attribute>
+                <attribute name="action">app.file-new_window</attribute>
+            </item>
+        </section>
+        <section>
+            <item>
+                <attribute name="label">Load Game...</attribute>
+                <attribute name="action">app.file-open</attribute>
+            </item>
+        </section>
+        <section>
+            <item>
+                <attribute name="label">Save: Replace Game...</attribute>
+                <attribute name="action">app.file-save</attribute>
+            </item>
+            <item>
+                <attribute name="label">Save: Add Game...</attribute>
+                <attribute name="action">app.file-save_append</attribute>
+            </item>
+        </section>
+        <section>
+            <item>
+                <attribute name="label">Copy Game</attribute>
+                <attribute name="action">app.edit-copy_game</attribute>
+            </item>
+            <item>
+                <attribute name="label">Paste Game</attribute>
+                <attribute name="action">app.edit-paste_game</attribute>
+            </item>
+        </section>
+        <section>
+            <item>
+                <attribute name="label">Copy Game Fen</attribute>
+                <attribute name="action">app.edit-copy_game_fen</attribute>
+            </item>
+            <item>
+                <attribute name="label">Paste Game Fen</attribute>
+                <attribute name="action">app.edit-paste_game_fen</attribute>
+            </item>
+        </section>
         <section>
             <submenu>
                 <attribute name="label">View</attribute>

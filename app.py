@@ -90,7 +90,7 @@ class App(Gtk.Application):
         self.file_new = Gio.SimpleAction.new("file-new")
         self.file_new_window = Gio.SimpleAction.new("file-new_window")
         self.file_save = Gio.SimpleAction.new("file-save")
-        self.file_save_append = Gio.SimpleAction.new("file-save-append")
+        self.file_save_append = Gio.SimpleAction.new("file-save_append")
         self.file_open = Gio.SimpleAction.new("file-open")
         self.file_quit = Gio.SimpleAction.new("file-quit")
 
@@ -122,7 +122,7 @@ class App(Gtk.Application):
         self.edit_undo.connect("activate", self.window_move_undo)
         self.edit_redo.connect("activate", self.window_move_redo)
         self.edit_copy_game.connect("activate", self.window_copy_game)
-        self.edit_paste_game.connect("activate", self.window_copy_game_fen)
+        self.edit_paste_game.connect("activate", self.window_paste_game)
         self.edit_copy_game_fen.connect("activate", self.window_copy_game_fen)
         self.edit_paste_game_fen.connect("activate", self.window_paste_game_fen)
         self.edit_settings.connect("activate", self.window_show_settings)
@@ -140,7 +140,7 @@ class App(Gtk.Application):
         self.set_accels_for_action("app.file-new", ["<control>N"])
         self.set_accels_for_action("app.file-new_window", ["<control><shift>N"])
         self.set_accels_for_action("app.file-save", ["<control>S"])
-        self.set_accels_for_action("app.file-save-append", ["<control><shift>S"])
+        self.set_accels_for_action("app.file-save_append", ["<control><shift>S"])
         self.set_accels_for_action("app.file-open", ["<control>O"])
         self.set_accels_for_action("app.file-quit", ["<control>Q"])
 
