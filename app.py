@@ -104,6 +104,7 @@ class App(Gtk.Application):
 
         self.view_toggle_status_frames = Gio.SimpleAction.new("view-toggle_status_frames")
         self.view_flip_chessboard = Gio.SimpleAction.new("view-flip_chessboard")
+        self.view_toggle_fullscreen = Gio.SimpleAction.new("view-toggle_fullscreen")
 
         self.game_engine_move = Gio.SimpleAction.new("game-engine_move")
         self.game_random_move = Gio.SimpleAction.new("game-random_move")
@@ -129,6 +130,7 @@ class App(Gtk.Application):
 
         self.view_toggle_status_frames.connect("activate", self.window_toggle_status_frames)
         self.view_flip_chessboard.connect("activate", self.window_flip_chessboard, True)
+        self.view_toggle_fullscreen.connect("activate", self.window_toggle_fullscreen)
 
         self.game_engine_move.connect("activate", self.window_engine_move)
         self.game_random_move.connect("activate", self.window_random_move)
@@ -152,6 +154,7 @@ class App(Gtk.Application):
         self.set_accels_for_action("app.edit-paste_game_fen", ["<control><shift>V"])
 
         self.set_accels_for_action("app.view-flip_chessboard", ["<control>D"])
+        self.set_accels_for_action("app.view-toggle_fullscreen", ["F11"])
 
         self.set_accels_for_action("app.game-engine_move", ["<control>E"])
         self.set_accels_for_action("app.game-random_move", ["<control>R"])
@@ -174,6 +177,7 @@ class App(Gtk.Application):
         self.add_action(self.edit_settings)
         self.add_action(self.view_toggle_status_frames)
         self.add_action(self.view_flip_chessboard)
+        self.add_action(self.view_toggle_fullscreen)
         self.add_action(self.game_engine_move)
         self.add_action(self.game_random_move)
         self.add_action(self.game_type_move)
@@ -368,6 +372,10 @@ class App(Gtk.Application):
         """Invoke the current window's flip_chessboard method."""
         self.get_current_window_instance().flip_chessboard(None, None, parameter)
 
+    def window_toggle_fullscreen(self, *args):
+        """Invoke the current window's toggle_fullscreen method."""
+        self.get_current_window_instance().toggle_fullscreen()
+
     def window_engine_move(self, *args):
         """Invoke the current window's engine_move method."""
         self.get_current_window_instance().engine_move()
@@ -392,12 +400,16 @@ class Window(Gtk.ApplicationWindow):
         # The window and its settings and events
         Gtk.ApplicationWindow.__init__(self, application=application, title=title)
         self.connect("delete-event", self.quit)
+        self.connect("key-press-event", self.escape_fullscreen)
 
         # The application
         self.application = application
 
         # The window's name
         self.name = name
+
+        # The window's state
+        self.fullscreen_on = False
 
         # This is so that the application can keep track of the current window
         self.connect("event", self.window_focused)
@@ -585,9 +597,22 @@ class Window(Gtk.ApplicationWindow):
         # Create the application popover
         self.create_application_popover()
 
+        # The fullscreen button
+        self.fullscreen_button = Gtk.Button.new_from_icon_name("view-fullscreen-symbolic", 1)
+        self.fullscreen_button.connect("clicked", self.toggle_fullscreen)
+        self.fullscreen_button.set_tooltip_text("Toggle Fullscreen (F11)")
+        self.header_bar.pack_end(self.fullscreen_button)
+
     def engine_move(self, *args):
         """Have the computer play for the current turn."""
         self.game.engine_move()
+
+    def escape_fullscreen(self, widget, event):
+        if event.keyval == Gdk.KEY_Escape:
+            self.fullscreen_button.set_image(Gtk.Image.new_from_icon_name("view-fullscreen-symbolic", 1))
+            self.fullscreen_button.show_all()
+            self.unfullscreen()
+            self.fullscreen_on = not self.fullscreen_on
 
     def exit(self):
         """Exit the app immediately."""
@@ -861,6 +886,18 @@ class Window(Gtk.ApplicationWindow):
         info = json.load(open(APP_INFO))
         info["logo"] = IMAGE_APPLICATION
         dialogs.AboutDialog(self, info).present()
+
+    def toggle_fullscreen(self, *args):
+        if not self.fullscreen_on:
+            self.fullscreen_button.set_image(Gtk.Image.new_from_icon_name("view-restore-symbolic", 1))
+            self.fullscreen_button.show_all()
+            self.fullscreen()
+            self.fullscreen_on = not self.fullscreen_on
+        else:
+            self.fullscreen_button.set_image(Gtk.Image.new_from_icon_name("view-fullscreen-symbolic", 1))
+            self.fullscreen_button.show_all()
+            self.unfullscreen()
+            self.fullscreen_on = not self.fullscreen_on
 
     def toggle_status_frames(self, *args):
         
