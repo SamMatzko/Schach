@@ -30,34 +30,64 @@ import sys
 # Install only if we are on a linux-based system
 if "linux" in sys.platform.lower():
 
-    # The directories
-    APPLICATION = os.path.dirname(__file__)
-    APPLICATION_DIR = APPLICATION + "/"
-    CURRENT_DIR = os.path.dirname(APPLICATION_DIR)
-    INSTALL_IN = os.environ["HOME"] + "/.local/share/"
+    # Check if we are installing or uninstalling
+    try: uninstall = sys.argv[1]
+    except:
+        uninstall = False
+    if not uninstall:
 
-    # Load our version info
-    with open(APPLICATION_DIR + "json/appinfo.json") as f:
-        current_appinfo = json.load(f)
-        f.close()
-    current_version = current_appinfo["version"]
-    current_update = current_appinfo["nano_revision"]
+        # The directories
+        APPLICATION = os.path.dirname(__file__)
+        APPLICATION_DIR = APPLICATION + "/"
+        CURRENT_DIR = os.path.dirname(APPLICATION_DIR)
 
-    # Install the app in the directory
-    os.rename(APPLICATION, "%sSchach %s" % (CURRENT_DIR, ("%s.%s" % (current_version, str(current_update)))))
+        # Load our version info
+        with open(APPLICATION_DIR + "json/appinfo.json") as f:
+            current_appinfo = json.load(f)
+            f.close()
+        current_version = current_appinfo["version"]
+        current_update = current_appinfo["nano_revision"]
+        print("Starting install of Schach %s..." % current_version)
 
-    # # Load the version info from the already-installed Schach, if it exists
-    # if os.path.exists(INSTALL_IN + "Schach/json/appinfo.json"):
-    #     with open(INSTALL_IN + "Schach/json/appinfo.json") as f:
-    #         old_appinfo = json.load(f)
-    #         f.close()
-    #     old_version = old_appinfo["version"]
-    #     old_update = old_appinfo["nano_revision"]
+        # Create the desktop file from the template
+        print("Creating desktop...", end="")
+        with open(APPLICATION_DIR + "desktop.template") as f:
+            template = f.read()
+            f.close()
+        template = template.replace("<ICON_PATH>", APPLICATION_DIR + "icons/application/appicon.png")
+        template = template.replace("<APP_PATH>", APPLICATION)
+        with open(APPLICATION_DIR + "schach-chess.desktop", "w") as f:
+            f.write(template)
+            f.close()
+        print("Done")
+        
+        # Install the desktop
+        print("Installing desktop...", end="")
+        os.system("xdg-desktop-menu install %s" % APPLICATION_DIR + "schach-chess.desktop")
+        os.system("xdg-desktop-icon install %s" % APPLICATION_DIR + "schach-chess.desktop")
+        os.system("xdg-mime default schach-chess.desktop application/vnd.chess-pgn")
+        print("Done")
 
-    #     if old_version == current_version:
-    #         if old_update == current_update:
-    #             print("You already have this version of Schach installed.")
-    #             exit()
+    else:
+
+        # The directories
+        APPLICATION = os.path.dirname(__file__)
+        APPLICATION_DIR = APPLICATION + "/"
+        CURRENT_DIR = os.path.dirname(APPLICATION_DIR)
+
+        # Load our version info
+        with open(APPLICATION_DIR + "json/appinfo.json") as f:
+            current_appinfo = json.load(f)
+            f.close()
+        current_version = current_appinfo["version"]
+        current_update = current_appinfo["nano_revision"]
+        print("Starting uninstall of Schach %s..." % current_version)
+        
+        # Uninstall the desktop
+        print("Uninstalling desktop...", end="")
+        os.system("xdg-desktop-menu uninstall %s" % APPLICATION_DIR + "schach-chess.desktop")
+        os.system("xdg-desktop-icon uninstall %s" % APPLICATION_DIR + "schach-chess.desktop")
+        print("Done")
 
 else:
     print("FATAL ERROR: Your system is not a Linux. This install cannot run.")
