@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=Schach
+Comment=A chess-playing app that uses the stockfish engine
+GenericName=Schach chess app
+Exec=python3 <APP_PATH> -o %F none
+Icon=<ICON_PATH>
+Type=Application
+Terminal=false
+StartupNotify=true
+Keywords=chess;master;pgn;
+Actions=NewWindow;
+
+[Desktop Action NewWindow]
+Name=New Window
+Exec=python3 <APP_PATH> -n
