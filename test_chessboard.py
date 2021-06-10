@@ -20,8 +20,10 @@
 
 import cairo
 import cairoarea
+import chess
 import gi
 import random
+import time
 
 gi.require_version("Gtk", "3.0")
 gi.require_version("Gdk", "3.0")
@@ -69,8 +71,14 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
 
         # The fuction to call when a square is invoked
         self.square_function = None
-        self.squaresdict = {"d7": (0.0, 1.0, 0.5)}
-        self.squaresonly = True
+
+        # The chessboard-drawing variables
+        self.squaresdict = {}
+        self.squaresonly = False
+
+        # The string that contains the board's current position
+        self.string = \
+        "r n b q k b n r p p p p p p p p . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . P P P P P P P P R N B Q K B N R".split()
 
         self.show_all()
 
@@ -89,6 +97,61 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
         else:
             raise TypeError("Cannot call type 'None'.")
 
+    def _convert_square_to_color(self, square):
+        """SQUARE must be in "a4" format. Returns either BLACK2 or WHITE2."""
+        c = square[0]
+        r = square[1]
+        if str(c) in ODD_LETTERS:
+            if str(r) in ODD_NUMBERS:
+                color = BLACK2
+            else:
+                color = WHITE2
+        else:
+            if str(r) in ODD_NUMBERS:
+                color = WHITE2
+            else:
+                color = BLACK2
+        return color
+
+    def _convert_square_to_coords(self, square):
+        """SQUARE must be in "a4" format. Returns a tuple (c, r)."""
+        c = square[0]
+        r = square[1]
+        return (LETTERS.index(c), NUMBERS_REVERSED.index(r))
+    
+    def _convert_square_to_image(self, square):
+        """SQUARE must be in "a4" format. Returns the file path."""
+        c = square[0]
+        r = square[1]
+        piece = self.string[BOARD_ORDER.index(square)]
+        image = IMAGE_EMPTY
+        if piece == "K":
+            image = IMAGE_K
+        elif piece == "Q":
+            image = IMAGE_Q
+        elif piece == "R":
+            image = IMAGE_R
+        elif piece == "B":
+            image = IMAGE_B
+        elif piece == "N":
+            image = IMAGE_N
+        elif piece == "P":
+            image = IMAGE_P
+
+        elif piece == "k":
+            image = IMAGE_k
+        elif piece == "q":
+            image = IMAGE_q
+        elif piece == "r":
+            image = IMAGE_r
+        elif piece == "b":
+            image = IMAGE_b
+        elif piece == "n":
+            image = IMAGE_n
+        elif piece == "p":
+            image = IMAGE_p
+        return image, piece
+
     def _create_squares(self, event, cr, allocation):
         x, y, w, h = allocation
         cr.set_source_rgb(0.0, 0.0, 0.0)
@@ -97,81 +160,22 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
         for c in LETTERS:
             for r in NUMBERS:
 
+                square = "%s%s" % (c, r)
+
                 # Get the row/column numbers
-                cindex = LETTERS.index(c)
-                NUMBERS.reverse()
-                rindex = NUMBERS.index(r)
-                NUMBERS.reverse()
+                cindex, rindex = self._convert_square_to_coords(square)
 
                 # Set the color of the square
-                if str(c) in ODD_LETTERS:
-                    if str(r) in ODD_NUMBERS:
-                        color = BLACK2
-                    else:
-                        color = WHITE2
-                else:
-                    if str(r) in ODD_NUMBERS:
-                        color = WHITE2
-                    else:
-                        color = BLACK2
-
-                # Reset the image
-                image = IMAGE_EMPTY
-                image_name = "."
+                color = self._convert_square_to_color(square)
 
                 # Set which piece is for this square
-                if r == "1":
-                    if c == "a" or c == "h":
-                        image = IMAGE_R
-                        image_name = "R"
-                    elif c == "b" or c == "g":
-                        image = IMAGE_N
-                        image_name = "N"
-                    elif c == "c" or c == "f":
-                        image = IMAGE_B
-                        image_name = "B"
-                    elif c == "d":
-                        image = IMAGE_Q
-                        image_name = "Q"
-                    elif c == "e":
-                        image = IMAGE_K
-                        image_name = "K"
-                elif r == "2":
-                    image = IMAGE_P
-                    image_name = "P"
-                elif r == "8":
-                    if c == "a" or c == "h":
-                        image = IMAGE_r
-                        image_name = "r"
-                    elif c == "b" or c == "g":
-                        image = IMAGE_n
-                        image_name = "n"
-                    elif c == "c" or c == "f":
-                        image = IMAGE_b
-                        image_name = "b"
-                    elif c == "d":
-                        image = IMAGE_q
-                        image_name = "q"
-                    elif c == "e":
-                        image = IMAGE_k
-                        image_name = "k"
-                elif r == "7":
-                    image = IMAGE_p
-                    image_name = "p"
+                image, image_name = self._convert_square_to_image(square)
 
-                # Execute the squares' creation so that we don't have
-                # to type 192 lines
-                # exec(f"iii = Gtk.Image.new_from_file(image)")
-                # exec(f"iii.set_name(image_name)")
-                # exec(f"self.{c}{r} = Square(color='{color}', name='{c}{r}', image=iii)")
-                # exec(f"self.{c}{r}.color = '{color}'")
-                # exec(f"self.attach(self.{c}{r}, {cindex + 1}, {rindex + 1}, 1, 1)")
-                print(self.squaresdict)
+                # Create the squares
                 if self.squaresdict is not None:
-                    try: color = self.squaresdict["%s%s" % (c, r)];print(color)
+                    try: color = self.squaresdict["%s%s" % (c, r)]
                     except:
                         pass
-
                 exec(f"cr.set_source_rgb(*color)")
                 exec(f"cr.rectangle(cindex * 70, rindex * 70, 70, 70)")
                 exec("cr.fill()")
@@ -185,16 +189,8 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
         """Rearrange the board according to STRING."""
 
         string = string.replace("\n", " ").split()
-        for sint in range(0, 64):
-            s = BOARD_ORDER[sint]
-            exec(f"square = self.{s}")
-            if string[sint] == ".":
-                exec("square.reload(Gtk.Image.new_from_file(IMAGE_EMPTY))")
-            else:
-                exec(f"iii = Gtk.Image.new_from_file(IMAGE_{string[sint]})")
-                exec(f"iii.set_name('{string[sint]}')")
-                exec(f"square.reload(iii)")
-        self.show_all()
+        self.squaresonly = False
+        self.string = string
 
 if __name__ == "__main__":
     window = Gtk.Window()
@@ -202,8 +198,10 @@ if __name__ == "__main__":
     box = Gtk.VBox()
     box2 = Gtk.HBox()
     box2.pack_start(box, False, False, 0)
-    box.pack_start(ChessBoard(window), False, False, 0)
+    chessboard = ChessBoard(window)
+    box.pack_start(chessboard, False, False, 0)
     window.add(box2)
-    # window.add(Area().widget)
     window.show_all()
+    board = chess.Board("rnbqkb1r/ppp1pppp/5n2/3p4/3P1B2/2P5/PP2PPPP/RN1QKBNR")
+    chessboard.from_string(str(board))
     Gtk.main()
