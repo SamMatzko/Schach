@@ -42,29 +42,27 @@ class Area:
 
     def _draw(self, event, cr, allocation):
         x, y, w, h = allocation
-        image = cairo.ImageSurface.create_from_png("/home/sam/Pictures/Icons/idle.png")
-        cr.set_source_surface(image, 200, 200)
-        cr.paint()
-        image = cairo.ImageSurface.create_from_png("/home/sam/Pictures/Icons/HappyLappyIcon.png")
-        cr.set_source_surface(image, 200, 200)
-        cr.paint()
+        for x in range(0, 3):
+            image = cairo.ImageSurface.create_from_png("/home/sam/Pictures/Icons/idle.png")
+            cr.set_source_surface(image, 50 * x, 50 * x)
+            cr.paint()
 
 class ChessBoard(cairoarea.CairoDrawableArea2):
     """The chessboard widget."""
 
     def __init__(self, parent=None, string=None, flipped=False):
 
-        cairoarea.CairoDrawableArea2.__init__(self, 560, 560, self._draw)
+        cairoarea.CairoDrawableArea2.__init__(self, 560, 560, self._create_squares)
 
         # Whether we are flipped or not
         self.flipped = flipped
 
-        # Create the board
-        self._create_squares()
-        self.set_no_show_all(False)
+        # # Create the board
+        # self._create_squares()
+        # self.set_no_show_all(False)
 
-        if string is not None:
-            self.from_string(string)
+        # if string is not None:
+            # self.from_string(string)
 
         # The parent
         self.parent = parent
@@ -89,11 +87,11 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
         else:
             raise TypeError("Cannot call type 'None'.")
 
-    def _create_squares(self, flipped=False):
-        LETTERS = LETTERS_REVERSED
-        NUMBERS = NUMBERS_REVERSED
-        LETTERS.reverse()
-        NUMBERS.reverse()
+    def _create_squares(self, event, cr, allocation, squaresonly=False):
+        x, y, w, h = allocation
+        cr.set_source_rgb(0.0, 0.0, 0.0)
+        cr.rectangle(0, 0, w, h)
+        cr.fill()
         for c in LETTERS:
             for r in NUMBERS:
 
@@ -106,14 +104,14 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
                 # Set the color of the square
                 if str(c) in ODD_LETTERS:
                     if str(r) in ODD_NUMBERS:
-                        color = BLACK
+                        color = BLACK2
                     else:
-                        color = WHITE
+                        color = WHITE2
                 else:
                     if str(r) in ODD_NUMBERS:
-                        color = WHITE
+                        color = WHITE2
                     else:
-                        color = BLACK
+                        color = BLACK2
 
                 # Reset the image
                 image = IMAGE_EMPTY
@@ -161,36 +159,19 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
 
                 # Execute the squares' creation so that we don't have
                 # to type 192 lines
-                exec(f"iii = Gtk.Image.new_from_file(image)")
-                exec(f"iii.set_name(image_name)")
-                exec(f"self.{c}{r} = Square(color='{color}', name='{c}{r}', image=iii)")
-                exec(f"self.{c}{r}.color = '{color}'")
-                exec(f"self.attach(self.{c}{r}, {cindex + 1}, {rindex + 1}, 1, 1)")
+                # exec(f"iii = Gtk.Image.new_from_file(image)")
+                # exec(f"iii.set_name(image_name)")
+                # exec(f"self.{c}{r} = Square(color='{color}', name='{c}{r}', image=iii)")
+                # exec(f"self.{c}{r}.color = '{color}'")
+                # exec(f"self.attach(self.{c}{r}, {cindex + 1}, {rindex + 1}, 1, 1)")
+                exec(f"cr.set_source_rgb(*color)")
+                exec(f"cr.rectangle(cindex * 70, rindex * 70, 70, 70)")
+                exec("cr.fill()")
+                if not squaresonly:
+                    exec(f"cr.set_source_surface(cairo.ImageSurface.create_from_png(image), (cindex * 70) + 3, (rindex * 70) + 3)")
+                    exec(f"cr.paint()")
 
         self.show_all()
-
-    def _get_squares(self):
-        """Return a list of the squares."""
-
-        # The list
-        l = []
-
-        for c in LETTERS:
-            for r in NUMBERS:
-                exec(f"l.append(self.{c}{r})")
-
-        return(l)
-
-    def bind_squares(self, func):
-        """Bind all the squares at a "clicked" event to a call of function FUNC."""
-
-        # Set the square_function to be called by the squares
-        self.square_function = func
-        
-        # Go through and bind all the squares to self._bound_method.
-        # This method then calls func when it is called.
-        for square in self._get_squares():
-            square.connect("clicked", self._bound_method)
 
     def from_string(self, string):
         """Rearrange the board according to STRING."""
@@ -207,20 +188,14 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
                 exec(f"square.reload(iii)")
         self.show_all()
 
-    def get_board_string(self):
-        """Return a string giving the board layout."""
-        s = ""
-        for sq in BOARD_ORDER:          
-            for sq2 in self._get_squares():
-                if sq2.get_name() == sq:
-                    s = s + (sq2.get_piece()) + " "
-        if s[len(s) - 1] == " ":
-            s = s[:len(s) - 1]
-        return s
-
 if __name__ == "__main__":
     window = Gtk.Window()
     window.connect("delete-event", Gtk.main_quit)
-    window.add(Area().widget)
+    box = Gtk.VBox()
+    box2 = Gtk.HBox()
+    box2.pack_start(box, False, False, 0)
+    box.pack_start(ChessBoard(window), False, False, 0)
+    window.add(box2)
+    # window.add(Area().widget)
     window.show_all()
     Gtk.main()

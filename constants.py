@@ -52,6 +52,8 @@ for rank in ["8", "7", "6", "5", "4", "3", "2", "1"]:
 # The colors
 BLACK = "#222222"
 WHITE = "#ffffff"
+BLACK2 = (0.2, 0.2, 0.2)
+WHITE2 = (1.0, 1.0, 1.0)
 
 # The images
 IMAGE_EMPTY = f"{ROOT_PATH}icons/pieces/base.png"
