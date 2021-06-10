@@ -69,6 +69,8 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
 
         # The fuction to call when a square is invoked
         self.square_function = None
+        self.squaresdict = {"d7": (0.0, 1.0, 0.5)}
+        self.squaresonly = True
 
         self.show_all()
 
@@ -87,7 +89,7 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
         else:
             raise TypeError("Cannot call type 'None'.")
 
-    def _create_squares(self, event, cr, allocation, squaresonly=False):
+    def _create_squares(self, event, cr, allocation):
         x, y, w, h = allocation
         cr.set_source_rgb(0.0, 0.0, 0.0)
         cr.rectangle(0, 0, w, h)
@@ -164,10 +166,16 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
                 # exec(f"self.{c}{r} = Square(color='{color}', name='{c}{r}', image=iii)")
                 # exec(f"self.{c}{r}.color = '{color}'")
                 # exec(f"self.attach(self.{c}{r}, {cindex + 1}, {rindex + 1}, 1, 1)")
+                print(self.squaresdict)
+                if self.squaresdict is not None:
+                    try: color = self.squaresdict["%s%s" % (c, r)];print(color)
+                    except:
+                        pass
+
                 exec(f"cr.set_source_rgb(*color)")
                 exec(f"cr.rectangle(cindex * 70, rindex * 70, 70, 70)")
                 exec("cr.fill()")
-                if not squaresonly:
+                if not self.squaresonly:
                     exec(f"cr.set_source_surface(cairo.ImageSurface.create_from_png(image), (cindex * 70) + 3, (rindex * 70) + 3)")
                     exec(f"cr.paint()")
 
