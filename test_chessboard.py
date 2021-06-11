@@ -69,9 +69,6 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
         # The parent
         self.parent = parent
 
-        # The fuction to call when a square is invoked
-        self.square_function = None
-
         # The chessboard-drawing variables
         self.squaresdict = {}
         self.squaresonly = False
@@ -86,8 +83,8 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
         """The method called when a square is invoked."""
 
         # Call the method if it exists
-        if self.square_function != None:
-            self.square_function(
+        if self.button_press_func != None:
+            self.button_press_func(
                 {
                     "square": widget,
                     "location": widget.get_name(),
@@ -96,6 +93,18 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
             )
         else:
             raise TypeError("Cannot call type 'None'.")
+
+    def _convert_row_column_to_square(self, coords):
+        """COORDS must be a tuple of (row, column). Returns a square, "a2" for example."""
+        row = coords[0]
+        column = coords[1]
+        return "%s%s" % (LETTERS[column], NUMBERS_REVERSED[row])
+
+    def _convert_screen_coords_to_square(self, coords):
+        """COORDS must be a tuple of (x, y). Returns a square, "a2" for example."""
+        x, y = coords
+        c, r = int(str(x / 70)[0]), int(str(y / 70)[0])
+        return self._convert_row_column_to_square((r, c))
 
     def _convert_square_to_color(self, square):
         """SQUARE must be in "a4" format. Returns either BLACK2 or WHITE2."""
@@ -185,6 +194,36 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
 
         self.show_all()
 
+    def bind(self, event, func):
+        """Bind the board at EVENT to a call of FUNC.
+        EVENT must be one of:
+            button-press-event
+            button-release-event
+            motion-notify-event
+            enter-notify-event
+            leave-notify-event
+            scroll-event"""
+
+        if event == "button-press-event":
+            self.press_func = func
+        elif event == "button-release-event":
+            self.release_func = func
+        elif event == "motion-notify-event":
+            self.motion_notify_func = func
+        elif event == "enter-notify-event":
+            self.enter_notify_func = func
+        elif event == "leave-notify-event":
+            self.leave_notify_func = func
+        elif event == "scroll-event":
+            self.mouse_scroll_func = func
+        else:
+            raise TypeError('"%s": must be one of button-press-event, \
+button-release-event, \
+motion-notify-event, \
+enter-notify-event, \
+leave-notify-event, \
+scroll-event' % func)
+
     def from_string(self, string):
         """Rearrange the board according to STRING."""
 
@@ -198,10 +237,14 @@ if __name__ == "__main__":
     box = Gtk.VBox()
     box2 = Gtk.HBox()
     box2.pack_start(box, False, False, 0)
+    def motion_notify(*args):
+        print(args)
     chessboard = ChessBoard(window)
     box.pack_start(chessboard, False, False, 0)
     window.add(box2)
     window.show_all()
+    chessboard.bind("motion-notify-event", motion_notify)
+    print(chessboard._convert_screen_coords_to_square((1, 1)))
     board = chess.Board("rnbqkb1r/ppp1pppp/5n2/3p4/3P1B2/2P5/PP2PPPP/RN1QKBNR")
     chessboard.from_string(str(board))
     Gtk.main()
