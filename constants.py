@@ -48,7 +48,6 @@ COLOR_MOVETO = "#00ffff"
 for rank in NUMBERS_REVERSED:
     for file in LETTERS:
         BOARD_ORDER.append(f"{file}{rank}")
-print(BOARD_ORDER)
 
 # The colors
 BLACK = "#222222"

@@ -126,8 +126,10 @@ class Game:
                         # Set the color of the square
                         self._set_square_color(COLOR_MOVEFROM, square_name, False)
                     else:
+                        move_from = self.move_from
                         self.move_from = None
                 else:
+                    move_from = self.move_from
                     self.move_from = None
 
             # If we are on the last square of the move...
@@ -150,8 +152,8 @@ class Game:
 
                     # If we're a black piece in rank 1 or a white one in rank 8...
                     if (
-                            color_at_square == chess.WHITE and "8" in self.move_to or
-                            color_at_square == chess.BLACK and "1" in self.move_to):
+                            color_at_square == chess.WHITE and "8" in self.move_to and "7" in move_from or
+                            color_at_square == chess.BLACK and "1" in self.move_to and "2" in move_from):
 
                         # ...and if we are a pawn...
                         if piece_at_square.lower() == "p":

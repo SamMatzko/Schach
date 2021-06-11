@@ -189,7 +189,7 @@ class ChessBoard(Gtk.Grid):
     def get_board_string(self):
         """Return a string giving the board layout."""
         s = ""
-        for sq in BOARD_ORDER:          
+        for sq in BOARD_ORDER:
             for sq2 in self._get_squares():
                 if sq2.get_name() == sq:
                     s = s + (sq2.get_piece()) + " "
