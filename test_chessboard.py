@@ -74,8 +74,7 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
         self.squaresonly = False
 
         # The string that contains the board's current position
-        self.string = \
-        "r n b q k b n r p p p p p p p p . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . P P P P P P P P R N B Q K B N R".split()
+        self.string = STARTING_POSITION
 
         self.show_all()
 

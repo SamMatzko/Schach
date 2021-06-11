@@ -37,6 +37,9 @@ NUMBERS_REVERSED = ['8', '7', '6', '5', '4', '3', '2', '1']
 ODD_LETTERS = ["a", "c", "e", "g"]
 ODD_NUMBERS = ["1", "3", "5", "7"]
 
+# The starting position of the board, as a list
+STARTING_POSITION = "r n b q k b n r p p p p p p p p . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . P P P P P P P P R N B Q K B N R".split()
+
 # The list of the order in which to write the pieces to the board
 BOARD_ORDER = []
 
