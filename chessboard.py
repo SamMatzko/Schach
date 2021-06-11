@@ -18,38 +18,63 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 # or see <http://www.gnu.org/licenses/>
 
-"""The chessboard."""
-
+import cairo
+import cairoarea
+import chess
 import gi
+import random
+import time
 
 gi.require_version("Gtk", "3.0")
 gi.require_version("Gdk", "3.0")
 
 from constants import *
-from gi.repository import Gdk, Gtk
+from gi.repository import Gdk
+from gi.repository import GdkPixbuf
+from gi.repository import Gtk
 
-class ChessBoard(Gtk.Grid):
+class Area:
+
+    def __init__(self):
+        self.widget = cairoarea.CairoDrawableArea2(
+            500,
+            500,
+            self._draw
+        )
+
+    def _draw(self, event, cr, allocation):
+        x, y, w, h = allocation
+        for x in range(0, 3):
+            image = cairo.ImageSurface.create_from_png("/home/sam/Pictures/Icons/idle.png")
+            cr.set_source_surface(image, 50 * x, 50 * x)
+            cr.paint()
+
+class ChessBoard(cairoarea.CairoDrawableArea2):
     """The chessboard widget."""
 
     def __init__(self, parent=None, string=None, flipped=False):
 
-        Gtk.Grid.__init__(self)
+        cairoarea.CairoDrawableArea2.__init__(self, 560, 560, self._create_squares)
 
         # Whether we are flipped or not
         self.flipped = flipped
 
-        # Create the board
-        self._create_squares()
-        self.set_no_show_all(False)
+        # # Create the board
+        # self._create_squares()
+        # self.set_no_show_all(False)
 
-        if string is not None:
-            self.from_string(string)
+        # if string is not None:
+            # self.from_string(string)
 
         # The parent
         self.parent = parent
 
-        # The fuction to call when a square is invoked
-        self.square_function = None
+        # The chessboard-drawing variables
+        self.squaresdict = {}
+        self.squaresonly = False
+
+        # The string that contains the board's current position
+        self.string = STARTING_POSITION
 
         self.show_all()
 
@@ -57,8 +82,8 @@ class ChessBoard(Gtk.Grid):
         """The method called when a square is invoked."""
 
         # Call the method if it exists
-        if self.square_function != None:
-            self.square_function(
+        if self.button_press_func != None:
+            self.button_press_func(
                 {
                     "square": widget,
                     "location": widget.get_name(),
@@ -68,193 +93,157 @@ class ChessBoard(Gtk.Grid):
         else:
             raise TypeError("Cannot call type 'None'.")
 
-    def _create_squares(self, flipped=False):
-        LETTERS = LETTERS_REVERSED
-        NUMBERS = NUMBERS_REVERSED
-        LETTERS.reverse()
-        NUMBERS.reverse()
+    def _create_squares(self, event, cr, allocation):
+        x, y, w, h = allocation
+        cr.set_source_rgb(0.0, 0.0, 0.0)
+        cr.rectangle(0, 0, w, h)
+        cr.fill()
         for c in LETTERS:
             for r in NUMBERS:
 
+                square = "%s%s" % (c, r)
+
                 # Get the row/column numbers
-                cindex = LETTERS.index(c)
-                NUMBERS.reverse()
-                rindex = NUMBERS.index(r)
-                NUMBERS.reverse()
+                cindex, rindex = self.convert_square_to_coords(square)
 
                 # Set the color of the square
-                if str(c) in ODD_LETTERS:
-                    if str(r) in ODD_NUMBERS:
-                        color = BLACK
-                    else:
-                        color = WHITE
-                else:
-                    if str(r) in ODD_NUMBERS:
-                        color = WHITE
-                    else:
-                        color = BLACK
-
-                # Reset the image
-                image = IMAGE_EMPTY
-                image_name = "."
+                color = self.convert_square_to_color(square)
 
                 # Set which piece is for this square
-                if r == "1":
-                    if c == "a" or c == "h":
-                        image = IMAGE_R
-                        image_name = "R"
-                    elif c == "b" or c == "g":
-                        image = IMAGE_N
-                        image_name = "N"
-                    elif c == "c" or c == "f":
-                        image = IMAGE_B
-                        image_name = "B"
-                    elif c == "d":
-                        image = IMAGE_Q
-                        image_name = "Q"
-                    elif c == "e":
-                        image = IMAGE_K
-                        image_name = "K"
-                elif r == "2":
-                    image = IMAGE_P
-                    image_name = "P"
-                elif r == "8":
-                    if c == "a" or c == "h":
-                        image = IMAGE_r
-                        image_name = "r"
-                    elif c == "b" or c == "g":
-                        image = IMAGE_n
-                        image_name = "n"
-                    elif c == "c" or c == "f":
-                        image = IMAGE_b
-                        image_name = "b"
-                    elif c == "d":
-                        image = IMAGE_q
-                        image_name = "q"
-                    elif c == "e":
-                        image = IMAGE_k
-                        image_name = "k"
-                elif r == "7":
-                    image = IMAGE_p
-                    image_name = "p"
+                image, image_name = self.convert_square_to_image(square)
 
-                # Execute the squares' creation so that we don't have
-                # to type 192 lines
-                exec(f"iii = Gtk.Image.new_from_file(image)")
-                exec(f"iii.set_name(image_name)")
-                exec(f"self.{c}{r} = Square(color='{color}', name='{c}{r}', image=iii)")
-                exec(f"self.{c}{r}.color = '{color}'")
-                exec(f"self.attach(self.{c}{r}, {cindex + 1}, {rindex + 1}, 1, 1)")
+                # Create the squares
+                if self.squaresdict is not None:
+                    try: color = self.squaresdict["%s%s" % (c, r)]
+                    except:
+                        pass
+                exec(f"cr.set_source_rgb(*color)")
+                exec(f"cr.rectangle(cindex * 70, rindex * 70, 70, 70)")
+                exec("cr.fill()")
+                if not self.squaresonly:
+                    exec(f"cr.set_source_surface(cairo.ImageSurface.create_from_png(image), (cindex * 70) + 3, (rindex * 70) + 3)")
+                    exec(f"cr.paint()")
 
         self.show_all()
 
-    def _get_squares(self):
-        """Return a list of the squares."""
+    def bind(self, event, func):
+        """Bind the board at EVENT to a call of FUNC.
+        EVENT must be one of:
+            button-press-event
+            button-release-event
+            motion-notify-event
+            enter-notify-event
+            leave-notify-event
+            scroll-event"""
 
-        # The list
-        l = []
+        if event == "button-press-event":
+            self.press_func = func
+        elif event == "button-release-event":
+            self.release_func = func
+        elif event == "motion-notify-event":
+            self.motion_notify_func = func
+        elif event == "enter-notify-event":
+            self.enter_notify_func = func
+        elif event == "leave-notify-event":
+            self.leave_notify_func = func
+        elif event == "scroll-event":
+            self.mouse_scroll_func = func
+        else:
+            raise TypeError('"%s": must be one of button-press-event, \
+button-release-event, \
+motion-notify-event, \
+enter-notify-event, \
+leave-notify-event, \
+scroll-event' % func)
 
-        for c in LETTERS:
-            for r in NUMBERS:
-                exec(f"l.append(self.{c}{r})")
+    def convert_row_column_to_square(self, coords):
+        """COORDS must be a tuple of (row, column). Returns a square, "a2" for example."""
+        row = coords[0]
+        column = coords[1]
+        return "%s%s" % (LETTERS[column], NUMBERS_REVERSED[row])
 
-        return(l)
+    def convert_screen_coords_to_square(self, coords):
+        """COORDS must be a tuple of (x, y). Returns a square, "a2" for example."""
+        x, y = coords
+        c, r = int(str(x / 70)[0]), int(str(y / 70)[0])
+        return self.convert_row_column_to_square((r, c))
 
-    def bind_squares(self, func):
-        """Bind all the squares at a "clicked" event to a call of function FUNC."""
+    def convert_square_to_color(self, square):
+        """SQUARE must be in "a4" format. Returns either BLACK2 or WHITE2."""
+        c = square[0]
+        r = square[1]
+        if str(c) in ODD_LETTERS:
+            if str(r) in ODD_NUMBERS:
+                color = BLACK2
+            else:
+                color = WHITE2
+        else:
+            if str(r) in ODD_NUMBERS:
+                color = WHITE2
+            else:
+                color = BLACK2
+        return color
 
-        # Set the square_function to be called by the squares
-        self.square_function = func
-        
-        # Go through and bind all the squares to self._bound_method.
-        # This method then calls func when it is called.
-        for square in self._get_squares():
-            square.connect("clicked", self._bound_method)
+    def convert_square_to_coords(self, square):
+        """SQUARE must be in "a4" format. Returns a tuple (c, r)."""
+        c = square[0]
+        r = square[1]
+        return (LETTERS.index(c), NUMBERS_REVERSED.index(r))
+    
+    def convert_square_to_image(self, square):
+        """SQUARE must be in "a4" format. Returns the file path."""
+        c = square[0]
+        r = square[1]
+        piece = self.string[BOARD_ORDER.index(square)]
+        image = IMAGE_EMPTY
+        if piece == "K":
+            image = IMAGE_K
+        elif piece == "Q":
+            image = IMAGE_Q
+        elif piece == "R":
+            image = IMAGE_R
+        elif piece == "B":
+            image = IMAGE_B
+        elif piece == "N":
+            image = IMAGE_N
+        elif piece == "P":
+            image = IMAGE_P
+
+        elif piece == "k":
+            image = IMAGE_k
+        elif piece == "q":
+            image = IMAGE_q
+        elif piece == "r":
+            image = IMAGE_r
+        elif piece == "b":
+            image = IMAGE_b
+        elif piece == "n":
+            image = IMAGE_n
+        elif piece == "p":
+            image = IMAGE_p
+        return image, piece
 
     def from_string(self, string):
         """Rearrange the board according to STRING."""
 
         string = string.replace("\n", " ").split()
-        for sint in range(0, 64):
-            s = BOARD_ORDER[sint]
-            exec(f"square = self.{s}")
-            if string[sint] == ".":
-                exec("square.reload(Gtk.Image.new_from_file(IMAGE_EMPTY))")
-            else:
-                exec(f"iii = Gtk.Image.new_from_file(IMAGE_{string[sint]})")
-                exec(f"iii.set_name('{string[sint]}')")
-                exec(f"square.reload(iii)")
-        self.show_all()
+        self.squaresonly = False
+        self.string = string
 
-    def get_board_string(self):
-        """Return a string giving the board layout."""
-        s = ""
-        for sq in BOARD_ORDER:
-            for sq2 in self._get_squares():
-                if sq2.get_name() == sq:
-                    s = s + (sq2.get_piece()) + " "
-        if s[len(s) - 1] == " ":
-            s = s[:len(s) - 1]
-        return s
-
-class Square(Gtk.Button):
-    """A custom button for the chess squares."""
-
-    def __init__(self, name, image, color="#ffffff"):
-        Gtk.Button.__init__(self, name=name)
-
-        self.rgba = Gdk.RGBA()
-        self.rgba.parse(color)
-
-        self.color = color
-
-        self.image = image
-        self.image.connect("draw", self._on_draw, {"color": self.rgba})
-
-        self.add(image)
-
-    def _on_draw(self, widget, cr, data):
-        
-        context = widget.get_style_context()
-        self.cr = cr
-
-        self.width = widget.get_allocated_width()
-        self.height = widget.get_allocated_height()
-        Gtk.render_background(context, self.cr, 0, 0, self.width, self.height)
-
-        r, g, b, a = data["color"]
-        self.cr.set_source_rgba(r, g, b, a)
-        self.cr.rectangle(0, 0, self.width, self.height)
-        self.cr.fill()
-
-        self.set_tooltip_text(self.get_name())
-
-    def get_piece(self):
-        """Return a byte representing the chess piece that is currently
-        on this square."""
-
-        if self.image.get_name() == "GtkImage":
-            return "."
-        else:
-            return self.image.get_name()
-
-    def parse_color(self, color):
-        """Return the Gdk.RGBA.parse(COLOR).to_string() string."""
-        rgba = Gdk.RGBA()
-        rgba.parse(color)
-        return rgba.to_string()
-
-    def reload(self, image):
-        
-        self.remove(self.image)
-        self.image = image
-        self.image.connect("draw", self._on_draw, {"color": self.rgba})
-        self.add(self.image)
-
-    def set_color(self, color):
-        """Set the square's color to COLOR."""
-
-        self.rgba = Gdk.RGBA()
-        self.rgba.parse(color)
-
-        self.reload(self.image)
+if __name__ == "__main__":
+    window = Gtk.Window()
+    window.connect("delete-event", Gtk.main_quit)
+    box = Gtk.VBox()
+    box2 = Gtk.HBox()
+    box2.pack_start(box, False, False, 0)
+    def motion_notify(*args):
+        print(args)
+    chessboard = ChessBoard(window)
+    box.pack_start(chessboard, False, False, 0)
+    window.add(box2)
+    window.show_all()
+    chessboard.bind("motion-notify-event", motion_notify)
+    print(chessboard.convert_screen_coords_to_square((1, 1)))
+    board = chess.Board("rnbqkb1r/ppp1pppp/5n2/3p4/3P1B2/2P5/PP2PPPP/RN1QKBNR")
+    chessboard.from_string(str(board))
+    Gtk.main()
