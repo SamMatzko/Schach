@@ -79,19 +79,18 @@ class Game:
                 exit()
 
         # Bind the chessboard to the move assertion method
-        self.chessboard.bind_squares(self._assert_move)
+        self.chessboard.bind("button-press-event", self._assert_move)
 
-    def _assert_move(self, info):
+    def _assert_move(self, event):
         """Check all the move's stats, and if it's legal, move it."""
 
         # The square that was clicked
-        square = info["square"]
-        square_name = info["location"]
-        square_piece = info["piece"]
-
+        square_name = self.chessboard.convert_screen_coords_to_square((event.x, event.y))
+        ignore, square_piece = self.chessboard.convert_square_to_image(square_name)
+        print(square_name, square_piece)
 
         # Only respond if the widget is not disabled
-        if square.get_sensitive():
+        if self.chessboard.get_sensitive():
 
             # Check if we are on the starting square or the ending square of the move
             if self.move_from == None:
@@ -175,6 +174,7 @@ class Game:
                 # Update the board and status
                 self.chessboard.from_string(str(self.board))
                 self.update_status()
+        self.chessboard.update()
 
     def _game_over(self):
         """Handle the status and dialogs for the game's end."""
@@ -244,23 +244,16 @@ class Game:
     def _reset_square_colors(self):
         """Set the colors of the squares back to their default."""
 
-        for square in self.chessboard._get_squares():
-            square.set_color(square.color)
+        self.chessboard.squaresdict = {}
 
     def _set_square_color(self, color, square_name, isolate=True):
         """Set the SQUARE to COLOR, and all the other squares 
         to their default colors if ISOLATE == True"""
         
         # Configure that square and set it's color
-        for square in self.chessboard._get_squares():
-            if square.get_name() == square_name:
-                square.set_color(color)
-            else:
-                if isolate:
-                    square.set_color(square.color)
-                else:
-                    if square.rgba.to_string() == square.parse_color(COLOR_MOVEFROM):
-                        square.set_color(square.color)
+        if isolate:
+            self.chessboard.squaresdict = {}
+        self.chessboard.squaresdict[square_name] = color
 
     def engine_move(self):
         """Make the engine this turn."""

@@ -229,6 +229,12 @@ scroll-event' % func)
         string = string.replace("\n", " ").split()
         self.squaresonly = False
         self.string = string
+        self.update()
+
+    def update(self):
+        """Update the chessboard."""
+        self.hide()
+        self.show_all()
 
 if __name__ == "__main__":
     window = Gtk.Window()

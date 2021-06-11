@@ -647,7 +647,6 @@ class Window(Gtk.ApplicationWindow):
         self.chessboard.bind_squares(self.game._assert_move)
         self.game.chessboard = self.chessboard
 
-        self.chessboard.show_all()
         while Gtk.events_pending():
             Gtk.main_iteration()
 
@@ -731,6 +730,7 @@ class Window(Gtk.ApplicationWindow):
             self.game._push_move(move)
             self.game.update_status()
             self.chessboard.from_string(str(self.game.board))
+            self.chessboard.update()
             entry.get_buffer().delete_text(0, 5)
         else:
             dialogs.messagedialog.show_info(

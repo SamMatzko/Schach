@@ -44,8 +44,8 @@ STARTING_POSITION = "r n b q k b n r p p p p p p p p . . . . . . . . . . . . . .
 BOARD_ORDER = []
 
 # The square colors
-COLOR_MOVEFROM = "#3333ff"
-COLOR_MOVETO = "#00ffff"
+COLOR_MOVEFROM = (0.2, 0.2, 1.0)
+COLOR_MOVETO = (0.0, 1.0, 1.0)
 
 # The order in which to write the pieces to the board
 for rank in NUMBERS_REVERSED:
