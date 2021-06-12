@@ -52,19 +52,21 @@ class Area:
 class ChessBoard(cairoarea.CairoDrawableArea2):
     """The chessboard widget."""
 
-    def __init__(self, parent=None, string=None, flipped=False):
+    def __init__(self, parent=None, string=None):
 
         cairoarea.CairoDrawableArea2.__init__(self, 560, 560, self._create_squares)
 
+        # The variables for board-drawing
+        self.LETTERS = LETTERS
+        self.NUMBERS = NUMBERS
+        self.NUMBERS_REVERSED = NUMBERS_REVERSED
+        self.BOARD_ORDER = BOARD_ORDER
+
         # Whether we are flipped or not
-        self.flipped = flipped
+        self.flipped = False
 
-        # # Create the board
-        # self._create_squares()
-        # self.set_no_show_all(False)
-
-        # if string is not None:
-            # self.from_string(string)
+        if string is not None:
+            self.from_string(string)
 
         # The parent
         self.parent = parent
@@ -98,8 +100,8 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
         cr.set_source_rgb(0.0, 0.0, 0.0)
         cr.rectangle(0, 0, w, h)
         cr.fill()
-        for c in LETTERS:
-            for r in NUMBERS:
+        for c in self.LETTERS:
+            for r in self.NUMBERS:
 
                 square = "%s%s" % (c, r)
 
@@ -160,7 +162,7 @@ scroll-event' % func)
         """COORDS must be a tuple of (row, column). Returns a square, "a2" for example."""
         row = coords[0]
         column = coords[1]
-        return "%s%s" % (LETTERS[column], NUMBERS_REVERSED[row])
+        return "%s%s" % (self.LETTERS[column], self.NUMBERS_REVERSED[row])
 
     def convert_screen_coords_to_square(self, coords):
         """COORDS must be a tuple of (x, y). Returns a square, "a2" for example."""
@@ -188,13 +190,13 @@ scroll-event' % func)
         """SQUARE must be in "a4" format. Returns a tuple (c, r)."""
         c = square[0]
         r = square[1]
-        return (LETTERS.index(c), NUMBERS_REVERSED.index(r))
+        return (self.LETTERS.index(c), self.NUMBERS_REVERSED.index(r))
     
     def convert_square_to_image(self, square):
         """SQUARE must be in "a4" format. Returns the file path."""
         c = square[0]
         r = square[1]
-        piece = self.string[BOARD_ORDER.index(square)]
+        piece = self.string[self.BOARD_ORDER.index(square)]
         image = IMAGE_EMPTY
         if piece == "K":
             image = IMAGE_K
@@ -222,6 +224,19 @@ scroll-event' % func)
         elif piece == "p":
             image = IMAGE_p
         return image, piece
+
+    def flip(self):
+        """Flip the chessboard."""
+        if self.flipped:
+            self.LETTERS = LETTERS
+            self.NUMBERS = NUMBERS
+            self.NUMBERS_REVERSED = NUMBERS_REVERSED
+        else:
+            self.LETTERS = LETTERS_REVERSED
+            self.NUMBERS = NUMBERS_REVERSED
+            self.NUMBERS_REVERSED = NUMBERS
+        self.flipped = not self.flipped
+        self.update()
 
     def from_string(self, string):
         """Rearrange the board according to STRING."""

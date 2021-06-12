@@ -436,7 +436,7 @@ class Window(Gtk.ApplicationWindow):
         self.main_box.pack_start(self.game_box, True, False, 10)
 
         # The chessboard widget
-        self.chessboard = chessboard.ChessBoard(parent=self, flipped=True)
+        self.chessboard = chessboard.ChessBoard(parent=self)
 
         # The status frames
         self.white_status_frame = status_frame.WhiteStatusFrame()
@@ -627,28 +627,7 @@ class Window(Gtk.ApplicationWindow):
     def flip_chessboard(self, one, two, menu_trigger):
         """Flip the chessboard."""
 
-        # Set the chessboard flipped or not
-        self.game_box.remove(self.chessboard)
-        for square in self.chessboard._get_squares():
-            del square
-        del self.chessboard
-        self.chessboard = chessboard.ChessBoard(self, flipped=True)
-
-        # Remove and replace the frames and chessboard
-        self.game_box.remove(self.white_status_frame)
-        self.game_box.remove(self.black_status_frame)
-        
-        self.game_box.pack_start(self.white_status_frame, True, True, 5)
-        self.game_box.pack_start(self.chessboard, True, False, 10)
-        self.game_box.pack_start(self.black_status_frame, True, True, 5)
-
-        # Set up the board and bind the squares
-        self.chessboard.from_string(str(self.game.board))
-        self.chessboard.bind_squares(self.game._assert_move)
-        self.game.chessboard = self.chessboard
-
-        while Gtk.events_pending():
-            Gtk.main_iteration()
+        self.chessboard.flip()
 
     def focus_move_entry(self, *args):
         """Set the focus to the move entry."""

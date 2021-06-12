@@ -87,7 +87,6 @@ class Game:
         # The square that was clicked
         square_name = self.chessboard.convert_screen_coords_to_square((event.x, event.y))
         ignore, square_piece = self.chessboard.convert_square_to_image(square_name)
-        print(square_name, square_piece)
 
         # Only respond if the widget is not disabled
         if self.chessboard.get_sensitive():
