@@ -2,7 +2,7 @@
     "authors": ["Samuel Matzko"],
     "artists": ["Samuel Matzko"],
     "program_name": "Schach",
-    "version": "4.0.0",
+    "version": "4.1.0",
     "nano_revision": 0,
     "comments": "A chess app that uses the Stockfish engine.",
     "copyright": "\u00a92021 Samuel Matzko",
