@@ -327,6 +327,7 @@ class Game:
             except AssertionError:
                 pass
         self.chessboard.from_string(str(self.board))
+        self.update_status()
 
     def move_undo(self):
         """Undo the last move on the stack."""
@@ -339,6 +340,7 @@ class Game:
             self.chessboard.from_string(str(self.board))
         except IndexError:
             pass
+        self.update_status()
 
     def new_game(self, mainline=None):
         """Create a new game."""
