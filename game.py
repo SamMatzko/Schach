@@ -219,9 +219,12 @@ class Game:
     def _move_is_legal(self, move):
         """Return True if MOVE is legal."""
 
-        if chess.Move.from_uci(move) in self.board.legal_moves:
-            return True
-        else:
+        try:
+            if chess.Move.from_uci(move) in self.board.legal_moves:
+                return True
+            else:
+                return False
+        except ValueError:
             return False
 
     def _push_move(self, move):
@@ -320,7 +323,9 @@ class Game:
         """Redo the last undone move."""
 
         if self.undo_stack != []:
-            self._push_move(self.undo_stack.pop())
+            try: self._push_move(self.undo_stack.pop())
+            except AssertionError:
+                pass
         self.chessboard.from_string(str(self.board))
 
     def move_undo(self):
