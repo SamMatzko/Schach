@@ -108,6 +108,7 @@ class App(Gtk.Application):
 
         self.game_engine_move = Gio.SimpleAction.new("game-engine_move")
         self.game_random_move = Gio.SimpleAction.new("game-random_move")
+        self.game_engine_setup_position = Gio.SimpleAction.new("game-engine_setup_position")
         self.game_type_move = Gio.SimpleAction.new("game-type_move")
 
         self.help_license = Gio.SimpleAction.new("help-license")
@@ -134,6 +135,7 @@ class App(Gtk.Application):
 
         self.game_engine_move.connect("activate", self.window_engine_move)
         self.game_random_move.connect("activate", self.window_random_move)
+        self.game_engine_setup_position.connect("activate", self.window_engine_setup_position)
         self.game_type_move.connect("activate", self.window_focus_move_entry)
 
         self.help_license.connect("activate", self.show_license)
@@ -180,6 +182,7 @@ class App(Gtk.Application):
         self.add_action(self.view_toggle_fullscreen)
         self.add_action(self.game_engine_move)
         self.add_action(self.game_random_move)
+        self.add_action(self.game_engine_setup_position)
         self.add_action(self.game_type_move)
         self.add_action(self.help_license)
         self.add_action(self.help_about)
@@ -383,6 +386,10 @@ class App(Gtk.Application):
     def window_random_move(self, *args):
         """Invoke the current window's random_move method."""
         self.get_current_window_instance().random_move()
+
+    def window_engine_setup_position(self, *args):
+        """Invoke the current window's engine_setup_position method."""
+        self.get_current_window_instance().engine_setup_position()
 
     def window_focus_move_entry(self, *args):
         """Invoke the current window's move_entry method."""
@@ -606,6 +613,11 @@ class Window(Gtk.ApplicationWindow):
     def engine_move(self, *args):
         """Have the computer play for the current turn."""
         self.game.engine_move()
+
+    def engine_setup_position(self):
+        """Have the engine setup a position for the user to solve."""
+        for x in range(0, random.randint(0, 30)):
+            self.game.engine_move()
 
     def escape_fullscreen(self, widget, event):
         if event.keyval == Gdk.KEY_Escape:

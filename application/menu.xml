@@ -100,6 +100,12 @@
                     <attribute name="action">app.game-random_move</attribute>
                 </item>
             </section>
+            <section>
+                <item>
+                    <attribute name="label">Engine Setup position</attribute>
+                    <attribute name="action">app.game-engine_setup_position</attribute>
+                </item>
+            </section>
         </submenu>
         <submenu>
             <attribute name="label">_Help</attribute>
@@ -165,6 +171,12 @@
                 <attribute name="action">app.edit-paste_game_fen</attribute>
             </item>
         </section>
+        <section>
+                <item>
+                    <attribute name="label">Engine Setup position</attribute>
+                    <attribute name="action">app.game-engine_setup_position</attribute>
+                </item>
+            </section>
         <section>
             <submenu>
                 <attribute name="label">View</attribute>

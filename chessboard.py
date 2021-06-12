@@ -54,7 +54,7 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
 
     def __init__(self, parent=None, string=None):
 
-        cairoarea.CairoDrawableArea2.__init__(self, 560, 560, self._create_squares)
+        cairoarea.CairoDrawableArea2.__init__(self, 616, 616, self._create_squares)
 
         # The variables for board-drawing
         self.LETTERS = LETTERS
@@ -100,6 +100,7 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
         cr.set_source_rgb(0.0, 0.0, 0.0)
         cr.rectangle(0, 0, w, h)
         cr.fill()
+        cr.scale(1.1, 1.1)
         for c in self.LETTERS:
             for r in self.NUMBERS:
 
