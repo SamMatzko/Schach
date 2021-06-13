@@ -45,6 +45,21 @@ def ask_yes_no_cancel(parent, title, text):
     dialog.destroy()
     return response
 
+def show_game_over(parent):
+    dialog = Gtk.MessageDialog(
+        transient_for=parent,
+        message_type=Gtk.MessageType.INFO,
+        text="Game over!"
+    )
+    dialog.format_secondary_text("The game ended in a draw.")
+    buttons = (
+        (Gtk.STOCK_OK, Gtk.ResponseType.OK),
+    )
+    for button in buttons:
+        dialog.add_button(button[0], button[1])
+    dialog.run()
+    dialog.destroy()
+
 def show_game_over_checkmate(parent, color="white"):
     dialog = Gtk.MessageDialog(
         transient_for=parent,
@@ -67,21 +82,6 @@ def show_game_over_fivefold_repetition(parent):
         text="Game over!"
     )
     dialog.format_secondary_text("The game ended in a draw due to fivefold repetition.")
-    buttons = (
-        (Gtk.STOCK_OK, Gtk.ResponseType.OK),
-    )
-    for button in buttons:
-        dialog.add_button(button[0], button[1])
-    dialog.run()
-    dialog.destroy()
-
-def show_game_over_king_king(parent):
-    dialog = Gtk.MessageDialog(
-        transient_for=parent,
-        message_type=Gtk.MessageType.INFO,
-        text="Game over!"
-    )
-    dialog.format_secondary_text("The game ended in a draw due to the absence of any pieces other than kings.")
     buttons = (
         (Gtk.STOCK_OK, Gtk.ResponseType.OK),
     )

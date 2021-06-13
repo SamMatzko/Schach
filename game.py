@@ -210,9 +210,9 @@ class Game:
                 messagedialog.show_game_over_stalemate(self.window)
                 self.dialog_ok = True
         else:
-            self.status_bar.set_status(game_over="Draw (only kings)")
+            self.status_bar.set_status(game_over="Draw")
             if not self.dialog_ok:
-                messagedialog.show_game_over_king_king(self.window)
+                messagedialog.show_game_over(self.window)
                 self.dialog_ok = True
         self.chessboard.set_sensitive(False)
 
