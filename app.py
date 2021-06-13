@@ -636,7 +636,7 @@ class Window(Gtk.ApplicationWindow):
         self.application.do_window_closed(self.name)
         self.destroy()
 
-    def flip_chessboard(self, one, two, menu_trigger):
+    def flip_chessboard(self, *args):
         """Flip the chessboard."""
 
         self.chessboard.flip()
