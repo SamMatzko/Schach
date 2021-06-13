@@ -122,7 +122,7 @@ class Game:
                     # If so, is it ours?
                     if str(color_at_square) == str(self.board.turn):
                         # Set the color of the square
-                        self._set_square_color(COLOR_MOVEFROM, square_name, False)
+                        self._set_square_color(COLOR_MOVEFROM, square_name)
                     else:
                         move_from = self.move_from
                         self.move_from = None

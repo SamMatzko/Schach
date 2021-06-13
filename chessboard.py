@@ -62,6 +62,9 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
         self.NUMBERS_REVERSED = NUMBERS_REVERSED
         self.BOARD_ORDER = BOARD_ORDER
 
+        # The size of the squares
+        self.square_size = 77
+
         # Whether we are flipped or not
         self.flipped = False
 
@@ -100,7 +103,6 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
         cr.set_source_rgb(0.0, 0.0, 0.0)
         cr.rectangle(0, 0, w, h)
         cr.fill()
-        cr.scale(1.1, 1.1)
         for c in self.LETTERS:
             for r in self.NUMBERS:
 
@@ -121,10 +123,10 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
                     except:
                         pass
                 exec(f"cr.set_source_rgb(*color)")
-                exec(f"cr.rectangle(cindex * 70, rindex * 70, 70, 70)")
+                exec(f"cr.rectangle(cindex * self.square_size, rindex * self.square_size, self.square_size, self.square_size)")
                 exec("cr.fill()")
                 if not self.squaresonly:
-                    exec(f"cr.set_source_surface(cairo.ImageSurface.create_from_png(image), (cindex * 70) + 3, (rindex * 70) + 3)")
+                    exec(f"cr.set_source_surface(cairo.ImageSurface.create_from_png(image), (cindex * self.square_size) + 3, (rindex * self.square_size) + 3)")
                     exec(f"cr.paint()")
 
         self.show_all()
@@ -168,7 +170,7 @@ scroll-event' % func)
     def convert_screen_coords_to_square(self, coords):
         """COORDS must be a tuple of (x, y). Returns a square, "a2" for example."""
         x, y = coords
-        c, r = int(str(x / 70)[0]), int(str(y / 70)[0])
+        c, r = int(str(x / self.square_size)[0]), int(str(y / self.square_size)[0])
         return self.convert_row_column_to_square((r, c))
 
     def convert_square_to_color(self, square):
