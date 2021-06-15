@@ -89,8 +89,8 @@ class App(Gtk.Application):
         """Create all the actions for the application."""
         self.file_new = Gio.SimpleAction.new("file-new")
         self.file_new_window = Gio.SimpleAction.new("file-new_window")
-        self.file_save = Gio.SimpleAction.new("file-save")
         self.file_save_append = Gio.SimpleAction.new("file-save_append")
+        self.file_save = Gio.SimpleAction.new("file-save")
         self.file_open = Gio.SimpleAction.new("file-open")
         self.file_quit = Gio.SimpleAction.new("file-quit")
 
@@ -116,8 +116,8 @@ class App(Gtk.Application):
 
         self.file_new.connect("activate", self.window_new_game)
         self.file_new_window.connect("activate", self.new_window)
-        self.file_save.connect("activate", self.window_save_game)
         self.file_save_append.connect("activate", self.window_save_game_append)
+        self.file_save.connect("activate", self.window_save_game)
         self.file_open.connect("activate", self.window_load_game)
         self.file_quit.connect("activate", self.window_quit)
 
@@ -143,8 +143,8 @@ class App(Gtk.Application):
 
         self.set_accels_for_action("app.file-new", ["<control>N"])
         self.set_accels_for_action("app.file-new_window", ["<control><shift>N"])
-        self.set_accels_for_action("app.file-save", ["<control>S"])
-        self.set_accels_for_action("app.file-save_append", ["<control><shift>S"])
+        self.set_accels_for_action("app.file-save_append", ["<control>S"])
+        self.set_accels_for_action("app.file-save", ["<control><shift>S"])
         self.set_accels_for_action("app.file-open", ["<control>O"])
         self.set_accels_for_action("app.file-quit", ["<control>Q"])
 
@@ -166,8 +166,8 @@ class App(Gtk.Application):
 
         self.add_action(self.file_new)
         self.add_action(self.file_new_window)
-        self.add_action(self.file_save)
         self.add_action(self.file_save_append)
+        self.add_action(self.file_save)
         self.add_action(self.file_open)
         self.add_action(self.file_quit)
         self.add_action(self.edit_undo)

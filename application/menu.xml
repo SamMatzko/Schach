@@ -17,12 +17,12 @@
                     <attribute name="action">app.file-open</attribute>
                 </item>
                 <item>
-                    <attribute name="label">Save: Replace Game...</attribute>
-                    <attribute name="action">app.file-save</attribute>
-                </item>
-                <item>
                     <attribute name="label">Save: Add Game...</attribute>
                     <attribute name="action">app.file-save_append</attribute>
+                </item>
+                <item>
+                    <attribute name="label">Save: Replace Game...</attribute>
+                    <attribute name="action">app.file-save</attribute>
                 </item>
             </section>
             <section>
@@ -143,12 +143,12 @@
         </section>
         <section>
             <item>
-                <attribute name="label">Save: Replace Game...</attribute>
-                <attribute name="action">app.file-save</attribute>
-            </item>
-            <item>
                 <attribute name="label">Save: Add Game...</attribute>
                 <attribute name="action">app.file-save_append</attribute>
+            </item>
+            <item>
+                <attribute name="label">Save: Replace Game...</attribute>
+                <attribute name="action">app.file-save</attribute>
             </item>
         </section>
         <section>
