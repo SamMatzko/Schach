@@ -161,30 +161,31 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
             self.squaresdict = {}
             self.squaresdict[square] = COLOR_MOVEFROM
         else:
-            self.move_to = square
-            self.move = "%s%s" % (self.move_from, self.move_to)
-            if self.move != None:
-                move = chess.Move.from_uci(self.move)
-                if move in self.board.legal_moves:
-                    self.push_move(move)
-                    self.squaresdict = {}
-                    self.squaresdict[self.move_to] = COLOR_MOVETO
-                else:
-
-                    # Check if the move is a promotion
-                    if self.is_promotion(self.move):
-                        promote_to = self._bound_promotion_method()
-                        if self.board.turn:
-                            promote_to = promote_to.upper()
-                        else:
-                            promote_to = promote_to.lower()
-                        self.move = self.move + promote_to
-                        move = chess.Move.from_uci(self.move)
+            if self.move_from is not None:
+                self.move_to = square
+                self.move = "%s%s" % (self.move_from, self.move_to)
+                if self.move != None:
+                    move = chess.Move.from_uci(self.move)
+                    if move in self.board.legal_moves:
                         self.push_move(move)
-                    self.move = None
-                    self.move_from = None
-                    self.move_to = None
-                    self.squaresdict = {}
+                        self.squaresdict = {}
+                        self.squaresdict[self.move_to] = COLOR_MOVETO
+                    else:
+
+                        # Check if the move is a promotion
+                        if self.is_promotion(self.move):
+                            promote_to = self._bound_promotion_method()
+                            if self.board.turn:
+                                promote_to = promote_to.upper()
+                            else:
+                                promote_to = promote_to.lower()
+                            self.move = self.move + promote_to
+                            move = chess.Move.from_uci(self.move)
+                            self.push_move(move)
+                        self.move = None
+                        self.move_from = None
+                        self.move_to = None
+                        self.squaresdict = {}
 
         self.update()
 
