@@ -52,7 +52,7 @@ class Area:
 class ChessBoard(cairoarea.CairoDrawableArea2):
     """The chessboard widget."""
 
-    def __init__(self, parent=None, string=None):
+    def __init__(self, parent=None, board=None):
 
         cairoarea.CairoDrawableArea2.__init__(self, 616, 616, self._create_squares)
 
@@ -62,17 +62,31 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
         self.NUMBERS_REVERSED = NUMBERS_REVERSED
         self.BOARD_ORDER = BOARD_ORDER
 
+        # The event-handling methods
+        self.enter_notify_func = self._func_enter_notify
+        self.leave_notify_func = self._func_leave_notify
+        self.motion_notify_func = self._func_motion_notify
+        self.mouse_scroll_func = self._func_mouse_scroll
+        self.press_func = self._func_press
+        self.release_func = self._func_release
+
         # The size of the squares
         self.square_size = 77
 
         # Whether we are flipped or not
         self.flipped = False
 
-        if string is not None:
-            self.from_string(string)
+        if board is not None:
+            self.from_board(board)
+        self.board = board
 
         # The parent
         self.parent = parent
+
+        # Move data
+        self.move = None
+        self.move_from = None
+        self.move_to = None
 
         # The chessboard-drawing variables
         self.squaresdict = {}
@@ -131,35 +145,57 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
 
         self.show_all()
 
-    def bind(self, event, func):
-        """Bind the board at EVENT to a call of FUNC.
-        EVENT must be one of:
-            button-press-event
-            button-release-event
-            motion-notify-event
-            enter-notify-event
-            leave-notify-event
-            scroll-event"""
+    def _func_enter_notify(self, event):
+        """Event handler for enter notifications."""
+        print(event)
 
-        if event == "button-press-event":
-            self.press_func = func
-        elif event == "button-release-event":
-            self.release_func = func
-        elif event == "motion-notify-event":
-            self.motion_notify_func = func
-        elif event == "enter-notify-event":
-            self.enter_notify_func = func
-        elif event == "leave-notify-event":
-            self.leave_notify_func = func
-        elif event == "scroll-event":
-            self.mouse_scroll_func = func
+    def _func_leave_notify(self, event):
+        """Event handler for leave notifications."""
+        print(event)
+
+    def _func_motion_notify(self, x, y, state):
+        """Event handler for motion notifications."""
+        print(x, y, state)
+
+    def _func_mouse_scroll(self, event):
+        """Event handler for mouse scrolls."""
+        print(event)
+    
+    def _func_press(self, event):
+        """Event handler for button presses."""
+        
+        square = self.convert_screen_coords_to_square((event.x, event.y))
+
+        # Set the move data
+        if self.get_square_is_ours(square):
+            self.move_from = square
+            self.squaresdict = {}
+            self.squaresdict[square] = COLOR_MOVEFROM
+            self.update()
         else:
-            raise TypeError('"%s": must be one of button-press-event, \
-button-release-event, \
-motion-notify-event, \
-enter-notify-event, \
-leave-notify-event, \
-scroll-event' % func)
+            self.move_to = square
+            self.move = "%s%s" % (self.move_from, self.move_to)
+            move = chess.Move.from_uci(self.move)
+            if move in self.board.legal_moves:
+                self.board.push(move)
+                self.squaresdict = {}
+                self.squaresdict[self.move_to] = COLOR_MOVETO
+                self.from_board(self.board)
+            else:
+                self.move = None
+                self.move_from = None
+                self.move_to = None
+                self.squaresdict = {}
+
+        print(self.move_from, self.move_to, self.move)
+
+    def _func_release(self, event):
+        """Event handler for buttons releases."""
+        print(event)
+
+    def bind(self, func):
+        """Bind the board to a call of func when a move is made."""
+        self._bound_method = func
 
     def convert_row_column_to_square(self, coords):
         """COORDS must be a tuple of (row, column). Returns a square, "a2" for example."""
@@ -241,13 +277,30 @@ scroll-event' % func)
         self.flipped = not self.flipped
         self.update()
 
-    def from_string(self, string):
+    def from_board(self, board):
         """Rearrange the board according to STRING."""
-
-        string = string.replace("\n", " ").split()
+        self.board = board
+        string = str(self.board).replace("\n", " ").split()
         self.squaresonly = False
         self.string = string
         self.update()
+
+    def get_square_is_ours(self, square):
+        """Return True if the piece at the square is ours, False otherwise.
+        If there is no piece, return None."""
+        piece_at_square = str(self.board.piece_at(chess.parse_square(square)))
+        color_at_square = str(self.board.color_at(chess.parse_square(square)))
+
+        # Is there a piece here?
+        if piece_at_square != "None":
+
+            # If so, is it ours?
+            if str(color_at_square) == str(self.board.turn):
+                return True
+            else:
+                return False
+        else:
+            return None
 
     def update(self):
         """Update the chessboard."""
@@ -266,8 +319,7 @@ if __name__ == "__main__":
     box.pack_start(chessboard, False, False, 0)
     window.add(box2)
     window.show_all()
-    chessboard.bind("motion-notify-event", motion_notify)
     print(chessboard.convert_screen_coords_to_square((1, 1)))
     board = chess.Board("rnbqkb1r/ppp1pppp/5n2/3p4/3P1B2/2P5/PP2PPPP/RN1QKBNR")
-    chessboard.from_string(str(board))
+    chessboard.from_board(board)
     Gtk.main()

@@ -88,91 +88,6 @@ class Game:
         square_name = self.chessboard.convert_screen_coords_to_square((event.x, event.y))
         ignore, square_piece = self.chessboard.convert_square_to_image(square_name)
 
-        # Only respond if the widget is not disabled
-        if self.chessboard.get_sensitive():
-
-            # Check if we are on the starting square or the ending square of the move
-            if self.move_from == None:
-                self.move_from = square_name
-                move = None
-            else:
-                self.move_to = square_name
-                move = f"{self.move_from}{self.move_to}"
-                move_from = self.move_from
-                self.move_from = None
-
-            # Check if the move is legal
-            if move != None:
-                legal = self._move_is_legal(move)
-            else:
-                legal = None
-                
-            # If we are on the starting square, make sure that one of our pieces is 
-            # actually on it
-            if move == None:
-                
-                # Get the piece (if there is any) on the starting square
-                # and the color of that piece
-                piece_at_square = str(self.board.piece_at(chess.parse_square(self.move_from)))
-                color_at_square = str(self.board.color_at(chess.parse_square(self.move_from)))
-
-                # Is there a piece here?
-                if piece_at_square != "None":
-
-                    # If so, is it ours?
-                    if str(color_at_square) == str(self.board.turn):
-                        # Set the color of the square
-                        self._set_square_color(COLOR_MOVEFROM, square_name)
-                    else:
-                        move_from = self.move_from
-                        self.move_from = None
-                else:
-                    move_from = self.move_from
-                    self.move_from = None
-
-            # If we are on the last square of the move...
-            else:
-
-                # Is the move legal? If so, move it.
-                if legal:
-
-                    # Make the move in the chess.Board
-                    self._push_move(chess.Move.from_uci(move))
-                    
-                    # Clear the undo stack
-                    self.undo_stack = []
-
-                # If the move is not legal, it may be a promotion. Check if this
-                # is so, and if so, promote it.
-                else:
-                    piece_at_square = str(self.board.piece_at(chess.parse_square(move_from)))
-                    color_at_square = self.board.color_at(chess.parse_square(move_from))
-
-                    # If we're a black piece in rank 1 or a white one in rank 8...
-                    if (
-                            color_at_square == chess.WHITE and "8" in self.move_to and "7" in move_from or
-                            color_at_square == chess.BLACK and "1" in self.move_to and "2" in move_from):
-
-                        # ...and if we are a pawn...
-                        if piece_at_square.lower() == "p":
-                            if color_at_square == chess.WHITE:
-                                color = "white"
-                            else:
-                                color = "black"
-
-                            # ...promote us!
-                            promote_to = dialogs.PromotionDialog(self.chessboard.parent, color=color).show_dialog()
-                            self._push_move(chess.Move.from_uci(move + (promote_to.lower())))
-                            self.undo_stack = []
-                            self.chessboard.from_string(str(self.board))
-                
-                # Check if the game is over, and if so, handle all endgame stuff
-                if self.board.is_game_over():
-                    self._game_over()
-
-                # Update the board and status
-                self.chessboard.from_string(str(self.board))
-                self.update_status()
         self.chessboard.update()
 
     def _game_over(self):
@@ -215,6 +130,23 @@ class Game:
                 messagedialog.show_game_over(self.window)
                 self.dialog_ok = True
         self.chessboard.set_sensitive(False)
+
+    def _get_square_is_ours(self, square):
+        """Return True if the piece at the square is ours, False otherwise.
+        If there is no piece, return None."""
+        piece_at_square = str(self.board.piece_at(chess.parse_square(self.move_from)))
+        color_at_square = str(self.board.color_at(chess.parse_square(self.move_from)))
+
+        # Is there a piece here?
+        if piece_at_square != "None":
+
+            # If so, is it ours?
+            if str(color_at_square) == str(self.board.turn):
+                return True
+            else:
+                return False
+        else:
+            return None
 
     def _move_is_legal(self, move):
         """Return True if MOVE is legal."""
