@@ -646,10 +646,6 @@ class SettingsDialog(_Dialog):
         self.status_frames_checkbutton = Gtk.CheckButton(label="Show status frames")
         self.window_box.pack_start(self.status_frames_checkbutton, False, False, 3)
 
-        # The maximize on startup checkbutton
-        self.maximize_on_startup_checkbutton = Gtk.CheckButton(label="Maximize on startup")
-        self.window_box.pack_start(self.maximize_on_startup_checkbutton, False, False, 3)
-
         # The use custom Schach theme button
         self.use_app_theme_checkbutton = Gtk.CheckButton(label="Use custom Schach theme (change requires restart)")
         self.window_box.pack_start(self.use_app_theme_checkbutton, False, False, 3)
@@ -667,7 +663,6 @@ class SettingsDialog(_Dialog):
 
         # Get the settings from the window
         self.settings["show_status_frames"] = self.status_frames_checkbutton.get_active()
-        self.settings["maximize_on_startup"] = self.maximize_on_startup_checkbutton.get_active()
         self.settings["use_app_theme"] = self.use_app_theme_checkbutton.get_active()
 
         # Write the file
@@ -681,7 +676,6 @@ class SettingsDialog(_Dialog):
 
         # Set the widgets
         self.status_frames_checkbutton.set_active(self.settings["show_status_frames"])
-        self.maximize_on_startup_checkbutton.set_active(self.settings["maximize_on_startup"])
         self.use_app_theme_checkbutton.set_active(self.settings["use_app_theme"])
 
     def show_dialog(self):

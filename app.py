@@ -470,9 +470,7 @@ class Window(Gtk.ApplicationWindow):
 
         # Load the settings
         self.settings = json.load(open(f"{ROOT_PATH}json/settings.json"))
-        if self.settings["maximize_on_startup"]:
-            self.maximize()
-        self.set_settings()
+        self.maximize()
 
         # Load the theme
         if self.settings["use_app_theme"]:
