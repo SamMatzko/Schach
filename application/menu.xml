@@ -81,7 +81,7 @@
                     <attribute name="action">app.view-flip_chessboard</attribute>
                 </item>
                 <item>
-                    <attribute name="label">Toggle Fullsreen</attribute>
+                    <attribute name="label">Toggle Fullscreen</attribute>
                     <attribute name="action">app.view-toggle_fullscreen</attribute>
                 </item>
             </section>
@@ -189,7 +189,7 @@
                     <attribute name="action">app.view-flip_chessboard</attribute>
                 </item>
                 <item>
-                    <attribute name="label">Toggle Fullsreen</attribute>
+                    <attribute name="label">Toggle Fullscreen</attribute>
                     <attribute name="action">app.view-toggle_fullscreen</attribute>
                 </item>
             </submenu>
