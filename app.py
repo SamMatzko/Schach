@@ -720,7 +720,7 @@ class Window(Gtk.ApplicationWindow):
         if not move_failed and move in self.game.board.legal_moves:
             self.game._push_move(move)
             self.game.update_status()
-            self.chessboard.from_string(str(self.game.board))
+            self.chessboard.from_board(self.game.board)
             self.chessboard.update()
             entry.get_buffer().delete_text(0, 5)
         else:
@@ -805,7 +805,7 @@ class Window(Gtk.ApplicationWindow):
                 legal_moves.append(move.uci())
             random_move = random.choice(legal_moves)
             self.game._push_move(chess.Move.from_uci(random_move))
-            self.chessboard.from_string(str(self.game.board))
+            self.chessboard.from_board(self.game.board)
             self.game.update_status()
 
     def save_game(self, action=None, something_else=None, append=None):

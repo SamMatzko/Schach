@@ -71,7 +71,7 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
         self.release_func = self._func_release
 
         # The methods to call on piece move or promotion
-        self._bound_method = None
+        self._bound_move_method = None
         self._bound_promotion_method = None
 
         # The size of the squares
@@ -136,19 +136,19 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
 
     def _func_enter_notify(self, event):
         """Event handler for enter notifications."""
-        print(event)
+        pass
 
     def _func_leave_notify(self, event):
         """Event handler for leave notifications."""
-        print(event)
+        pass
 
     def _func_motion_notify(self, x, y, state):
         """Event handler for motion notifications."""
-        print(x, y, state)
+        pass
 
     def _func_mouse_scroll(self, event):
         """Event handler for mouse scrolls."""
-        print(event)
+        pass
     
     def _func_press(self, event):
         """Event handler for button presses."""
@@ -166,10 +166,9 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
             if self.move != None:
                 move = chess.Move.from_uci(self.move)
                 if move in self.board.legal_moves:
-                    self.board.push(move)
+                    self.push_move(move)
                     self.squaresdict = {}
                     self.squaresdict[self.move_to] = COLOR_MOVETO
-                    self.from_board(self.board)
                 else:
 
                     # Check if the move is a promotion
@@ -181,23 +180,21 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
                             promote_to = promote_to.lower()
                         self.move = self.move + promote_to
                         move = chess.Move.from_uci(self.move)
-                        self.board.push(move)
-                        self.from_board(self.board)
+                        self.push_move(move)
                     self.move = None
                     self.move_from = None
                     self.move_to = None
                     self.squaresdict = {}
 
         self.update()
-        print(self.move_from, self.move_to, self.move)
 
     def _func_release(self, event):
         """Event handler for buttons releases."""
-        print(event)
+        pass
 
     def bind_move(self, func):
         """Bind the board to a call of FUNC when a move is made."""
-        self._bound_method = func
+        self._bound_move_method = func
 
     def bind_promotion(self, func):
         """Bind the board to a call of FUNC when a piece needs to be promoted.
@@ -286,7 +283,7 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
         self.update()
 
     def from_board(self, board):
-        """Rearrange the board according to STRING."""
+        """Rearrange the board according to BOARD."""
         self.board = board
         string = str(self.board).replace("\n", " ").split()
         self.squaresonly = False
@@ -324,14 +321,25 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
         else:
             return False
 
+    def push_move(self, move):
+        """Push MOVE."""
+        self.board.push(move)
+        self._bound_move_method(move)
+        self.from_board(self.board)
+
+    def set_square_color(self, square, color):
+        """Set SQUARE to COLOR."""
+        self.squaresdict = {}
+        self.squaresdict[square] = color
+
     def update(self):
         """Update the chessboard."""
         self.hide()
         self.show_all()
 
 if __name__ == "__main__":
-    def move():
-        print("move")
+    def move(*args):
+        print(args)
     def promote():
         return "q"
     window = Gtk.Window()

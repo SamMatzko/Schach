@@ -45,6 +45,8 @@ class Game:
 
         # The chessboard widget
         self.chessboard = chessboard
+        self.chessboard.bind_move(self._push_move)
+        self.chessboard.bind_promotion(self._promote)
         
         # The status widgets
         self.white_frame = white_frame
@@ -57,6 +59,7 @@ class Game:
 
         # The board
         self.board = chess.Board()
+        self.chessboard.from_board(self.board)
 
         # The stack of undone moves
         self.undo_stack = []
@@ -77,9 +80,6 @@ class Game:
                 print("FATAL ERROR: Cannot set up engine: engine is not executable.")
                 print(f"Please set {ROOT_PATH}stockfish to be executable.")
                 exit()
-
-        # Bind the chessboard to the move assertion method
-        self.chessboard.bind("button-press-event", self._assert_move)
 
     def _assert_move(self, event):
         """Check all the move's stats, and if it's legal, move it."""
@@ -159,21 +159,23 @@ class Game:
         except ValueError:
             return False
 
+    def _promote(self):
+        """Promote the current pawn."""
+        if self.board.turn:
+            color = "white"
+        else:
+            color = "black"
+        promote_to = dialogs.PromotionDialog(self.window, color=color).show_dialog()
+        self.chessboard.from_board(self.board)
+        self.update_status()
+        return promote_to
+
     def _push_move(self, move):
         """Push the move to the board and highlight the ending square of the move."""
-
-        # Push the move on the board
+        self.chessboard.from_board(self.board)
         self.board.push(move)
-
-        # The last square of the move
-        last_square = move.to_square
-        for square_name in chess.SQUARES:
-            if last_square == square_name:
-                square_name = chess.SQUARE_NAMES[last_square]
-                break
-        
-        # Set the square's color
-        self._set_square_color(COLOR_MOVETO, square_name)
+        self.chessboard.set_square_color(move.uci()[2:], COLOR_MOVETO)
+        self.update_status()
 
     def _reset_square_colors(self):
         """Set the colors of the squares back to their default."""
@@ -226,7 +228,7 @@ class Game:
 
             # Set the move_to setting so we can update the last-moved square
             self.move_to = engine_move.move.uci()[2:]
-            self.chessboard.from_string(str(self.board))
+            self.chessboard.from_board(self.board)
 
             # Hide the spinners
             self.white_frame.set_status(thinking=False)
@@ -253,23 +255,31 @@ class Game:
 
     def move_redo(self):
         """Redo the last undone move."""
-
-        if self.undo_stack != []:
-            try: self._push_move(self.undo_stack.pop())
-            except AssertionError:
-                pass
-        self.chessboard.from_string(str(self.board))
+        
+        try:
+            if self.undo_stack != []:
+                move = self.undo_stack.pop()
+                try:
+                    self._push_move(move)
+                    self.chessboard.from_board(self.board)
+                    self.chessboard.set_square_color(move.uci()[2:], COLOR_MOVETO)
+                except AssertionError:
+                    pass
+        except IndexError:
+            pass
         self.update_status()
 
     def move_undo(self):
         """Undo the last move on the stack."""
-
+        
         try:
+            move = self.board.pop()
             # Undo the game's move
-            self.undo_stack.append(self.board.pop())
+            self.undo_stack.append(move)
 
             # Update the board
-            self.chessboard.from_string(str(self.board))
+            self.chessboard.from_board(self.board)
+            self.chessboard.set_square_color(move.uci()[:2], COLOR_MOVETO)
         except IndexError:
             pass
         self.update_status()
@@ -283,14 +293,14 @@ class Game:
         # Reset the chessboard
         self.chessboard.set_sensitive(True)
         self._reset_square_colors()
-        self.chessboard.from_string(str(self.board))
+        self.chessboard.from_board(self.board)
         self.dialog_ok = False
 
         # Make the moves in the mainline move stack, if one was given
         if mainline is not None:
             for move in mainline:
                 self.board.push(move)
-            self.chessboard.from_string(str(self.board))
+            self.chessboard.from_board(self.board)
 
         # Update the status
         self.update_status()
@@ -304,12 +314,12 @@ class Game:
         # Reset the chessboard
         self.chessboard.set_sensitive(True)
         self._reset_square_colors()
-        self.chessboard.from_string(str(self.board))
+        self.chessboard.from_board(self.board)
         self.dialog_ok = False
 
         # Make the board
         self.board.set_board_fen(fen)
-        self.chessboard.from_string(str(self.board))
+        self.chessboard.from_board(self.board)
 
         # Update the status
         self.update_status()
