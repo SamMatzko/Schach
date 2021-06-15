@@ -70,6 +70,10 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
         self.press_func = self._func_press
         self.release_func = self._func_release
 
+        # The methods to call on piece move or promotion
+        self._bound_method = None
+        self._bound_promotion_method = None
+
         # The size of the squares
         self.square_size = 77
 
@@ -96,21 +100,6 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
         self.string = STARTING_POSITION
 
         self.show_all()
-
-    def _bound_method(self, widget):
-        """The method called when a square is invoked."""
-
-        # Call the method if it exists
-        if self.button_press_func != None:
-            self.button_press_func(
-                {
-                    "square": widget,
-                    "location": widget.get_name(),
-                    "piece": widget.get_piece()
-                }
-            )
-        else:
-            raise TypeError("Cannot call type 'None'.")
 
     def _create_squares(self, event, cr, allocation):
         x, y, w, h = allocation
@@ -171,31 +160,50 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
             self.move_from = square
             self.squaresdict = {}
             self.squaresdict[square] = COLOR_MOVEFROM
-            self.update()
         else:
             self.move_to = square
             self.move = "%s%s" % (self.move_from, self.move_to)
-            move = chess.Move.from_uci(self.move)
-            if move in self.board.legal_moves:
-                self.board.push(move)
-                self.squaresdict = {}
-                self.squaresdict[self.move_to] = COLOR_MOVETO
-                self.from_board(self.board)
-            else:
-                self.move = None
-                self.move_from = None
-                self.move_to = None
-                self.squaresdict = {}
+            if self.move != None:
+                move = chess.Move.from_uci(self.move)
+                if move in self.board.legal_moves:
+                    self.board.push(move)
+                    self.squaresdict = {}
+                    self.squaresdict[self.move_to] = COLOR_MOVETO
+                    self.from_board(self.board)
+                else:
 
+                    # Check if the move is a promotion
+                    if self.is_promotion(self.move):
+                        promote_to = self._bound_promotion_method()
+                        if self.board.turn:
+                            promote_to = promote_to.upper()
+                        else:
+                            promote_to = promote_to.lower()
+                        self.move = self.move + promote_to
+                        move = chess.Move.from_uci(self.move)
+                        self.board.push(move)
+                        self.from_board(self.board)
+                    self.move = None
+                    self.move_from = None
+                    self.move_to = None
+                    self.squaresdict = {}
+
+        self.update()
         print(self.move_from, self.move_to, self.move)
 
     def _func_release(self, event):
         """Event handler for buttons releases."""
         print(event)
 
-    def bind(self, func):
-        """Bind the board to a call of func when a move is made."""
+    def bind_move(self, func):
+        """Bind the board to a call of FUNC when a move is made."""
         self._bound_method = func
+
+    def bind_promotion(self, func):
+        """Bind the board to a call of FUNC when a piece needs to be promoted.
+        FUNC should return a single-character string representing the piece to 
+        promote to."""
+        self._bound_promotion_method = func
 
     def convert_row_column_to_square(self, coords):
         """COORDS must be a tuple of (row, column). Returns a square, "a2" for example."""
@@ -302,24 +310,42 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
         else:
             return None
 
+    def is_promotion(self, move):
+        """Return True if MOVE requires a promotion."""
+        move_from = move[:2]
+        move_to = move[2:]
+        ignore, piece = self.convert_square_to_image(move_from)
+        if piece.lower() == "p":
+            if (self.board.turn and move_from[1] == "7" and move_to[1] == "8" or
+                not self.board.turn and move_from[1] == "2" and move_to[1] == "1"):
+                return True
+            else:
+                return False
+        else:
+            return False
+
     def update(self):
         """Update the chessboard."""
         self.hide()
         self.show_all()
 
 if __name__ == "__main__":
+    def move():
+        print("move")
+    def promote():
+        return "q"
     window = Gtk.Window()
     window.connect("delete-event", Gtk.main_quit)
     box = Gtk.VBox()
     box2 = Gtk.HBox()
     box2.pack_start(box, False, False, 0)
-    def motion_notify(*args):
-        print(args)
     chessboard = ChessBoard(window)
+    chessboard.bind_move(move)
+    chessboard.bind_promotion(promote)
     box.pack_start(chessboard, False, False, 0)
     window.add(box2)
     window.show_all()
     print(chessboard.convert_screen_coords_to_square((1, 1)))
-    board = chess.Board("rnbqkb1r/ppp1pppp/5n2/3p4/3P1B2/2P5/PP2PPPP/RN1QKBNR")
+    board = chess.Board()
     chessboard.from_board(board)
     Gtk.main()
