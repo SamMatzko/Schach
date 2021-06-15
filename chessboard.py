@@ -323,7 +323,6 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
 
     def push_move(self, move):
         """Push MOVE."""
-        self.board.push(move)
         self._bound_move_method(move)
         self.from_board(self.board)
 
