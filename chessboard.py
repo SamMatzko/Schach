@@ -33,22 +33,6 @@ from gi.repository import Gdk
 from gi.repository import GdkPixbuf
 from gi.repository import Gtk
 
-class Area:
-
-    def __init__(self):
-        self.widget = cairoarea.CairoDrawableArea2(
-            500,
-            500,
-            self._draw
-        )
-
-    def _draw(self, event, cr, allocation):
-        x, y, w, h = allocation
-        for x in range(0, 3):
-            image = cairo.ImageSurface.create_from_png("/home/sam/Pictures/Icons/idle.png")
-            cr.set_source_surface(image, 50 * x, 50 * x)
-            cr.paint()
-
 class ChessBoard(cairoarea.CairoDrawableArea2):
     """The chessboard widget."""
 
