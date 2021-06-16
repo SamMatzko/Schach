@@ -113,7 +113,7 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
                 exec(f"cr.rectangle(cindex * self.square_size, rindex * self.square_size, self.square_size, self.square_size)")
                 exec("cr.fill()")
                 if not self.squaresonly:
-                    exec(f"cr.set_source_surface(cairo.ImageSurface.create_from_png(image), (cindex * self.square_size) + 3, (rindex * self.square_size) + 3)")
+                    exec(f"cr.set_source_surface(cairo.ImageSurface.create_from_png(image), (cindex * self.square_size) + 5, (rindex * self.square_size) + 5)")
                     exec(f"cr.paint()")
 
         self.show_all()
