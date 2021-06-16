@@ -46,7 +46,6 @@ if "linux" in sys.platform.lower():
             current_appinfo = json.load(f)
             f.close()
         current_version = current_appinfo["version"]
-        current_update = current_appinfo["nano_revision"]
         print("Starting install of Schach %s..." % current_version)
 
         # Create the desktop file from the template
@@ -80,7 +79,6 @@ if "linux" in sys.platform.lower():
             current_appinfo = json.load(f)
             f.close()
         current_version = current_appinfo["version"]
-        current_update = current_appinfo["nano_revision"]
         print("Starting uninstall of Schach %s..." % current_version)
         
         # Uninstall the desktop
