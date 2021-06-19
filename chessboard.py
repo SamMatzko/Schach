@@ -159,10 +159,7 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
                         # Check if the move is a promotion
                         if self.is_promotion(self.move):
                             promote_to = self._bound_promotion_method()
-                            if self.board.turn:
-                                promote_to = promote_to.upper()
-                            else:
-                                promote_to = promote_to.lower()
+                            promote_to = promote_to.lower()
                             self.move = self.move + promote_to
                             move = chess.Move.from_uci(self.move)
                             self.push_move(move)
