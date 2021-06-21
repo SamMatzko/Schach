@@ -645,13 +645,15 @@ class Window(Gtk.ApplicationWindow):
 
     def load_game(self, file=None, *args):
         """Load a game from a pgn file."""
-        
-        # Get the file to load the game from
 
         if file is not None:
             file = file
         else:
-            file = filedialogs.Open(parent=self, title="Load a Game").show()
+            file = filedialogs.Open(
+                parent=self,
+                title="Load a Game",
+                filters=FILE_FILTERS
+            ).show()
         if file is not None:
 
             # Get the contents of the file
@@ -838,7 +840,11 @@ class Window(Gtk.ApplicationWindow):
         if response == Gtk.ResponseType.OK:
 
             # Get the file
-            file = filedialogs.SaveAs(parent=self, initialdir=os.environ["HOME"]).show()
+            file = filedialogs.SaveAs(
+                parent=self,
+                initialdir=os.environ["HOME"],
+                filters=FILE_FILTERS
+            ).show()
             if file is not None:
 
                 # Save the file

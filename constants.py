@@ -20,7 +20,12 @@
 
 """Program constants."""
 
+import gi
 import os
+
+gi.require_version("Gtk", "3.0")
+
+from gi.repository import Gtk
 
 # The parent directory
 ROOT_PATH = f"{os.path.dirname(__file__)}/"
@@ -91,3 +96,14 @@ MENU_XML = f"{ROOT_PATH}ui/menu.xml"
 
 # The application info file
 APP_INFO = f"{ROOT_PATH}json/appinfo.json"
+
+# The list of filters for the filedialogs
+FILE_FILTERS = []
+f1 = Gtk.FileFilter()
+f1.set_name("PGN chess game notation")
+f1.add_pattern("application/vnd.chess-pgn")
+FILE_FILTERS.append(f1)
+f2 = Gtk.FileFilter()
+f2.set_name("All files")
+f2.add_pattern("*.*")
+FILE_FILTERS.append(f2)

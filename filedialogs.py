@@ -43,6 +43,10 @@ class Open:
         try: self.parent = kw["parent"]
         except:
             self.parent = None
+
+        try: self.filters = kw["filters"]
+        except:
+            self.filters = None
         
         # The dialog
         self.dialog = Gtk.FileChooserDialog(title=self.title, parent=self.parent, transient_for=self.parent,
@@ -51,6 +55,9 @@ class Open:
         self.dialog.set_action(Gtk.FileChooserAction.OPEN)
         if self.initialdir:
             self.dialog.set_current_folder(self.initialdir)
+        if self.filters:
+            for f in self.filters:
+                self.dialog.add_filter(f)
         self.dialog.set_select_multiple(False)
         self.dialog.connect("response", self.callback)
 
@@ -85,6 +92,10 @@ class SaveAs:
         except:
             self.parent = None
 
+        try: self.filters = kw["filters"]
+        except:
+            self.filters = None
+
         self.dialog = Gtk.FileChooserDialog(parent=self.parent, transient_for=self.parent,
             modal=True, action=Gtk.FileChooserAction.SAVE)
         self.dialog.add_buttons("Cancel", Gtk.ResponseType.CANCEL, "Save", Gtk.ResponseType.ACCEPT)
@@ -92,7 +103,9 @@ class SaveAs:
         self.dialog.set_do_overwrite_confirmation(True)
         if self.initialdir:
             self.dialog.set_current_folder(self.initialdir)
-
+        if self.filters:
+            for f in self.filters:
+                self.dialog.add_filter(f)
         self.dialog.set_select_multiple(False)
         self.dialog.connect('response', self.callback)
         self.dialog.show()
