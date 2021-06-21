@@ -99,7 +99,7 @@ class BoardSetupDialog(_Dialog):
             self.add_button(*button)
 
         # The current piece to be adding to the board
-        self.current_piece = "."
+        self.current_piece = "P"
 
         # The board
         self.board = chess.Board()
@@ -130,77 +130,110 @@ class BoardSetupDialog(_Dialog):
         self.b6 = Gtk.HBox()
         self.board_settings_box.pack_start(self.b6, False, True, 5)
 
-        self.pawn_w_button = Gtk.ToggleButton()
+        self.pawn_w_button = Gtk.Button()
         self.pawn_w_button_image = Gtk.Image.new_from_file(IMAGE_P)
         self.pawn_w_button.set_image(self.pawn_w_button_image)
-        self.pawn_w_button.connect("toggled", self._on_button_toggle, "P")
+        self.pawn_w_button.connect("clicked", self._on_button_toggle, "P")
         self.b1.pack_start(self.pawn_w_button, False, False, 3)
 
-        self.knight_w_button = Gtk.ToggleButton()
+        self.knight_w_button = Gtk.Button()
         self.knight_w_button_image = Gtk.Image.new_from_file(IMAGE_N)
         self.knight_w_button.set_image(self.knight_w_button_image)
-        self.knight_w_button.connect("toggled", self._on_button_toggle, "N")
+        self.knight_w_button.connect("clicked", self._on_button_toggle, "N")
         self.b2.pack_start(self.knight_w_button, False, False, 3)
 
-        self.bishop_w_button = Gtk.ToggleButton()
+        self.bishop_w_button = Gtk.Button()
         self.bishop_w_button_image = Gtk.Image.new_from_file(IMAGE_B)
         self.bishop_w_button.set_image(self.bishop_w_button_image)
-        self.bishop_w_button.connect("toggled", self._on_button_toggle, "B")
+        self.bishop_w_button.connect("clicked", self._on_button_toggle, "B")
         self.b3.pack_start(self.bishop_w_button, False, False, 3)
 
-        self.rook_w_button = Gtk.ToggleButton()
+        self.rook_w_button = Gtk.Button()
         self.rook_w_button_image = Gtk.Image.new_from_file(IMAGE_R)
         self.rook_w_button.set_image(self.rook_w_button_image)
-        self.rook_w_button.connect("toggled", self._on_button_toggle, "R")
+        self.rook_w_button.connect("clicked", self._on_button_toggle, "R")
         self.b4.pack_start(self.rook_w_button, False, False, 3)
 
-        self.queen_w_button = Gtk.ToggleButton()
+        self.queen_w_button = Gtk.Button()
         self.queen_w_button_image = Gtk.Image.new_from_file(IMAGE_Q)
         self.queen_w_button.set_image(self.queen_w_button_image)
-        self.queen_w_button.connect("toggled", self._on_button_toggle, "Q")
+        self.queen_w_button.connect("clicked", self._on_button_toggle, "Q")
         self.b5.pack_start(self.queen_w_button, False, False, 3)
 
-        self.king_w_button = Gtk.ToggleButton()
+        self.king_w_button = Gtk.Button()
         self.king_w_button_image = Gtk.Image.new_from_file(IMAGE_K)
         self.king_w_button.set_image(self.king_w_button_image)
-        self.king_w_button.connect("toggled", self._on_button_toggle, "K")
+        self.king_w_button.connect("clicked", self._on_button_toggle, "K")
         self.b6.pack_start(self.king_w_button, False, False, 3)
 
-        self.pawn_b_button = Gtk.ToggleButton()
+        self.pawn_b_button = Gtk.Button()
         self.pawn_b_button_image = Gtk.Image.new_from_file(IMAGE_p)
         self.pawn_b_button.set_image(self.pawn_b_button_image)
-        self.pawn_b_button.connect("toggled", self._on_button_toggle, "p")
+        self.pawn_b_button.connect("clicked", self._on_button_toggle, "p")
         self.b1.pack_start(self.pawn_b_button, False, False, 3)
 
-        self.knight_b_button = Gtk.ToggleButton()
+        self.knight_b_button = Gtk.Button()
         self.knight_b_button_image = Gtk.Image.new_from_file(IMAGE_n)
         self.knight_b_button.set_image(self.knight_b_button_image)
-        self.knight_b_button.connect("toggled", self._on_button_toggle, "n")
+        self.knight_b_button.connect("clicked", self._on_button_toggle, "n")
         self.b2.pack_start(self.knight_b_button, False, False, 3)
 
-        self.bishop_b_button = Gtk.ToggleButton()
+        self.bishop_b_button = Gtk.Button()
         self.bishop_b_button_image = Gtk.Image.new_from_file(IMAGE_b)
         self.bishop_b_button.set_image(self.bishop_b_button_image)
-        self.bishop_b_button.connect("toggled", self._on_button_toggle, "b")
+        self.bishop_b_button.connect("clicked", self._on_button_toggle, "b")
         self.b3.pack_start(self.bishop_b_button, False, False, 3)
 
-        self.rook_b_button = Gtk.ToggleButton()
+        self.rook_b_button = Gtk.Button()
         self.rook_b_button_image = Gtk.Image.new_from_file(IMAGE_r)
         self.rook_b_button.set_image(self.rook_b_button_image)
-        self.rook_b_button.connect("toggled", self._on_button_toggle, "r")
+        self.rook_b_button.connect("clicked", self._on_button_toggle, "r")
         self.b4.pack_start(self.rook_b_button, False, False, 3)
 
-        self.queen_b_button = Gtk.ToggleButton()
+        self.queen_b_button = Gtk.Button()
         self.queen_b_button_image = Gtk.Image.new_from_file(IMAGE_q)
         self.queen_b_button.set_image(self.queen_b_button_image)
-        self.queen_b_button.connect("toggled", self._on_button_toggle, "q")
+        self.queen_b_button.connect("clicked", self._on_button_toggle, "q")
         self.b5.pack_start(self.queen_b_button, False, False, 3)
 
-        self.king_b_button = Gtk.ToggleButton()
+        self.king_b_button = Gtk.Button()
         self.king_b_button_image = Gtk.Image.new_from_file(IMAGE_k)
         self.king_b_button.set_image(self.king_b_button_image)
-        self.king_b_button.connect("toggled", self._on_button_toggle, "k")
+        self.king_b_button.connect("clicked", self._on_button_toggle, "k")
         self.b6.pack_start(self.king_b_button, False, False, 3)
+
+        # The turn box and its widgets
+        self.turn_box = Gtk.VBox()
+        self.b1.pack_end(self.turn_box, True, True, 3)
+        self.turn_label = Gtk.Label(label="Turn")
+        self.turn_box.pack_start(self.turn_label, True, True, 3)
+
+        self.white_radiobutton = Gtk.RadioButton.new_with_label_from_widget(None, "White")
+        self.white_radiobutton.connect("toggled", self._on_radiobutton_toggle, "w")
+        self.turn_box.pack_start(self.white_radiobutton, False, False, 3)
+
+        self.black_radiobutton = Gtk.RadioButton.new_with_label_from_widget(self.white_radiobutton, "Black")
+        self.black_radiobutton.connect("toggled", self._on_radiobutton_toggle, "b")
+        self.turn_box.pack_end(self.black_radiobutton, False, False, 3)
+
+        # The list of buttons
+        self.buttons = [
+            self.pawn_w_button,
+            self.knight_w_button,
+            self.bishop_w_button,
+            self.rook_w_button,
+            self.queen_w_button,
+            self.king_w_button,
+            self.pawn_b_button,
+            self.knight_b_button,
+            self.bishop_b_button,
+            self.rook_b_button,
+            self.queen_b_button,
+            self.king_b_button
+        ]
+        for button in self.buttons:
+            button.set_relief(Gtk.ReliefStyle.NONE)
+        self.pawn_w_button.set_relief(Gtk.ReliefStyle.HALF)
 
     def _create_dialog(self):
         """Add all the widgets to the dialog."""
@@ -230,6 +263,8 @@ class BoardSetupDialog(_Dialog):
 
         # The board settings buttons
         self._create_board_settings()
+
+        self._update()
 
     def _get_chess_piece(self, piece):
         """Return a chess.Piece instance for string PIECE."""
@@ -263,12 +298,30 @@ class BoardSetupDialog(_Dialog):
 
     def _on_button_toggle(self, button, piece):
         """Handle events when a button is toggled."""
-        print(button, piece)
+        for b in self.buttons:
+            b.set_relief(Gtk.ReliefStyle.NONE)
+        button.set_relief(Gtk.ReliefStyle.HALF)
+        self.current_piece = piece
+
+    def _on_radiobutton_toggle(self, button, color):
+        """Set the board's turn to the color given."""
+        if color == "w":
+            self.board.turn = chess.WHITE
+        else:
+            self.board.turn = chess.BLACK
+        self._update()
         
     def _place_func(self, square):
         """The method to be called when the chessboard is clicked."""
-        self.chessboard.place(self.current_piece, square)
-        self.board.set_piece_at(BOARD_ORDER.index(square), self._get_chess_piece(self.current_piece))
+        ignore, piece = self.chessboard.convert_square_to_image(square)
+        if piece == self.current_piece:
+            self.chessboard.place(".", square)
+            self.board.set_piece_at(BOARD_ORDER.index(square), self._get_chess_piece("."))
+        else:
+            self.chessboard.place(self.current_piece, square)
+            self.board.set_piece_at(BOARD_ORDER.index(square), self._get_chess_piece(self.current_piece))
+
+        self._update()
 
     def _update(self):
         """Update everything."""
@@ -278,7 +331,7 @@ class BoardSetupDialog(_Dialog):
         """Show the dilaog."""
         response = self.run()
         self.destroy()
-        return response
+        return response, self.board
 
 class CalendarDialog(_Dialog):
     """A dialog to get a date response from the user using a calendar."""
