@@ -38,7 +38,7 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
 
     def __init__(self, parent=None):
 
-        cairoarea.CairoDrawableArea2.__init__(self, 616, 616, self._draw_board)
+        cairoarea.CairoDrawableArea2.__init__(self, 528, 528, self._draw_board)
 
         # The variables for board-drawing
         self.LETTERS = LETTERS
@@ -58,7 +58,7 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
         self._bound_place_method = None
 
         # The size of the squares
-        self.square_size = 77
+        self.square_size = 66
 
         # Whether we are flipped or not
         self.flipped = False
@@ -108,7 +108,7 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
                 exec(f"cr.rectangle(cindex * self.square_size, rindex * self.square_size, self.square_size, self.square_size)")
                 exec("cr.fill()")
                 if not self.squaresonly:
-                    exec(f"cr.set_source_surface(cairo.ImageSurface.create_from_png(image), (cindex * self.square_size) + 5, (rindex * self.square_size) + 5)")
+                    exec(f"cr.set_source_surface(cairo.ImageSurface.create_from_png(image), (cindex * self.square_size) + 1, (rindex * self.square_size) + 1)")
                     exec(f"cr.paint()")
 
         self.show_all()

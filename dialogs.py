@@ -109,12 +109,109 @@ class BoardSetupDialog(_Dialog):
 
         self.show_all()
 
+    def _create_board_settings(self):
+        """Add all the settings widgets."""
+        
+        # The box
+        self.board_settings_box = Gtk.VBox()
+        self.secondary_box.pack_end(self.board_settings_box, True, True, 5)
+
+        # The piece buttons and boxes
+        self.b1 = Gtk.HBox()
+        self.board_settings_box.pack_start(self.b1, False, True, 5)
+        self.b2 = Gtk.HBox()
+        self.board_settings_box.pack_start(self.b2, False, True, 5)
+        self.b3 = Gtk.HBox()
+        self.board_settings_box.pack_start(self.b3, False, True, 5)
+        self.b4 = Gtk.HBox()
+        self.board_settings_box.pack_start(self.b4, False, True, 5)
+        self.b5 = Gtk.HBox()
+        self.board_settings_box.pack_start(self.b5, False, True, 5)
+        self.b6 = Gtk.HBox()
+        self.board_settings_box.pack_start(self.b6, False, True, 5)
+
+        self.pawn_w_button = Gtk.ToggleButton()
+        self.pawn_w_button_image = Gtk.Image.new_from_file(IMAGE_P)
+        self.pawn_w_button.set_image(self.pawn_w_button_image)
+        self.pawn_w_button.connect("toggled", self._on_button_toggle, "P")
+        self.b1.pack_start(self.pawn_w_button, False, False, 3)
+
+        self.knight_w_button = Gtk.ToggleButton()
+        self.knight_w_button_image = Gtk.Image.new_from_file(IMAGE_N)
+        self.knight_w_button.set_image(self.knight_w_button_image)
+        self.knight_w_button.connect("toggled", self._on_button_toggle, "N")
+        self.b2.pack_start(self.knight_w_button, False, False, 3)
+
+        self.bishop_w_button = Gtk.ToggleButton()
+        self.bishop_w_button_image = Gtk.Image.new_from_file(IMAGE_B)
+        self.bishop_w_button.set_image(self.bishop_w_button_image)
+        self.bishop_w_button.connect("toggled", self._on_button_toggle, "B")
+        self.b3.pack_start(self.bishop_w_button, False, False, 3)
+
+        self.rook_w_button = Gtk.ToggleButton()
+        self.rook_w_button_image = Gtk.Image.new_from_file(IMAGE_R)
+        self.rook_w_button.set_image(self.rook_w_button_image)
+        self.rook_w_button.connect("toggled", self._on_button_toggle, "R")
+        self.b4.pack_start(self.rook_w_button, False, False, 3)
+
+        self.queen_w_button = Gtk.ToggleButton()
+        self.queen_w_button_image = Gtk.Image.new_from_file(IMAGE_Q)
+        self.queen_w_button.set_image(self.queen_w_button_image)
+        self.queen_w_button.connect("toggled", self._on_button_toggle, "Q")
+        self.b5.pack_start(self.queen_w_button, False, False, 3)
+
+        self.king_w_button = Gtk.ToggleButton()
+        self.king_w_button_image = Gtk.Image.new_from_file(IMAGE_K)
+        self.king_w_button.set_image(self.king_w_button_image)
+        self.king_w_button.connect("toggled", self._on_button_toggle, "K")
+        self.b6.pack_start(self.king_w_button, False, False, 3)
+
+        self.pawn_b_button = Gtk.ToggleButton()
+        self.pawn_b_button_image = Gtk.Image.new_from_file(IMAGE_p)
+        self.pawn_b_button.set_image(self.pawn_b_button_image)
+        self.pawn_b_button.connect("toggled", self._on_button_toggle, "p")
+        self.b1.pack_start(self.pawn_b_button, False, False, 3)
+
+        self.knight_b_button = Gtk.ToggleButton()
+        self.knight_b_button_image = Gtk.Image.new_from_file(IMAGE_n)
+        self.knight_b_button.set_image(self.knight_b_button_image)
+        self.knight_b_button.connect("toggled", self._on_button_toggle, "n")
+        self.b2.pack_start(self.knight_b_button, False, False, 3)
+
+        self.bishop_b_button = Gtk.ToggleButton()
+        self.bishop_b_button_image = Gtk.Image.new_from_file(IMAGE_b)
+        self.bishop_b_button.set_image(self.bishop_b_button_image)
+        self.bishop_b_button.connect("toggled", self._on_button_toggle, "b")
+        self.b3.pack_start(self.bishop_b_button, False, False, 3)
+
+        self.rook_b_button = Gtk.ToggleButton()
+        self.rook_b_button_image = Gtk.Image.new_from_file(IMAGE_r)
+        self.rook_b_button.set_image(self.rook_b_button_image)
+        self.rook_b_button.connect("toggled", self._on_button_toggle, "r")
+        self.b4.pack_start(self.rook_b_button, False, False, 3)
+
+        self.queen_b_button = Gtk.ToggleButton()
+        self.queen_b_button_image = Gtk.Image.new_from_file(IMAGE_q)
+        self.queen_b_button.set_image(self.queen_b_button_image)
+        self.queen_b_button.connect("toggled", self._on_button_toggle, "q")
+        self.b5.pack_start(self.queen_b_button, False, False, 3)
+
+        self.king_b_button = Gtk.ToggleButton()
+        self.king_b_button_image = Gtk.Image.new_from_file(IMAGE_k)
+        self.king_b_button.set_image(self.king_b_button_image)
+        self.king_b_button.connect("toggled", self._on_button_toggle, "k")
+        self.b6.pack_start(self.king_b_button, False, False, 3)
+
     def _create_dialog(self):
         """Add all the widgets to the dialog."""
 
-        # The main HBox
-        self.main_box = Gtk.HBox()
+        # The main box
+        self.main_box = Gtk.VBox()
         self.area.add(self.main_box)
+
+        # The secondary box
+        self.secondary_box = Gtk.HBox()
+        self.main_box.add(self.secondary_box)
 
         # The chessboard
         self.chessboard = setup_chessboard.ChessBoard(self)
@@ -122,8 +219,17 @@ class BoardSetupDialog(_Dialog):
 
         # The extra box for the chessboard
         self.chessboard_box = Gtk.VBox()
-        self.main_box.pack_start(self.chessboard_box, False, False, 5)
+        self.secondary_box.pack_start(self.chessboard_box, False, False, 5)
         self.chessboard_box.pack_start(self.chessboard, False, False, 5)
+
+        # The entry containing the fen
+        self.fen_entry = Gtk.Entry()
+        self.fen_entry.set_editable(False)
+        self.fen_entry.set_tooltip_text("Board FEN")
+        self.main_box.pack_end(self.fen_entry, False, True, 3)
+
+        # The board settings buttons
+        self._create_board_settings()
 
     def _get_chess_piece(self, piece):
         """Return a chess.Piece instance for string PIECE."""
@@ -154,11 +260,19 @@ class BoardSetupDialog(_Dialog):
             return chess.Piece(chess.PAWN, chess.BLACK)
         else:
             return chess.Piece(chess.BB_EMPTY, chess.WHITE)
+
+    def _on_button_toggle(self, button, piece):
+        """Handle events when a button is toggled."""
+        print(button, piece)
         
     def _place_func(self, square):
         """The method to be called when the chessboard is clicked."""
         self.chessboard.place(self.current_piece, square)
         self.board.set_piece_at(BOARD_ORDER.index(square), self._get_chess_piece(self.current_piece))
+
+    def _update(self):
+        """Update everything."""
+        self.fen_entry.set_text(self.board.fen())
 
     def show_dialog(self):
         """Show the dilaog."""
