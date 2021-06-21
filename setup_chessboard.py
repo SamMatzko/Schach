@@ -133,8 +133,7 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
         """Event handler for button presses."""
         
         square = self.convert_screen_coords_to_square((event.x, event.y))
-        self.from_board(self._bound_place_method())
-
+        self._bound_place_method(square)
         self.update()
 
     def _func_release(self, event):
@@ -183,7 +182,6 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
         """SQUARE must be in "a4" format. Returns the file path."""
         c = square[0]
         r = square[1]
-        print(self.string)
         piece = self.string[self.BOARD_ORDER.index(square)]
         image = IMAGE_EMPTY
         if piece == "K":
@@ -231,6 +229,11 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
         string = str(board).replace("\n", " ").split()
         self.squaresonly = False
         self.string = string
+        self.update()
+
+    def place(self, piece, square):
+        """Place PIECE at SQUARE."""
+        self.string[self.BOARD_ORDER.index(square)] = piece
         self.update()
 
     def update(self):

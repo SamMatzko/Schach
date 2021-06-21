@@ -98,13 +98,74 @@ class BoardSetupDialog(_Dialog):
         for button in buttons:
             self.add_button(*button)
 
+        # The current piece to be adding to the board
+        self.current_piece = "."
+
+        # The board
+        self.board = chess.Board()
+
+        # Create the dialog
+        self._create_dialog()
+
         self.show_all()
 
-    def show_dilaog(self):
+    def _create_dialog(self):
+        """Add all the widgets to the dialog."""
+
+        # The main HBox
+        self.main_box = Gtk.HBox()
+        self.area.add(self.main_box)
+
+        # The chessboard
+        self.chessboard = setup_chessboard.ChessBoard(self)
+        self.chessboard.bind_place(self._place_func)
+
+        # The extra box for the chessboard
+        self.chessboard_box = Gtk.VBox()
+        self.main_box.pack_start(self.chessboard_box, False, False, 5)
+        self.chessboard_box.pack_start(self.chessboard, False, False, 5)
+
+    def _get_chess_piece(self, piece):
+        """Return a chess.Piece instance for string PIECE."""
+        if piece == "K":
+            return chess.Piece(chess.KING, chess.WHITE)
+        elif piece == "Q":
+            return chess.Piece(chess.QUEEN, chess.WHITE)
+        elif piece == "R":
+            return chess.Piece(chess.ROOK, chess.WHITE)
+        elif piece == "B":
+            return chess.Piece(chess.BISHOP, chess.WHITE)
+        elif piece == "N":
+            return chess.Piece(chess.KNIGHT, chess.WHITE)
+        elif piece == "P":
+            return chess.Piece(chess.PAWN, chess.WHITE)
+        
+        elif piece == "k":
+            return chess.Piece(chess.KING, chess.BLACK)
+        elif piece == "q":
+            return chess.Piece(chess.QUEEN, chess.BLACK)
+        elif piece == "r":
+            return chess.Piece(chess.ROOK, chess.BLACK)
+        elif piece == "b":
+            return chess.Piece(chess.BISHOP, chess.BLACK)
+        elif piece == "n":
+            return chess.Piece(chess.KNIGHT, chess.BLACK)
+        elif piece == "p":
+            return chess.Piece(chess.PAWN, chess.BLACK)
+        else:
+            return chess.Piece(chess.BB_EMPTY, chess.WHITE)
+        
+    def _place_func(self, square):
+        """The method to be called when the chessboard is clicked."""
+        self.chessboard.place(self.current_piece, square)
+        self.board.set_piece_at(BOARD_ORDER.index(square), self._get_chess_piece(self.current_piece))
+
+    def show_dialog(self):
         """Show the dilaog."""
         response = self.run()
         self.destroy()
         return response
+
 class CalendarDialog(_Dialog):
     """A dialog to get a date response from the user using a calendar."""
     
