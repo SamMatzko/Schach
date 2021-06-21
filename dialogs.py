@@ -25,12 +25,12 @@ import chess.pgn
 import gi
 import io
 import json
+import setup_chessboard
 import string
 
 gi.require_version("Gdk", "3.0")
 gi.require_version("Gtk", "3.0")
 
-from . import setup_chessboard
 from constants import *
 from gi.repository import Gtk, Gdk, GdkPixbuf
 
@@ -153,6 +153,107 @@ class CalendarDialog(_Dialog):
 
         # Return the response and date
         return response, date
+
+class FileOpen:
+    """An Open File dialog
+    
+    Valid options: initialdir, parent, title"""
+
+    def __init__(self, **kw):
+
+        try: self.title = kw["title"]
+        except:
+            self.title = "Open File"
+
+        try: self.initialdir = kw["initialdir"]
+        except:
+            self.initialdir = None
+
+        try: self.parent = kw["parent"]
+        except:
+            self.parent = None
+
+        try: self.filters = kw["filters"]
+        except:
+            self.filters = None
+        
+        # The dialog
+        self.dialog = Gtk.FileChooserDialog(title=self.title, parent=self.parent, transient_for=self.parent,
+            modal=True, action=Gtk.FileChooserAction.OPEN)
+        self.dialog.add_buttons("Cancel", Gtk.ResponseType.CANCEL, "OK", Gtk.ResponseType.ACCEPT)
+        self.dialog.set_action(Gtk.FileChooserAction.OPEN)
+        if self.initialdir:
+            self.dialog.set_current_folder(self.initialdir)
+        if self.filters:
+            for f in self.filters:
+                self.dialog.add_filter(f)
+        self.dialog.set_select_multiple(False)
+        self.dialog.connect("response", self.callback)
+
+    def callback(self, dialog=None, response=None, whoknows=None):
+        """The method to be called when the user responds to the file dialog."""
+        self.filenames = self.dialog.get_filenames()
+        self.response = response
+        self.dialog.destroy()
+
+    def show(self):
+        """Show the dialog."""
+        self.dialog.show()
+        while self.dialog.get_mapped():
+            Gtk.main_iteration()
+        if self.response == Gtk.ResponseType.ACCEPT:
+            return self.filenames[0]
+        else:
+            return None
+
+class FileSaveAs:
+    """A Save File As dialog.
+    
+    Valid options: initialdir, parent"""
+
+    def __init__(self, **kw):
+
+        try: self.initialdir = kw["initialdir"]
+        except:
+            self.initialdir = None
+
+        try: self.parent = kw["parent"]
+        except:
+            self.parent = None
+
+        try: self.filters = kw["filters"]
+        except:
+            self.filters = None
+
+        self.dialog = Gtk.FileChooserDialog(parent=self.parent, transient_for=self.parent,
+            modal=True, action=Gtk.FileChooserAction.SAVE)
+        self.dialog.add_buttons("Cancel", Gtk.ResponseType.CANCEL, "Save", Gtk.ResponseType.ACCEPT)
+        self.dialog.set_action(Gtk.FileChooserAction.SAVE)
+        self.dialog.set_do_overwrite_confirmation(True)
+        if self.initialdir:
+            self.dialog.set_current_folder(self.initialdir)
+        if self.filters:
+            for f in self.filters:
+                self.dialog.add_filter(f)
+        self.dialog.set_select_multiple(False)
+        self.dialog.connect('response', self.callback)
+        self.dialog.show()
+
+    def callback(self, dialog=None, response=None, whoknows=None):
+        """The method to be called when the user responds to the file dialog."""
+        self.filenames = self.dialog.get_filenames()
+        self.response = response
+        self.dialog.destroy()
+
+    def show(self):
+        """Show the dialog."""
+        self.dialog.show()
+        while self.dialog.get_mapped():
+            Gtk.main_iteration()
+        if self.response == Gtk.ResponseType.ACCEPT:
+            return self.filenames[0]
+        else:
+            return None
 
 class GameSelectorDialog(_Dialog):
     """The dialog to prompt the user to choose a game from a loaded file."""

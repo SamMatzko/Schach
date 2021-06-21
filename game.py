@@ -24,11 +24,11 @@ import chess
 import chess.engine
 import dialogs
 import gi
+import messagedialogs
 import os
 import sys
 
 from constants import *
-from dialogs import messagedialog
 from gi.repository import Gtk
 
 class Game:
@@ -100,34 +100,34 @@ class Game:
                 self.white_frame.set_status(we_won=False)
                 # Show the dialog
                 if not self.dialog_ok:
-                    messagedialog.show_game_over_checkmate(self.window, "black")
+                    messagedialogs.show_game_over_checkmate(self.window, "black")
                     self.dialog_ok = True
             else:
                 self.white_frame.set_status(we_won=True)
                 self.black_frame.set_status(we_won=False)
                 # Show the dialog
                 if not self.dialog_ok:
-                    messagedialog.show_game_over_checkmate(self.window, "white")
+                    messagedialogs.show_game_over_checkmate(self.window, "white")
                     self.dialog_ok = True
         elif self.board.is_fivefold_repetition():
             self.status_bar.set_status(game_over="Draw (fivefold repetition)")
             if not self.dialog_ok:
-                messagedialog.show_game_over_fivefold_repetition(self.window)
+                messagedialogs.show_game_over_fivefold_repetition(self.window)
                 self.dialog_ok = True
         elif self.board.is_seventyfive_moves():
             self.status_bar.set_status(game_over="Draw (seventy-five moves)")
             if not self.dialog_ok:
-                messagedialog.show_game_over_seventyfive_moves(self.window)
+                messagedialogs.show_game_over_seventyfive_moves(self.window)
                 self.dialog_ok = True
         elif self.board.is_stalemate():
             self.status_bar.set_status(game_over="Stalemate")
             if not self.dialog_ok:
-                messagedialog.show_game_over_stalemate(self.window)
+                messagedialogs.show_game_over_stalemate(self.window)
                 self.dialog_ok = True
         else:
             self.status_bar.set_status(game_over="Draw")
             if not self.dialog_ok:
-                messagedialog.show_game_over(self.window)
+                messagedialogs.show_game_over(self.window)
                 self.dialog_ok = True
         self.chessboard.set_sensitive(False)
 

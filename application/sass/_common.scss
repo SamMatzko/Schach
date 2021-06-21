@@ -2567,7 +2567,7 @@ calendar {
 //
 // Dialogs
 //
-messagedialog { // Message Dialog styling
+messagedialogs { // Message Dialog styling
 
   .titlebar {
     min-height: 20px;
@@ -3115,7 +3115,7 @@ decoration {
     border-radius: 2px;
     box-shadow: 0 1px 3px 1px if($variant == 'light', $_wm_border, transparentize($_wm_border, 0.3));
   }
-  messagedialog.csd & {
+  messagedialogs.csd & {
     border-radius: 3px;
   }
   .solid-csd & {

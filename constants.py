@@ -101,7 +101,7 @@ APP_INFO = f"{ROOT_PATH}json/appinfo.json"
 FILE_FILTERS = []
 f1 = Gtk.FileFilter()
 f1.set_name("PGN chess game notation")
-f1.add_pattern("application/vnd.chess-pgn")
+f1.add_pattern("*.pgn")
 FILE_FILTERS.append(f1)
 f2 = Gtk.FileFilter()
 f2.set_name("All files")

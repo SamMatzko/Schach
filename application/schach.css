@@ -2517,36 +2517,36 @@ calendar {
   calendar.highlight {
     color: #D3DAE3; }
 
-messagedialog .titlebar {
+messagedialogs .titlebar {
   min-height: 20px;
   background-color: rgba(47, 52, 63, 0.97);
   border-bottom: 1px solid rgba(32, 35, 43, 0.97); }
 
-messagedialog .dialog-action-area button {
+messagedialogs .dialog-action-area button {
   padding: 8px;
   min-height: 0; }
 
-messagedialog.csd.background {
+messagedialogs.csd.background {
   border-bottom-left-radius: 3px;
   border-bottom-right-radius: 3px;
   border: none; }
 
-messagedialog.csd .dialog-action-area button {
+messagedialogs.csd .dialog-action-area button {
   border-bottom-style: none; }
 
-messagedialog.csd .dialog-action-area button {
+messagedialogs.csd .dialog-action-area button {
   border-radius: 0;
   border-right-style: none; }
 
-messagedialog.csd .dialog-action-area button:last-child {
+messagedialogs.csd .dialog-action-area button:last-child {
   border-radius: 0 0 3px 0;
   border-right-style: none; }
 
-messagedialog.csd .dialog-action-area button:first-child {
+messagedialogs.csd .dialog-action-area button:first-child {
   border-radius: 0 0 0 3px;
   border-left-style: none; }
 
-messagedialog.csd .dialog-action-area button:only-child {
+messagedialogs.csd .dialog-action-area button:only-child {
   border-radius: 0 0 3px 3px;
   border-left-style: none;
   border-right-style: none; }
@@ -2888,7 +2888,7 @@ decoration {
   tooltip.csd decoration {
     border-radius: 2px;
     box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.25); }
-  messagedialog.csd decoration {
+  messagedialogs.csd decoration {
     border-radius: 3px; }
   .solid-csd decoration {
     border-radius: 0;

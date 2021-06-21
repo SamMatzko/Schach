@@ -24,11 +24,11 @@ import chess
 import chess.pgn
 import chessboard
 import dialogs
-import filedialogs
 import game
 import gi
 import io
 import json
+import messagedialogs
 import os
 import pgn
 import random
@@ -42,7 +42,6 @@ gi.require_version("Gdk", "3.0")
 gi.require_version("Gtk", "3.0")
 
 from constants import *
-from dialogs import messagedialog
 from gi.repository import Gdk, Gio, GLib, Gtk, GObject
 with open("%sapplication/menu.xml" % ROOT_PATH) as f:
     MENU_XML = f.read()
@@ -649,7 +648,7 @@ class Window(Gtk.ApplicationWindow):
         if file is not None:
             file = file
         else:
-            file = filedialogs.Open(
+            file = dialogs.FileOpen(
                 parent=self,
                 title="Load a Game",
                 filters=FILE_FILTERS
@@ -690,7 +689,7 @@ class Window(Gtk.ApplicationWindow):
         """Create a new game."""
 
         # Ask the user if they want to save the current game before exiting
-        response = dialogs.messagedialog.ask_yes_no_cancel(
+        response = dialogs.messagedialogs.ask_yes_no_cancel(
             self,
             "Save game?",
             "Save the current game before creating a new one?"
@@ -724,7 +723,7 @@ class Window(Gtk.ApplicationWindow):
             self.chessboard.update()
             entry.get_buffer().delete_text(0, 5)
         else:
-            dialogs.messagedialog.show_info(
+            dialogs.messagedialogs.show_info(
                 self,
                 "Invalid Move",
                 "The given move was invalid. Please try a different one."
@@ -742,7 +741,7 @@ class Window(Gtk.ApplicationWindow):
         fen = self.clipboard.wait_for_text()
 
         # Make sure that the user wants to quit the current game
-        response = dialogs.messagedialog.ask_yes_no_cancel(
+        response = dialogs.messagedialogs.ask_yes_no_cancel(
             self,
             "Save game?",
             "Save the current game before pasting a new one?"
@@ -763,7 +762,7 @@ class Window(Gtk.ApplicationWindow):
         game_instance = chess.pgn.read_game(io.StringIO(game))
 
         # Make sure that the user wants to quit the current game
-        response = dialogs.messagedialog.ask_yes_no_cancel(
+        response = dialogs.messagedialogs.ask_yes_no_cancel(
             self,
             "Save game?",
             "Save the current game before pasting a new one?"
@@ -780,7 +779,7 @@ class Window(Gtk.ApplicationWindow):
         """Properly close the application."""
 
         # Ask the user if they want to save the game
-        response = messagedialog.ask_yes_no_cancel(
+        response = messagedialogs.ask_yes_no_cancel(
             self,
             "Save game?",
             "Save the current game before exiting?"
@@ -840,7 +839,7 @@ class Window(Gtk.ApplicationWindow):
         if response == Gtk.ResponseType.OK:
 
             # Get the file
-            file = filedialogs.SaveAs(
+            file = dialogs.FileSaveAs(
                 parent=self,
                 initialdir=os.environ["HOME"],
                 filters=FILE_FILTERS
