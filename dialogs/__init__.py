@@ -30,6 +30,7 @@ import string
 gi.require_version("Gdk", "3.0")
 gi.require_version("Gtk", "3.0")
 
+from . import setup_chessboard
 from constants import *
 from gi.repository import Gtk, Gdk, GdkPixbuf
 
@@ -75,6 +76,35 @@ class AboutDialog:
     def present(self):
         self.dialog.present()
 
+class BoardSetupDialog(_Dialog):
+    """A dialog to get a setup board from the user."""
+
+    def __init__(self, parent):
+        _Dialog.__init__(
+            self,
+            title="Board Setup",
+            transient_for=parent,
+            modal=True
+        )
+
+        # The area to which we can add everything
+        self.area = self.get_content_area()
+
+        # Add the buttons
+        buttons = (
+            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL),
+            (Gtk.STOCK_OK, Gtk.ResponseType.OK)
+        )
+        for button in buttons:
+            self.add_button(*button)
+
+        self.show_all()
+
+    def show_dilaog(self):
+        """Show the dilaog."""
+        response = self.run()
+        self.destroy()
+        return response
 class CalendarDialog(_Dialog):
     """A dialog to get a date response from the user using a calendar."""
     
@@ -697,10 +727,11 @@ if __name__ == "__main__":
     window.add(Gtk.Label(label="Press a key to see the dialogs."))
     window.show_all()
     def sd(*args):
+        print(BoardSetupDialog(window).show_dialog())
         # print(CalendarDialog(window).show_dialog())
         # print(GameSelectorDialog(window).show_dialog())
         # print(HeadersDialog(window, "1/2 - 1/2").show_dialog())
-        print(LicenseDialog(window).show_dialog())
+        # print(LicenseDialog(window).show_dialog())
         # print(PromotionDialog(window).show_dialog())
         # print(PromotionDialog(window, "black").show_dialog())
         # print(NewGameDialog(window).show_dialog())
