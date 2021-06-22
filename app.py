@@ -696,7 +696,7 @@ class Window(Gtk.ApplicationWindow):
         """Create a new game."""
 
         # Ask the user if they want to save the current game before exiting
-        response = dialogs.messagedialogs.ask_yes_no_cancel(
+        response = messagedialogs.ask_yes_no_cancel(
             self,
             "Save game?",
             "Save the current game before creating a new one?"
@@ -730,7 +730,7 @@ class Window(Gtk.ApplicationWindow):
             self.chessboard.update()
             entry.get_buffer().delete_text(0, 5)
         else:
-            dialogs.messagedialogs.show_info(
+            messagedialogs.show_info(
                 self,
                 "Invalid Move",
                 "The given move was invalid. Please try a different one."
@@ -748,7 +748,7 @@ class Window(Gtk.ApplicationWindow):
         fen = self.clipboard.wait_for_text()
 
         # Make sure that the user wants to quit the current game
-        response = dialogs.messagedialogs.ask_yes_no_cancel(
+        response = messagedialogs.ask_yes_no_cancel(
             self,
             "Save game?",
             "Save the current game before pasting a new one?"
@@ -769,7 +769,7 @@ class Window(Gtk.ApplicationWindow):
         game_instance = chess.pgn.read_game(io.StringIO(game))
 
         # Make sure that the user wants to quit the current game
-        response = dialogs.messagedialogs.ask_yes_no_cancel(
+        response = messagedialogs.ask_yes_no_cancel(
             self,
             "Save game?",
             "Save the current game before pasting a new one?"
