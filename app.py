@@ -107,6 +107,7 @@ class App(Gtk.Application):
 
         self.game_engine_move = Gio.SimpleAction.new("game-engine_move")
         self.game_random_move = Gio.SimpleAction.new("game-random_move")
+        self.game_setup_start_position = Gio.SimpleAction.new("game-setup_start_position")
         self.game_engine_setup_position = Gio.SimpleAction.new("game-engine_setup_position")
         self.game_type_move = Gio.SimpleAction.new("game-type_move")
 
@@ -134,6 +135,7 @@ class App(Gtk.Application):
 
         self.game_engine_move.connect("activate", self.window_engine_move)
         self.game_random_move.connect("activate", self.window_random_move)
+        self.game_setup_start_position.connect("activate", self.window_setup_start_position)
         self.game_engine_setup_position.connect("activate", self.window_engine_setup_position)
         self.game_type_move.connect("activate", self.window_focus_move_entry)
 
@@ -181,6 +183,7 @@ class App(Gtk.Application):
         self.add_action(self.view_toggle_fullscreen)
         self.add_action(self.game_engine_move)
         self.add_action(self.game_random_move)
+        self.add_action(self.game_setup_start_position)
         self.add_action(self.game_engine_setup_position)
         self.add_action(self.game_type_move)
         self.add_action(self.help_license)
@@ -385,6 +388,10 @@ class App(Gtk.Application):
     def window_random_move(self, *args):
         """Invoke the current window's random_move method."""
         self.get_current_window_instance().random_move()
+
+    def window_setup_start_position(self, *args):
+        """Invoke the current window's setup_start_position method."""
+        self.get_current_window_instance().setup_start_position()
 
     def window_engine_setup_position(self, *args):
         """Invoke the current window's engine_setup_position method."""
@@ -872,6 +879,36 @@ class Window(Gtk.ApplicationWindow):
 
         # Write the file
         json.dump(self.settings, open(f"{ROOT_PATH}json/settings.json", "w"))
+
+    def setup_start_position(self):
+        """Prompt the user for a start position to set a new game to."""
+        response = messagedialogs.ask_yes_no_cancel(
+            self,
+            "Save game?",
+            "Save the current game before creating a new one?"
+        )
+        if response == Gtk.ResponseType.OK:
+            self.save_game(append=True)
+        elif response == Gtk.ResponseType.NO:
+
+            # Prompt the user for a startup position
+            response, board, valid_board = dialogs.BoardSetupDialog(self).show_dialog()
+            if response == Gtk.ResponseType.OK:
+                if valid_board:
+                    self.game.new_game()
+                    self.game.board = board
+                    self.game.update_status()
+                    self.chessboard.from_board(self.game.board)
+                else:
+                    messagedialogs.show_info(
+                        self,
+                        "Invalid Board",
+                        "The setup board is invalid. Please try a different setup."
+                    )
+            else:
+                pass
+        else:
+            pass
 
     def show_about(self, *args):
         """Show the about dialog."""

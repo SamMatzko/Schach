@@ -89,6 +89,10 @@ class BoardSetupDialog(_Dialog):
 
         # The area to which we can add everything
         self.area = self.get_content_area()
+        self.BOARD_ORDER = []
+        for r in NUMBERS:
+            for c in LETTERS:
+                self.BOARD_ORDER.append("%s%s" % (c, r))
 
         # Add the buttons
         buttons = (
@@ -100,6 +104,9 @@ class BoardSetupDialog(_Dialog):
 
         # The current piece to be adding to the board
         self.current_piece = "P"
+
+        # Whether the board is valid
+        self.board_is_valid = True
 
         # The board
         self.board = chess.Board()
@@ -248,6 +255,7 @@ class BoardSetupDialog(_Dialog):
 
         # The chessboard
         self.chessboard = setup_chessboard.ChessBoard(self)
+        self.chessboard.from_board(self.board)
         self.chessboard.bind_place(self._place_func)
 
         # The extra box for the chessboard
@@ -255,11 +263,19 @@ class BoardSetupDialog(_Dialog):
         self.secondary_box.pack_start(self.chessboard_box, False, False, 5)
         self.chessboard_box.pack_start(self.chessboard, False, False, 5)
 
+        self.fen_box = Gtk.HBox()
+        self.main_box.pack_end(self.fen_box, True, True, 3)
+
+        # The buttons for pasting a fen to the fen entry
+        self.paste_fen_button = Gtk.Button(label="Paste fen")
+        self.paste_fen_button.connect("clicked", self._paste_fen)
+        self.fen_box.pack_start(self.paste_fen_button, False, False, 3)
+
         # The entry containing the fen
         self.fen_entry = Gtk.Entry()
         self.fen_entry.set_editable(False)
         self.fen_entry.set_tooltip_text("Board FEN")
-        self.main_box.pack_end(self.fen_entry, False, True, 3)
+        self.fen_box.pack_start(self.fen_entry, True, True, 3)
 
         # The board settings buttons
         self._create_board_settings()
@@ -310,28 +326,67 @@ class BoardSetupDialog(_Dialog):
         else:
             self.board.turn = chess.BLACK
         self._update()
+
+    def _paste_fen(self, *args):
+        """Paste a fen into the fen entry."""
+        clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
+        fen = clipboard.wait_for_text()
+        self.board = chess.Board(fen)
+        self.chessboard.from_board(self.board)
+        self._update()
         
     def _place_func(self, square):
         """The method to be called when the chessboard is clicked."""
         ignore, piece = self.chessboard.convert_square_to_image(square)
         if piece == self.current_piece:
             self.chessboard.place(".", square)
-            self.board.set_piece_at(BOARD_ORDER.index(square), self._get_chess_piece("."))
+            self.board.set_piece_at(self.BOARD_ORDER.index(square), self._get_chess_piece("."))
         else:
             self.chessboard.place(self.current_piece, square)
-            self.board.set_piece_at(BOARD_ORDER.index(square), self._get_chess_piece(self.current_piece))
+            self.board.set_piece_at(self.BOARD_ORDER.index(square), self._get_chess_piece(self.current_piece))
 
         self._update()
 
     def _update(self):
         """Update everything."""
         self.fen_entry.set_text(self.board.fen())
+        status = self.board.status()
+
+        if chess.Status.TOO_MANY_KINGS in status:
+            self.fen_entry.set_text("Too many kings")
+            self.board_is_valid = False
+
+        elif chess.Status.TOO_MANY_WHITE_PIECES in status:
+            self.fen_entry.set_text("Too many white pieces")
+
+        elif chess.Status.TOO_MANY_BLACK_PIECES in status:
+            self.fen_entry.set_text("Too many black pieces")
+
+        elif chess.Status.TOO_MANY_WHITE_PAWNS in status:
+            self.fen_entry.set_text("Too many white pawns")
+
+        elif chess.Status.TOO_MANY_BLACK_PAWNS in status:
+            self.fen_entry.set_text("Too many black pawns")
+
+        elif chess.Status.PAWNS_ON_BACKRANK in status:
+            self.fen_entry.set_text("Pawns are not allowed on backrank")
+
+        elif chess.Status.NO_WHITE_KING in status:
+            self.fen_entry.set_text("White must have one king")
+            self.board_is_valid = False
+
+        elif chess.Status.NO_BLACK_KING in status:
+            self.fen_entry.set_text("Black must have one king")
+            self.board_is_valid = False
+
+        else:
+            self.board_is_valid = True
 
     def show_dialog(self):
         """Show the dilaog."""
         response = self.run()
         self.destroy()
-        return response, self.board
+        return response, self.board, self.board_is_valid
 
 class CalendarDialog(_Dialog):
     """A dialog to get a date response from the user using a calendar."""

@@ -138,7 +138,6 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
         """Event handler for button presses."""
         
         square = self.convert_screen_coords_to_square((event.x, event.y))
-
         # Set the move data
         if self.get_square_is_ours(square):
             self.move_from = square

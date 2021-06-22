@@ -102,6 +102,10 @@
             </section>
             <section>
                 <item>
+                    <attribute name="label">Setup start position</attribute>
+                    <attribute name="action">app.game-setup_start_position</attribute>
+                </item>
+                <item>
                     <attribute name="label">Engine Setup position</attribute>
                     <attribute name="action">app.game-engine_setup_position</attribute>
                 </item>
@@ -172,6 +176,10 @@
             </item>
         </section>
         <section>
+                <item>
+                    <attribute name="label">Setup start position</attribute>
+                    <attribute name="action">app.game-setup_start_position</attribute>
+                </item>
                 <item>
                     <attribute name="label">Engine Setup position</attribute>
                     <attribute name="action">app.game-engine_setup_position</attribute>
