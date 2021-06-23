@@ -93,8 +93,6 @@
                     <attribute name="label">Engine move</attribute>
                     <attribute name="action">app.game-engine_move</attribute>
                 </item>
-            </section>
-            <section>
                 <item>
                     <attribute name="label">Random move</attribute>
                     <attribute name="action">app.game-random_move</attribute>
