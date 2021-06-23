@@ -546,11 +546,11 @@ class Squares:
         if size == 1:
             self.SIZE = 64
         elif size == 2:
-            self.SIZE = 96
+            self.SIZE = 74
         elif size == 3:
-            self.SIZE = 128
+            self.SIZE = 84
         elif size == 4:
-            self.SIZE = 160
+            self.SIZE = 94
         else:
             raise TypeError('Size "%s" must be one of integers 1, 2, 3, or 4' % size)
         self.BOARD_SIZE = self.SIZE * 8

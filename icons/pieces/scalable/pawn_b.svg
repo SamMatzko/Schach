@@ -15,7 +15,10 @@
    height="256"
    viewBox="0 0 256 256"
    sodipodi:docname="pawn_b.svg"
-   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)">
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"
+   inkscape:export-filename="/home/sam/programs/Schach/icons/pieces/94x94/pawn_b.png"
+   inkscape:export-xdpi="35.25"
+   inkscape:export-ydpi="35.25">
   <metadata
      id="metadata8">
     <rdf:RDF>
@@ -24,7 +27,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -46,8 +49,8 @@
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:zoom="2.8284271"
-     inkscape:cx="78.969796"
-     inkscape:cy="185.90892"
+     inkscape:cx="10.380438"
+     inkscape:cy="183.43405"
      inkscape:window-x="0"
      inkscape:window-y="27"
      inkscape:window-maximized="1"
