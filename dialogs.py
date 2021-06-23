@@ -22,10 +22,10 @@
 
 import chess
 import chess.pgn
+import chessboards
 import gi
 import io
 import json
-import setup_chessboard
 import string
 
 gi.require_version("Gdk", "3.0")
@@ -254,7 +254,7 @@ class BoardSetupDialog(_Dialog):
         self.main_box.add(self.secondary_box)
 
         # The chessboard
-        self.chessboard = setup_chessboard.ChessBoard(self)
+        self.chessboard = chessboards.SetupChessBoard(self)
         self.chessboard.from_board(self.board)
         self.chessboard.bind_place(self._place_func)
 

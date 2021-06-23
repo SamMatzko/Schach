@@ -22,7 +22,7 @@
 
 import chess
 import chess.pgn
-import chessboard
+import chessboards
 import dialogs
 import game
 import gi
@@ -449,7 +449,7 @@ class Window(Gtk.ApplicationWindow):
         self.main_box.pack_start(self.game_box, True, False, 10)
 
         # The chessboard widget
-        self.chessboard = chessboard.ChessBoard(parent=self)
+        self.chessboard = chessboards.ChessBoard(parent=self)
 
         # The status frames
         self.white_status_frame = status_frame.WhiteStatusFrame()
