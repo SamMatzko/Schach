@@ -36,10 +36,10 @@ from gi.repository import Gtk
 class ChessBoard(cairoarea.CairoDrawableArea2):
     """The chessboard widget."""
 
-    def __init__(self, parent=None, board=None):
+    def __init__(self, size, parent=None, board=None):
 
         # The instance of Squares to store all the square info in
-        self.squares = Squares(2)
+        self.squares = Squares(size)
 
         # The size of the squares
         self.square_size = self.squares.SIZE
@@ -309,6 +309,13 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
         """Push MOVE."""
         self._bound_move_method(move)
         self.from_board(self.board)
+
+    def set_size(self, size):
+        """Set the board size to SIZE."""
+        self.squares.set_size(size)
+        self.square_size = self.squares.SIZE
+        self.set_size_request(self.squares.BOARD_SIZE, self.squares.BOARD_SIZE)
+        self.update()
 
     def set_square_color(self, square, color):
         """Set SQUARE to COLOR."""

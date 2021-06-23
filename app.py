@@ -415,6 +415,9 @@ class Window(Gtk.ApplicationWindow):
         self.connect("delete-event", self.quit)
         self.connect("key-press-event", self.escape_fullscreen)
 
+        # Load the settings
+        self.settings = json.load(open(f"{ROOT_PATH}json/settings.json"))
+
         # The application
         self.application = application
 
@@ -449,7 +452,7 @@ class Window(Gtk.ApplicationWindow):
         self.main_box.pack_start(self.game_box, True, False, 10)
 
         # The chessboard widget
-        self.chessboard = chessboards.ChessBoard(parent=self)
+        self.chessboard = chessboards.ChessBoard(parent=self, size=self.settings["board_size"])
 
         # The status frames
         self.white_status_frame = status_frame.WhiteStatusFrame()
@@ -474,8 +477,6 @@ class Window(Gtk.ApplicationWindow):
         )
         self.game.update_status()
 
-        # Load the settings
-        self.settings = json.load(open(f"{ROOT_PATH}json/settings.json"))
         self.maximize()
 
         # Load the theme
@@ -876,6 +877,8 @@ class Window(Gtk.ApplicationWindow):
             self.white_status_frame.set_no_show_all(True)
             self.black_status_frame.hide()
             self.black_status_frame.set_no_show_all(True)
+
+        self.chessboard.set_size(self.settings["board_size"])
 
         # Write the file
         json.dump(self.settings, open(f"{ROOT_PATH}json/settings.json", "w"))

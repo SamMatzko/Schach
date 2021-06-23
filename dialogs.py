@@ -1016,6 +1016,9 @@ class SettingsDialog(_Dialog):
         )
         self.set_default_size(500, 500)
 
+        # The square size for the preview
+        self.squares = chessboards.Squares(1)
+
         # The area to which we can add stuff
         self.area = self.get_content_area()
 
@@ -1064,6 +1067,24 @@ class SettingsDialog(_Dialog):
         self.use_app_theme_checkbutton = Gtk.CheckButton(label="Use custom Schach theme (change requires restart)")
         self.window_box.pack_start(self.use_app_theme_checkbutton, False, False, 3)
 
+        # The board size scale
+        self.board_size_box = Gtk.HBox()
+        self.window_box.pack_start(self.board_size_box, False, False, 3)
+
+        self.board_size_scale_label = Gtk.Label(label="Board size:")
+        self.board_size_box.pack_start(self.board_size_scale_label, False, False, 3)
+        self.board_size_scale = Gtk.Scale.new_with_range(
+            Gtk.Orientation.HORIZONTAL,
+            1.0,
+            4.0,
+            1.0
+        )
+        self.board_size_scale.connect("value-changed", self._on_board_size_scale)
+        self.board_size_box.pack_start(self.board_size_scale, True, True, 3)
+
+        self.board_size_image = Gtk.Image.new_from_file(self.squares.IMAGE_Q)
+        self.board_size_box.pack_end(self.board_size_image, False, False, 3)
+
         # Set the window to the settings
         self._set_to_settings()
 
@@ -1072,12 +1093,21 @@ class SettingsDialog(_Dialog):
 
         self.destroy()
 
+    def _on_board_size_scale(self, scale):
+        """Set the preview for the board size."""
+        self.squares.set_size(scale.get_value())
+        self.board_size_box.remove(self.board_size_image)
+        self.board_size_image = Gtk.Image.new_from_file(self.squares.IMAGE_Q)
+        self.board_size_box.pack_end(self.board_size_image, False, False, 3)
+        self.board_size_box.show_all()
+
     def _save_settings(self):
         """Save the settings in the window to the json file."""
 
         # Get the settings from the window
         self.settings["show_status_frames"] = self.status_frames_checkbutton.get_active()
         self.settings["use_app_theme"] = self.use_app_theme_checkbutton.get_active()
+        self.settings["board_size"] = int(self.board_size_scale.get_value())
 
         # Write the file
         json.dump(self.settings, open(f"{ROOT_PATH}json/settings.json", "w"))
@@ -1091,6 +1121,8 @@ class SettingsDialog(_Dialog):
         # Set the widgets
         self.status_frames_checkbutton.set_active(self.settings["show_status_frames"])
         self.use_app_theme_checkbutton.set_active(self.settings["use_app_theme"])
+        self.squares.set_size(self.settings["board_size"])
+        self.board_size_scale.set_value(float(self.settings["board_size"]))
 
     def show_dialog(self):
 
@@ -1111,7 +1143,7 @@ if __name__ == "__main__":
     window.add(Gtk.Label(label="Press a key to see the dialogs."))
     window.show_all()
     def sd(*args):
-        print(BoardSetupDialog(window).show_dialog())
+        # print(BoardSetupDialog(window).show_dialog())
         # print(CalendarDialog(window).show_dialog())
         # print(GameSelectorDialog(window).show_dialog())
         # print(HeadersDialog(window, "1/2 - 1/2").show_dialog())
@@ -1119,7 +1151,7 @@ if __name__ == "__main__":
         # print(PromotionDialog(window).show_dialog())
         # print(PromotionDialog(window, "black").show_dialog())
         # print(NewGameDialog(window).show_dialog())
-        # print(SettingsDialog(window).show_dialog())
+        print(SettingsDialog(window).show_dialog())
 
     window.connect("delete-event", Gtk.main_quit)
     window.connect("key-press-event", sd)
