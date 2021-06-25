@@ -27,6 +27,10 @@
             </section>
             <section>
                 <item>
+                    <attribute name="label">Import PGN...</attribute>
+                    <attribute name="action">app.file-import_pgn</attribute>
+                </item>
+                <item>
                     <attribute name="label">Export as PGN...</attribute>
                     <attribute name="action">app.file-export_pgn</attribute>
                 </item>
@@ -158,6 +162,16 @@
                 <attribute name="label">Save: Replace Game...</attribute>
                 <attribute name="action">app.file-save</attribute>
             </item>
+        </section>
+        <section>
+                <item>
+                    <attribute name="label">Import PGN...</attribute>
+                    <attribute name="action">app.file-import_pgn</attribute>
+                </item>
+                <item>
+                    <attribute name="label">Export as PGN...</attribute>
+                    <attribute name="action">app.file-export_pgn</attribute>
+                </item>
         </section>
         <section>
             <item>

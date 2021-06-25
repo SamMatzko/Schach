@@ -304,6 +304,27 @@ class Game:
         # Update the status
         self.update_status()
 
+    def new_game_from_pgn(self, game):
+        """Create a new game from a chess.pgn.Game instance."""
+
+        # Reset the game
+        self.board.reset()
+
+        # Reset the chessboard
+        self.chessboard.set_sensitive(True)
+        self._reset_square_colors()
+        self.chessboard.from_board(self.board)
+        self.dialog_ok = False
+
+        # Make the moves in the chess.dcn.Game instance, if one was given
+        if game is not None:
+            for move in game.mainline_moves():
+                self.board.push(move)
+            self.chessboard.from_board(self.board)
+
+        # Update the status
+        self.update_status()
+
     def new_game_from_fen(self, fen=None):
         """Create a new game from a fen string."""
 

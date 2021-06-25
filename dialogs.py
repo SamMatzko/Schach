@@ -566,7 +566,7 @@ class GameSelectorDialog(_Dialog):
                 if filetype == "dcn":
                     game_instance = chess.dcn.Game().from_string(game)
                 elif filetype == "pgn":
-                    game_instance = chess.pgn.Game()
+                    game_instance = chess.pgn.read_game(io.StringIO(game))
                 if game_instance is not None:
                     self.games.append(game_instance)
             else:

@@ -152,6 +152,7 @@ class App(Gtk.Application):
         self.set_accels_for_action("app.file-open", ["<control>O"])
         self.set_accels_for_action("app.file-save_append", ["<control>S"])
         self.set_accels_for_action("app.file-save", ["<control><shift>S"])
+        self.set_accels_for_action("app.file-import_pgn", ["<control><shift>I"])
         self.set_accels_for_action("app.file-export_pgn", ["<control><shift>E"])
         self.set_accels_for_action("app.file-quit", ["<control>Q"])
 
@@ -694,7 +695,6 @@ class Window(Gtk.ApplicationWindow):
 
                 # Save the file
                 pgn.save_game(self.game.board, file, headers)
-                print("pgnsavegaemmem")
             else:
                 return True
         else:
@@ -709,7 +709,7 @@ class Window(Gtk.ApplicationWindow):
         """Set the focus to the move entry."""
         self.move_entry.grab_focus()
 
-    def import_pgn(self):
+    def import_pgn(self, file=None):
         """Load a game from a PGN file."""
 
         if file is not None:
@@ -718,7 +718,7 @@ class Window(Gtk.ApplicationWindow):
             file = dialogs.FileOpen(
                 parent=self,
                 title="Import a Pgn",
-                filters=FILE_FILTERS
+                filters=FILE_FILTERS_PGN
             ).show()
         if file is not None:
 
@@ -732,7 +732,7 @@ class Window(Gtk.ApplicationWindow):
             
             # Load the selected game if the user clicked OK
             if response == Gtk.ResponseType.OK:
-                self.game.new_game(game)        
+                self.game.new_game_from_pgn(game)        
 
     def load_game(self, file=None, *args):
         """Load a game from a dcn file."""

@@ -105,3 +105,13 @@ f2 = Gtk.FileFilter()
 f2.set_name("All files")
 f2.add_pattern("*.*")
 FILE_FILTERS.append(f2)
+
+FILE_FILTERS_PGN = []
+f1 = Gtk.FileFilter()
+f1.set_name("PGN chess notation (*.pgn)")
+f1.add_pattern("*.pgn")
+FILE_FILTERS_PGN.append(f1)
+f2 = Gtk.FileFilter()
+f2.set_name("All files")
+f2.add_pattern("*.*")
+FILE_FILTERS_PGN.append(f2)
