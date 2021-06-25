@@ -21,8 +21,9 @@
 """Schach main application."""
 
 import chess
-import chess.pgn
+import chess.dcn
 import chessboards
+import dcn
 import dialogs
 import game
 import gi
@@ -30,7 +31,6 @@ import io
 import json
 import messagedialogs
 import os
-import pgn
 import random
 import status_bar
 import status_frame
@@ -494,8 +494,7 @@ class Window(Gtk.ApplicationWindow):
 
     def copy_game(self, *args):
         """Copy the current game to the clipboard."""
-
-        self.clipboard.set_text(str(chess.pgn.Game.from_board(self.game.board)), -1)
+        self.clipboard.set_text(str(chess.dcn.Game().from_board(self.game.board)), -1)
 
     def create_application_popover(self):
         """Create the application popover and its contents."""
@@ -651,7 +650,7 @@ class Window(Gtk.ApplicationWindow):
         self.move_entry.grab_focus()
 
     def load_game(self, file=None, *args):
-        """Load a game from a pgn file."""
+        """Load a game from a dcn file."""
 
         if file is not None:
             file = file
@@ -766,7 +765,7 @@ class Window(Gtk.ApplicationWindow):
         
         # Get the game stuff
         game = self.clipboard.wait_for_text()
-        game_instance = chess.pgn.read_game(io.StringIO(game))
+        game_instance = chess.dcn.Game().from_string(game)
 
         # Make sure that the user wants to quit the current game
         response = messagedialogs.ask_yes_no_cancel(
@@ -775,10 +774,10 @@ class Window(Gtk.ApplicationWindow):
             "Save the current game before pasting a new one?"
         )
         if response == Gtk.ResponseType.NO:
-            self.game.new_game(game_instance.mainline_moves())
+            self.game.new_game(game_instance)
         elif response == Gtk.ResponseType.YES:
             self.save_game(append=True)
-            self.game.new_game(game_instance.mainline_moves())
+            self.game.new_game(game_instance)
         else:
             pass
 
@@ -855,9 +854,9 @@ class Window(Gtk.ApplicationWindow):
 
                 # Save the file
                 if append:
-                    pgn.save_game_append(self.game.board, file, headers)
+                    dcn.save_game_append(self.game.board, file, headers)
                 else:
-                    pgn.save_game(self.game.board, file, headers)
+                    dcn.save_game(self.game.board, file, headers)
             else:
                 return True
         else:

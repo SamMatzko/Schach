@@ -41,33 +41,6 @@ class Game:
     def __str__(self):
         return self.dcn
 
-    def _create_dcn(self):
-        self.dcn = ''
-        self.dcn += '<?dcn version="%s">\n<game>\n' % self.supported_version
-        for header in self.headers:
-            self.dcn += """    <header>
-        <attribute name="name">%s</attribute>
-        <attribute name="value">%s</attribute>
-    </header>\n""" % (header, self.headers[header])
-
-        self.dcn += """    <board>
-        <attribute name="fen">%s</attribute>
-    </board>\n""" % self.start_fen
-
-        move_index = 1
-        self.dcn += "    <moves>\n"
-        for move in self.board.move_stack:
-            if not self._is_odd(self.board.move_stack.index(move)):
-                self.dcn += '        <move number="%s">%s...' % (move_index, move.uci())
-            else:
-                self.dcn += '%s</move>\n' % move.uci()
-                move_index += 1
-        if not self._is_odd(self.board.move_stack.index(move)):
-            self.dcn +="</move>\n"
-        self.dcn += "    </moves>\n"
-    
-        self.dcn += "</game>"
-
     def _get_contents_of(self, tag):
         """Get the contents of TAG."""
         return tag[
@@ -94,6 +67,34 @@ class Game:
         else:
             return False
 
+    def create_dcn(self):
+        self.dcn = ''
+        self.dcn += '<?dcn version="%s">\n<game>\n' % self.supported_version
+        for header in self.headers:
+            self.dcn += """    <header>
+        <attribute name="name">%s</attribute>
+        <attribute name="value">%s</attribute>
+    </header>\n""" % (header, self.headers[header])
+
+        self.dcn += """    <board>
+        <attribute name="fen">%s</attribute>
+    </board>\n""" % self.start_fen
+
+        move_index = 1
+        self.dcn += "    <stack>\n"
+        if self.board.move_stack != []:
+            for move in self.board.move_stack:
+                if not self._is_odd(self.board.move_stack.index(move)):
+                    self.dcn += '        <move number="%s">%s...' % (move_index, move.uci())
+                else:
+                    self.dcn += '%s</move>\n' % move.uci()
+                    move_index += 1
+            if not self._is_odd(self.board.move_stack.index(move)):
+                self.dcn +="</move>\n"
+        self.dcn += "    </stack>\n"
+    
+        self.dcn += "</game>"
+
     def from_board(self, board):
         self.moves = []
         self.board = board
@@ -104,11 +105,12 @@ class Game:
         for move in self.moves:
             self.board.push(move)
         self.dcn = ''
+        self.dcn += '<?dcn version="%s">\n<game>\n' % self.supported_version
         if self.board is not None:
             if (self.board.turn and not self._is_odd(len(self.board.move_stack) - 1) or
                 not self.board.turn and self._is_odd(len(self.board.move_stack) - 1)):
                 self.board.move_stack.insert(0, chess.Move.from_uci("0000"))
-                self._create_dcn()
+            self.create_dcn()
         return self
     
     def from_file(self, file):
@@ -120,6 +122,7 @@ class Game:
 
     def from_string(self, string):
         self.dcn = string
+        self.board = chess.Board()
         dcn = self.dcn
         dcnlines = dcn.splitlines()
         if 'version="%s"' % self.supported_version in dcnlines[0]:

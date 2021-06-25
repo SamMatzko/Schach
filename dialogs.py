@@ -562,9 +562,12 @@ class GameSelectorDialog(_Dialog):
         # The list of chess.dcn.Game instances
         self.games = []
         for game in self.game_strings:
-            game_instance = chess.dcn.Game().from_string(game)
-            if game_instance is not None:
-                self.games.append(game_instance)
+            if game != "":
+                game_instance = chess.dcn.Game().from_string(game)
+                if game_instance is not None:
+                    self.games.append(game_instance)
+            else:
+                self.game_strings.pop(self.game_strings.index(game))
 
         # The listbox for the games
         self.listbox = Gtk.ListBox()

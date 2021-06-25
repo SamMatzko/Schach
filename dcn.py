@@ -72,6 +72,7 @@ def save_game(board, file, headers):
         dcn.headers["Black"] = black
     if result:
         dcn.headers["Result"] = result
+    dcn.create_dcn()
 
     with open(file, "w") as f:
         f.write(str(dcn) + "\n\n\n")

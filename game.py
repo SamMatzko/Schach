@@ -284,7 +284,7 @@ class Game:
             pass
         self.update_status()
 
-    def new_game(self, game):
+    def new_game(self, game=None):
         """Create a new game."""
 
         # Reset the game
