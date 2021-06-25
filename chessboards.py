@@ -300,7 +300,10 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
         if piece.lower() == "p":
             if (self.board.turn and move_from[1] == "7" and move_to[1] == "8" or
                 not self.board.turn and move_from[1] == "2" and move_to[1] == "1"):
-                return True
+                if chess.Move.from_uci(move + "q") in self.board.legal_moves:
+                    return True
+                else:
+                    return False
             else:
                 return False
         else:
