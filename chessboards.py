@@ -336,7 +336,13 @@ class SetupChessBoard(cairoarea.CairoDrawableArea2):
 
     def __init__(self, parent=None):
 
-        cairoarea.CairoDrawableArea2.__init__(self, 528, 528, self._draw_board)
+        # The instance of Squares to store all the square info in
+        self.squares = Squares(1)
+
+        # The size of the squares
+        self.square_size = self.squares.SIZE
+
+        cairoarea.CairoDrawableArea2.__init__(self, self.squares.BOARD_SIZE, self.squares.BOARD_SIZE, self._draw_board)
 
         # The variables for board-drawing
         self.LETTERS = LETTERS
@@ -354,9 +360,6 @@ class SetupChessBoard(cairoarea.CairoDrawableArea2):
 
         # The methods to call on piece placement
         self._bound_place_method = None
-
-        # The size of the squares
-        self.square_size = 66
 
         # Whether we are flipped or not
         self.flipped = False
@@ -406,7 +409,7 @@ class SetupChessBoard(cairoarea.CairoDrawableArea2):
                 exec(f"cr.rectangle(cindex * self.square_size, rindex * self.square_size, self.square_size, self.square_size)")
                 exec("cr.fill()")
                 if not self.squaresonly:
-                    exec(f"cr.set_source_surface(cairo.ImageSurface.create_from_png(image), (cindex * self.square_size) + 1, (rindex * self.square_size) + 1)")
+                    exec(f"cr.set_source_surface(cairo.ImageSurface.create_from_png(image), (cindex * self.square_size), (rindex * self.square_size))")
                     exec(f"cr.paint()")
 
         self.show_all()
@@ -483,30 +486,30 @@ class SetupChessBoard(cairoarea.CairoDrawableArea2):
         piece = self.string[self.BOARD_ORDER.index(square)]
         image = IMAGE_EMPTY
         if piece == "K":
-            image = IMAGE_K
+            image = self.squares.IMAGE_K
         elif piece == "Q":
-            image = IMAGE_Q
+            image = self.squares.IMAGE_Q
         elif piece == "R":
-            image = IMAGE_R
+            image = self.squares.IMAGE_R
         elif piece == "B":
-            image = IMAGE_B
+            image = self.squares.IMAGE_B
         elif piece == "N":
-            image = IMAGE_N
+            image = self.squares.IMAGE_N
         elif piece == "P":
-            image = IMAGE_P
+            image = self.squares.IMAGE_P
 
         elif piece == "k":
-            image = IMAGE_k
+            image = self.squares.IMAGE_k
         elif piece == "q":
-            image = IMAGE_q
+            image = self.squares.IMAGE_q
         elif piece == "r":
-            image = IMAGE_r
+            image = self.squares.IMAGE_r
         elif piece == "b":
-            image = IMAGE_b
+            image = self.squares.IMAGE_b
         elif piece == "n":
-            image = IMAGE_n
+            image = self.squares.IMAGE_n
         elif piece == "p":
-            image = IMAGE_p
+            image = self.squares.IMAGE_p
         return image, piece
 
     def flip(self):
