@@ -101,9 +101,9 @@ class App(Gtk.Application):
         self.edit_redo = Gio.SimpleAction.new("edit-redo")
         self.edit_copy_game = Gio.SimpleAction.new("edit-copy_game")
         self.edit_paste_game = Gio.SimpleAction.new("edit-paste_game")
-        self.edit_settings = Gio.SimpleAction.new("edit-settings")
         self.edit_copy_game_fen = Gio.SimpleAction.new("edit-copy_game_fen")
         self.edit_paste_game_fen = Gio.SimpleAction.new("edit-paste_game_fen")
+        self.edit_settings = Gio.SimpleAction.new("edit-settings")
 
         self.view_toggle_status_frames = Gio.SimpleAction.new("view-toggle_status_frames")
         self.view_flip_chessboard = Gio.SimpleAction.new("view-flip_chessboard")
@@ -163,6 +163,7 @@ class App(Gtk.Application):
         self.set_accels_for_action("app.edit-paste_game", ["<control>V"])
         self.set_accels_for_action("app.edit-copy_game_fen", ["<control><shift>C"])
         self.set_accels_for_action("app.edit-paste_game_fen", ["<control><shift>V"])
+        self.set_accels_for_action("app.edit-settings", ["<control>P"])
 
         self.set_accels_for_action("app.view-flip_chessboard", ["<control>D"])
         self.set_accels_for_action("app.view-toggle_fullscreen", ["F11"])
