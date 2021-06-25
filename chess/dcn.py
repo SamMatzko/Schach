@@ -16,21 +16,34 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import chess
-import math
 
 class Game:
     """A game created from a board that stores all the headers and other data
     for the dcn file."""
 
     def __init__(self, board=None):
-        self.from_board(board)
+        self.moves = []
+        self.board = chess.Board()
+        self.supported_version = "1.0.0"
+        self.dcn = ""
+        self.headers = {
+            "Event": "?",
+            "Site": "?",
+            "Date": "????.??.??",
+            "Round": "?",
+            "White": "?",
+            "Black": "?",
+            "Result": "*"
+        }
+        if board is not None:
+            self.from_board(board)
 
     def __str__(self):
         return self.dcn
 
     def _create_dcn(self):
         self.dcn = ''
-        self.dcn += '<game>\n'
+        self.dcn += '<?dcn version="%s">\n<game>\n' % self.supported_version
         for header in self.headers:
             self.dcn += """    <header>
         <attribute name="name">%s</attribute>
@@ -55,6 +68,24 @@ class Game:
     
         self.dcn += "</game>"
 
+    def _get_contents_of(self, tag):
+        """Get the contents of TAG."""
+        return tag[
+            tag.find(">") + 1:tag.find("<", tag.find(">"))
+        ]
+
+    def _get_tag(self, tag, dcn):
+        """Get the contents of TAG from string DCN."""
+        return dcn[
+            dcn.find(f"<{tag}"):dcn.find(f"</{tag}>") + len(f"</{tag}>")
+        ]
+
+    def _get_value_of(self, value_of, tag_contents):
+        """Get the value of TAG_CONTENTS's attribute VALUE_OF."""
+        return tag_contents[
+            tag_contents.find(value_of) + len(value_of) + 2:tag_contents.find('"', tag_contents.find(value_of) + len(value_of) + 2)
+        ]
+
     def _is_odd(self, number):
         number = str(number)
         digit = number[len(number) - 1]
@@ -66,7 +97,6 @@ class Game:
     def from_board(self, board):
         self.moves = []
         self.board = board
-        self.board = self.board
         while self.board.move_stack != []:
             self.moves.append(self.board.pop())
         self.start_fen = self.board.fen()
@@ -74,18 +104,63 @@ class Game:
         for move in self.moves:
             self.board.push(move)
         self.dcn = ''
-        self.headers = {
-            "Event": "?",
-            "Site": "?",
-            "Date": "????.??.??",
-            "Round": "?",
-            "White": "?",
-            "Black": "?",
-            "Result": "*"
-        }
-        self.supported_version = "1.0.0"
         if self.board is not None:
             self._create_dcn()
+    
+    def from_file(self, file):
+        with open(file) as f:
+            self.dcn = f.read()
+            f.close()
+        dcn = self.dcn
+        dcnlines = dcn.splitlines()
+        if 'version="%s"' % self.supported_version in dcnlines[0]:
+            pass
+        else:
+            raise TypeError("DCN version %s is not supported." % dcnlines[0].replace('<?dcn version="', "").replace('">', ""))
+
+        dcn = self.dcn.replace("    ", "")
+        dcn = dcn.replace("\n", "")
+
+        # Get the headers        
+        game = self._get_tag("game", dcn)
+        while "<header>" in game:
+            header = self._get_tag("header", game)
+            game = game.replace(header, "")
+            while "<attribute" in header:
+                attribute = self._get_tag("attribute", header)
+                if self._get_value_of("name", attribute) == "name":
+                    header_name = self._get_contents_of(attribute)
+                elif self._get_value_of("name", attribute) == "value":
+                    header_value = self._get_contents_of(attribute)
+                header = header.replace(attribute, "")
+            self.headers[header_name] = header_value
+
+        # Get the board
+        while "<board>" in game:
+            board = self._get_tag("board", game)
+            game = game.replace(board, "")
+            while "<attribute" in board:
+                attribute = self._get_tag("attribute", board)
+                if self._get_value_of("name", attribute) == "fen":
+                    board_fen = self._get_contents_of(attribute).split(" ")
+                board = board.replace(attribute, "")
+            self.board.set_board_fen(board_fen[0])
+            if board_fen[1] == "w":
+                self.board.turn = True
+            else:
+                self.board.turn = False
+        
+        # Get the moves
+        stack = self._get_tag("stack", game)
+        game = game.replace(stack, "")
+        while "<move" in stack:
+            move = self._get_tag("move", stack)
+            moves = self._get_contents_of(move)
+            moves = moves.split("...")
+            for m in moves:
+                if m != "":
+                    self.board.push(chess.Move.from_uci(m))
+            stack = stack.replace(move, "")
 
 if __name__ == "__main__":
     board = chess.Board()
@@ -93,4 +168,8 @@ if __name__ == "__main__":
     board.push(chess.Move.from_uci("d7d5"))
     board.push(chess.Move.from_uci("a2a3"))
     game = Game(board)
+    print(str(game))
+    print()
+    game = Game()
+    game.from_file("/home/sam/text.dcn")
     print(str(game))
