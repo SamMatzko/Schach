@@ -27,6 +27,12 @@
             </section>
             <section>
                 <item>
+                    <attribute name="label">Export as PGN...</attribute>
+                    <attribute name="action">app.file-export_pgn</attribute>
+                </item>
+            </section>
+            <section>
+                <item>
                     <attribute name="label">Quit</attribute>
                     <attribute name="action">app.file-quit</attribute>
                 </item>

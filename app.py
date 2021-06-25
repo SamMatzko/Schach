@@ -31,6 +31,7 @@ import io
 import json
 import messagedialogs
 import os
+import pgn
 import random
 import status_bar
 import status_frame
@@ -88,9 +89,10 @@ class App(Gtk.Application):
         """Create all the actions for the application."""
         self.file_new = Gio.SimpleAction.new("file-new")
         self.file_new_window = Gio.SimpleAction.new("file-new_window")
+        self.file_open = Gio.SimpleAction.new("file-open")
         self.file_save_append = Gio.SimpleAction.new("file-save_append")
         self.file_save = Gio.SimpleAction.new("file-save")
-        self.file_open = Gio.SimpleAction.new("file-open")
+        self.file_export_pgn = Gio.SimpleAction.new("file-export_pgn")
         self.file_quit = Gio.SimpleAction.new("file-quit")
 
         self.edit_undo = Gio.SimpleAction.new("edit-undo")
@@ -116,9 +118,10 @@ class App(Gtk.Application):
 
         self.file_new.connect("activate", self.window_new_game)
         self.file_new_window.connect("activate", self.new_window)
+        self.file_open.connect("activate", self.window_load_game)
         self.file_save_append.connect("activate", self.window_save_game_append)
         self.file_save.connect("activate", self.window_save_game)
-        self.file_open.connect("activate", self.window_load_game)
+        self.file_export_pgn.connect("activate", self.window_export_pgn)
         self.file_quit.connect("activate", self.window_quit)
 
         self.edit_undo.connect("activate", self.window_move_undo)
@@ -144,9 +147,10 @@ class App(Gtk.Application):
 
         self.set_accels_for_action("app.file-new", ["<control>N"])
         self.set_accels_for_action("app.file-new_window", ["<control><shift>N"])
+        self.set_accels_for_action("app.file-open", ["<control>O"])
         self.set_accels_for_action("app.file-save_append", ["<control>S"])
         self.set_accels_for_action("app.file-save", ["<control><shift>S"])
-        self.set_accels_for_action("app.file-open", ["<control>O"])
+        self.set_accels_for_action("app.file-export_pgn", ["<control><shift>E"])
         self.set_accels_for_action("app.file-quit", ["<control>Q"])
 
         self.set_accels_for_action("app.edit-undo", ["<control>Z"])
@@ -167,9 +171,10 @@ class App(Gtk.Application):
 
         self.add_action(self.file_new)
         self.add_action(self.file_new_window)
+        self.add_action(self.file_open)
         self.add_action(self.file_save_append)
         self.add_action(self.file_save)
-        self.add_action(self.file_open)
+        self.add_action(self.file_export_pgn)
         self.add_action(self.file_quit)
         self.add_action(self.edit_undo)
         self.add_action(self.edit_redo)
@@ -323,6 +328,10 @@ class App(Gtk.Application):
     def window_load_game(self, *args, file=None):
         """Invoke the current window's load_game method."""
         self.get_current_window_instance().load_game(file)
+
+    def window_export_pgn(self, *args):
+        """Invoke the current window's export_pgn method."""
+        self.get_current_window_instance().export_pgn()
 
     def window_quit(self, *args):
         """Invoke the current window's quit method."""
@@ -639,6 +648,50 @@ class Window(Gtk.ApplicationWindow):
         # Close the window and give the application the name of the closed window
         self.application.do_window_closed(self.name)
         self.destroy()
+
+    def export_pgn(self):
+        """Export the current game as a pgn."""
+
+        # If the game has ended, set the override the result in the headers
+        if self.game.board.is_game_over():
+            status = self.game.get_game_status()
+            if status["is_checkmate"]:
+                if status["turn"]:
+                    override_result = "0 - 1"
+                else:
+                    override_result = "1 - 0"
+            else:
+                override_result = "1/2 - 1/2"
+        else:
+            override_result = None
+
+        # Set the title for the dialog
+        title = "Export as a PGN"
+
+        # Get the headers
+        response, headers = dialogs.HeadersDialog(
+            self,
+            title=title,
+            override_result=override_result
+        ).show_dialog()
+
+        if response == Gtk.ResponseType.OK:
+
+            # Get the file
+            file = dialogs.FileSaveAs(
+                parent=self,
+                initialdir=os.environ["HOME"],
+                filters=None
+            ).show()
+            if file is not None:
+
+                # Save the file
+                pgn.save_game(self.game.board, file, headers)
+                print("pgnsavegaemmem")
+            else:
+                return True
+        else:
+            return True
 
     def flip_chessboard(self, *args):
         """Flip the chessboard."""
