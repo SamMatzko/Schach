@@ -20,9 +20,10 @@
 
 """Game saving module for Schach."""
 
+import time
+
 import chess
 import chess.pgn
-import time
 
 def save_game(board, file, headers):
     """Save the current game under the file given, replacing the file's contents.

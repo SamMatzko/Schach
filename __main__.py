@@ -20,10 +20,11 @@
 
 """Executes main application program."""
 
-import app
 import gi
 import json
 import sys
+
+import app
 
 gi.require_version("Gtk", "3.0")
 

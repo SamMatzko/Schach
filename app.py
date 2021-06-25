@@ -20,24 +20,25 @@
 
 """Schach main application."""
 
+import gi
+import io
+import json
+import os
+import random
+import string
+import sys
+import time
+
 import chess
 import chess.dcn
 import chessboards
 import dcn
 import dialogs
 import game
-import gi
-import io
-import json
 import messagedialogs
-import os
 import pgn
-import random
 import status_bar
 import status_frame
-import string
-import sys
-import time
 
 gi.require_version("Gdk", "3.0")
 gi.require_version("Gtk", "3.0")

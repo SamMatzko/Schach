@@ -18,12 +18,13 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 # or see <http://www.gnu.org/licenses/>
 
-import cairo
-import cairoarea
-import chess
 import gi
 import random
 import time
+
+import cairo
+import cairoarea
+import chess
 
 gi.require_version("Gtk", "3.0")
 gi.require_version("Gdk", "3.0")

@@ -20,13 +20,14 @@
 
 """The main dialogs."""
 
-import chess
-import chess.dcn
-import chessboards
 import gi
 import io
 import json
 import string
+
+import chess
+import chess.dcn
+import chessboards
 
 gi.require_version("Gdk", "3.0")
 gi.require_version("Gtk", "3.0")

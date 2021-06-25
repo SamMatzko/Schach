@@ -20,13 +20,14 @@
 
 """The game manager."""
 
+import gi
+import os
+import sys
+
 import chess
 import chess.engine
 import dialogs
-import gi
 import messagedialogs
-import os
-import sys
 
 from constants import *
 from gi.repository import Gtk
