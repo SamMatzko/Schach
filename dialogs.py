@@ -541,7 +541,7 @@ class FileSaveAs:
 class GameSelectorDialog(_Dialog):
     """The dialog to prompt the user to choose a game from a loaded file."""
 
-    def __init__(self, parent, games):
+    def __init__(self, parent, games, filetype="dcn"):
         _Dialog.__init__(
             self,
             title="Select a Game",
@@ -563,7 +563,10 @@ class GameSelectorDialog(_Dialog):
         self.games = []
         for game in self.game_strings:
             if game != "":
-                game_instance = chess.dcn.Game().from_string(game)
+                if filetype == "dcn":
+                    game_instance = chess.dcn.Game().from_string(game)
+                elif filetype == "pgn":
+                    game_instance = chess.pgn.Game()
                 if game_instance is not None:
                     self.games.append(game_instance)
             else:

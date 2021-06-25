@@ -92,6 +92,7 @@ class App(Gtk.Application):
         self.file_open = Gio.SimpleAction.new("file-open")
         self.file_save_append = Gio.SimpleAction.new("file-save_append")
         self.file_save = Gio.SimpleAction.new("file-save")
+        self.file_import_pgn = Gio.SimpleAction.new("file-import_pgn")
         self.file_export_pgn = Gio.SimpleAction.new("file-export_pgn")
         self.file_quit = Gio.SimpleAction.new("file-quit")
 
@@ -121,6 +122,7 @@ class App(Gtk.Application):
         self.file_open.connect("activate", self.window_load_game)
         self.file_save_append.connect("activate", self.window_save_game_append)
         self.file_save.connect("activate", self.window_save_game)
+        self.file_import_pgn.connect("activate", self.window_import_pgn)
         self.file_export_pgn.connect("activate", self.window_export_pgn)
         self.file_quit.connect("activate", self.window_quit)
 
@@ -174,6 +176,7 @@ class App(Gtk.Application):
         self.add_action(self.file_open)
         self.add_action(self.file_save_append)
         self.add_action(self.file_save)
+        self.add_action(self.file_import_pgn)
         self.add_action(self.file_export_pgn)
         self.add_action(self.file_quit)
         self.add_action(self.edit_undo)
@@ -328,6 +331,10 @@ class App(Gtk.Application):
     def window_load_game(self, *args, file=None):
         """Invoke the current window's load_game method."""
         self.get_current_window_instance().load_game(file)
+
+    def window_import_pgn(self, *args):
+        """Invoke the current window's import_pgn method."""
+        self.get_current_window_instance().import_pgn()
 
     def window_export_pgn(self, *args):
         """Invoke the current window's export_pgn method."""
@@ -701,6 +708,31 @@ class Window(Gtk.ApplicationWindow):
     def focus_move_entry(self, *args):
         """Set the focus to the move entry."""
         self.move_entry.grab_focus()
+
+    def import_pgn(self):
+        """Load a game from a PGN file."""
+
+        if file is not None:
+            file = file
+        else:
+            file = dialogs.FileOpen(
+                parent=self,
+                title="Import a Pgn",
+                filters=FILE_FILTERS
+            ).show()
+        if file is not None:
+
+            # Get the contents of the file
+            with open(file) as f:
+                games = f.read()
+                f.close()
+            
+            # Show the game selection dialog
+            response, game = dialogs.GameSelectorDialog(self, games, filetype="pgn").show_dialog()
+            
+            # Load the selected game if the user clicked OK
+            if response == Gtk.ResponseType.OK:
+                self.game.new_game(game)        
 
     def load_game(self, file=None, *args):
         """Load a game from a dcn file."""
