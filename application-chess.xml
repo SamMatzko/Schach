@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
     <mime-type type="application/chess">
-        <comment>Descriptive chess start-board notation</comment>
+        <comment>Descriptive chess notation</comment>
         <sub-class-of type="text/plain"/>
         <glob pattern="*.dcn"/>
     </mime-type>

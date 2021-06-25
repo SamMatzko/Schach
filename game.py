@@ -284,7 +284,7 @@ class Game:
             pass
         self.update_status()
 
-    def new_game(self, mainline=None):
+    def new_game(self, game):
         """Create a new game."""
 
         # Reset the game
@@ -296,10 +296,9 @@ class Game:
         self.chessboard.from_board(self.board)
         self.dialog_ok = False
 
-        # Make the moves in the mainline move stack, if one was given
-        if mainline is not None:
-            for move in mainline:
-                self.board.push(move)
+        # Make the moves in the chess.dcn.Game instance, if one was given
+        if game is not None:
+            self.board = game.board
             self.chessboard.from_board(self.board)
 
         # Update the status

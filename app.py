@@ -673,8 +673,7 @@ class Window(Gtk.ApplicationWindow):
             
             # Load the selected game if the user clicked OK
             if response == Gtk.ResponseType.OK:
-                
-                self.game.new_game(game.mainline_moves())
+                self.game.new_game(game)
 
     def load_theme(self):
         """Load the theme."""

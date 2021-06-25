@@ -21,7 +21,7 @@
 """The main dialogs."""
 
 import chess
-import chess.pgn
+import chess.dcn
 import chessboards
 import gi
 import io
@@ -559,10 +559,10 @@ class GameSelectorDialog(_Dialog):
         # The list of the games' strings
         self.game_strings = self.games_file.split("\n\n\n")
 
-        # The list of chess.pgn.Game instances
+        # The list of chess.dcn.Game instances
         self.games = []
         for game in self.game_strings:
-            game_instance = chess.pgn.read_game(io.StringIO(game))
+            game_instance = chess.dcn.Game().from_string(game)
             if game_instance is not None:
                 self.games.append(game_instance)
 
@@ -1142,16 +1142,19 @@ if __name__ == "__main__":
     window = Gtk.Window()
     window.add(Gtk.Label(label="Press a key to see the dialogs."))
     window.show_all()
+    with open("/home/sam/text.dcn") as f:
+        games = f.read()
+        f.close()
     def sd(*args):
         # print(BoardSetupDialog(window).show_dialog())
         # print(CalendarDialog(window).show_dialog())
-        # print(GameSelectorDialog(window).show_dialog())
+        print(GameSelectorDialog(window, games).show_dialog())
         # print(HeadersDialog(window, "1/2 - 1/2").show_dialog())
         # print(LicenseDialog(window).show_dialog())
         # print(PromotionDialog(window).show_dialog())
         # print(PromotionDialog(window, "black").show_dialog())
         # print(NewGameDialog(window).show_dialog())
-        print(SettingsDialog(window).show_dialog())
+        # print(SettingsDialog(window).show_dialog())
 
     window.connect("delete-event", Gtk.main_quit)
     window.connect("key-press-event", sd)

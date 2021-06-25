@@ -98,8 +98,8 @@ APP_INFO = f"{ROOT_PATH}json/appinfo.json"
 # The list of filters for the filedialogs
 FILE_FILTERS = []
 f1 = Gtk.FileFilter()
-f1.set_name("PGN chess game notation")
-f1.add_pattern("*.pgn")
+f1.set_name("Descriptive chess notation (*.dcn)")
+f1.add_pattern("*.dcn")
 FILE_FILTERS.append(f1)
 f2 = Gtk.FileFilter()
 f2.set_name("All files")

@@ -105,12 +105,21 @@ class Game:
             self.board.push(move)
         self.dcn = ''
         if self.board is not None:
-            self._create_dcn()
+            if (self.board.turn and not self._is_odd(len(self.board.move_stack) - 1) or
+                not self.board.turn and self._is_odd(len(self.board.move_stack) - 1)):
+                self.board.move_stack.insert(0, chess.Move.from_uci("0000"))
+                self._create_dcn()
+        return self
     
     def from_file(self, file):
         with open(file) as f:
             self.dcn = f.read()
             f.close()
+        self.from_string(self.dcn)
+        return self
+
+    def from_string(self, string):
+        self.dcn = string
         dcn = self.dcn
         dcnlines = dcn.splitlines()
         if 'version="%s"' % self.supported_version in dcnlines[0]:
@@ -149,6 +158,7 @@ class Game:
                 self.board.turn = True
             else:
                 self.board.turn = False
+        self.moves = self.board.move_stack
         
         # Get the moves
         stack = self._get_tag("stack", game)
@@ -161,6 +171,7 @@ class Game:
                 if m != "":
                     self.board.push(chess.Move.from_uci(m))
             stack = stack.replace(move, "")
+        return self
 
 if __name__ == "__main__":
     board = chess.Board()

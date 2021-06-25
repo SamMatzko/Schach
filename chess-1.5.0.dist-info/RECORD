@@ -1,9 +1,9 @@
-chess-1.4.0.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
-chess-1.4.0.dist-info/LICENSE.txt,sha256=jOtLnuWt7d5Hsx6XXB2QxzrSe2sWWh3NgMfFRetluQM,35147
-chess-1.4.0.dist-info/METADATA,sha256=-7OAE8z3sseNb3PJwzjb7W8p1dtSH7Ro8GQftYQOoIA,17896
-chess-1.4.0.dist-info/RECORD,,
-chess-1.4.0.dist-info/WHEEL,sha256=OqRkF0eY5GHssMorFjlbTIq072vpHpF60fIQA6lS9xA,92
-chess-1.4.0.dist-info/top_level.txt,sha256=KQh_dmhsO-MtGPgCihpBa-q5XF6tGfA9_MKDXETuyss,6
+chess-1.5.0.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
+chess-1.5.0.dist-info/LICENSE.txt,sha256=jOtLnuWt7d5Hsx6XXB2QxzrSe2sWWh3NgMfFRetluQM,35147
+chess-1.5.0.dist-info/METADATA,sha256=-7OAE8z3sseNb3PJwzjb7W8p1dtSH7Ro8GQftYQOoIA,17896
+chess-1.5.0.dist-info/RECORD,,
+chess-1.5.0.dist-info/WHEEL,sha256=OqRkF0eY5GHssMorFjlbTIq072vpHpF60fIQA6lS9xA,92
+chess-1.5.0.dist-info/top_level.txt,sha256=KQh_dmhsO-MtGPgCihpBa-q5XF6tGfA9_MKDXETuyss,6
 chess/__init__.py,sha256=x0kvOCL9kRWlsrCG6IfzuL9gxiYu6zwKVoy-bcW80kA,142285
 chess/__pycache__/__init__.cpython-38.pyc,,
 chess/__pycache__/engine.cpython-38.pyc,,
