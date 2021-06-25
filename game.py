@@ -359,7 +359,7 @@ class Game:
         self.white_frame.set_status(board=str(self.board))
         self.black_frame.set_status(board=str(self.board))
         
-        self.status_bar.set_status(fen=self.board.board_fen(), turn=self.board.turn)
+        self.status_bar.set_status(fen=self.board.fen(), turn=self.board.turn)
 
         if self.board.is_game_over():
             self._game_over()
