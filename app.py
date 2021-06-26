@@ -471,7 +471,7 @@ class Window(Gtk.ApplicationWindow):
         self.main_box.pack_start(self.game_box, True, False, 10)
 
         # The game manager instance
-        self.game = game.Game(self)
+        self.game = game.Game()
         self.game.bind_status(self.update_status)
 
         # The chessboard widget
@@ -479,6 +479,14 @@ class Window(Gtk.ApplicationWindow):
         self.chessboard.bind_move(self.game._push_move)
         self.chessboard.bind_promotion(self.game._promote)
         self.game.bind_chessboard(self.chessboard.update)
+
+        # The methods that show dilaogs and promote stuff
+        self.game.show_game_over = self.show_game_over
+        self.game.show_game_over_checkmate = self.show_game_over_checkmate
+        self.game.show_game_over_fivefold_repetition = self.show_game_over_fivefold_repetition
+        self.game.show_game_over_seventyfive_moves = self.show_game_over_seventyfive_moves
+        self.game.show_game_over_stalemate = self.show_game_over_stalemate
+        self.game.promote_function = self.show_promotion_dialog
 
         # The status frames
         self.white_status_frame = status_frame.WhiteStatusFrame()
@@ -991,6 +999,24 @@ class Window(Gtk.ApplicationWindow):
         info = json.load(open(APP_INFO))
         info["logo"] = IMAGE_APPLICATION
         dialogs.AboutDialog(self, info).present()
+
+    def show_game_over(self):
+        messagedialogs.show_game_over(self)
+
+    def show_game_over_checkmate(self, winner):
+        messagedialogs.show_game_over_checkmate(self, winner)
+
+    def show_game_over_fivefold_repetition(self):
+        messagedialogs.show_game_over_fivefold_repetition(self)
+
+    def show_game_over_seventyfive_moves(self):
+        messagedialogs.show_game_over_seventyfive_moves(self)
+    
+    def show_game_over_stalemate(self):
+        messagedialogs.show_game_over_stalemate(self)
+
+    def show_promotion_dialog(self, color):
+        return dialogs.PromotionDialog(self, color).show_dialog()
 
     def toggle_fullscreen(self, *args):
         if not self.fullscreen_on:

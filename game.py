@@ -36,20 +36,11 @@ from gi.repository import Gtk
 class Game:
     """The class that manages the chess game."""
 
-    def __init__(self, window):
+    def __init__(self):
     
         # The last square that was clicked
         self.move_from = None
         self.move_to = None
-
-        # The parent window for the dialogs
-        self.window = window
-
-        # The function to call on a chessboard update
-        self.chessboard_function = None
-
-        # The function to call on a game status update
-        self.status_function = None
 
         # The limits for the computer
         self.white_limit = None
@@ -90,33 +81,33 @@ class Game:
                 self.status_function(winner="black")
                 # Show the dialog
                 if not self.dialog_ok:
-                    messagedialogs.show_game_over_checkmate(self.window, "black")
+                    self.show_game_over_checkmate("black")
                     self.dialog_ok = True
             else:
                 self.status_function(winner="white")
                 # Show the dialog
                 if not self.dialog_ok:
-                    messagedialogs.show_game_over_checkmate(self.window, "white")
+                    self.show_game_over_checkmate("white")
                     self.dialog_ok = True
         elif self.board.is_fivefold_repetition():
             self.status_function(game_over="Draw (fivefold repetition)")
             if not self.dialog_ok:
-                messagedialogs.show_game_over_fivefold_repetition(self.window)
+                self.show_game_over_fivefold_repetition()
                 self.dialog_ok = True
         elif self.board.is_seventyfive_moves():
             self.status_function(game_over="Draw (seventy-five moves)")
             if not self.dialog_ok:
-                messagedialogs.show_game_over_seventyfive_moves(self.window)
+                self.show_game_over_seventyfive_moves()
                 self.dialog_ok = True
         elif self.board.is_stalemate():
             self.status_function(game_over="Stalemate")
             if not self.dialog_ok:
-                messagedialogs.show_game_over_stalemate(self.window)
+                self.show_game_over_stalemate()
                 self.dialog_ok = True
         else:
             self.status_function(game_over="Draw")
             if not self.dialog_ok:
-                messagedialogs.show_game_over(self.window)
+                self.show_game_over()
                 self.dialog_ok = True
         self.chessboard_function(sensitive=False)
 
@@ -154,7 +145,7 @@ class Game:
             color = "white"
         else:
             color = "black"
-        promote_to = dialogs.PromotionDialog(self.window, color=color).show_dialog()
+        promote_to = self.promote_function(color)
         self.chessboard_function(board=self.board)
         self.update_status()
         return promote_to
@@ -384,3 +375,28 @@ class Game:
                 self.board.push(move)
             except IndexError:
                 pass
+
+    # ------ Methods for unbound stuff ------ 
+    def chessboard_function(self, **kw):
+        pass
+
+    def promote_function(self, color="white"):
+        return "q"
+
+    def show_game_over(self):
+        pass
+
+    def show_game_over_checkmate(self, winner):
+        pass
+
+    def show_game_over_fivefold_repetition(self):
+        pass
+
+    def show_game_over_seventyfive_moves(self):
+        pass
+    
+    def show_game_over_stalemate(self):
+        pass
+
+    def status_function(self):
+        pass
