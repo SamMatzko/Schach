@@ -470,8 +470,15 @@ class Window(Gtk.ApplicationWindow):
         self.game_box = Gtk.HBox()
         self.main_box.pack_start(self.game_box, True, False, 10)
 
+        # The game manager instance
+        self.game = game.Game(self)
+        self.game.bind_status(self.update_status)
+
         # The chessboard widget
         self.chessboard = chessboards.ChessBoard(parent=self, size=self.settings["board_size"])
+        self.chessboard.bind_move(self.game._push_move)
+        self.chessboard.bind_promotion(self.game._promote)
+        self.game.bind_chessboard(self.chessboard.update)
 
         # The status frames
         self.white_status_frame = status_frame.WhiteStatusFrame()
@@ -485,11 +492,6 @@ class Window(Gtk.ApplicationWindow):
         self.game_box.pack_start(self.white_status_frame, True, True, 5)
         self.game_box.pack_start(self.chessboard, True, False, 5)
         self.game_box.pack_start(self.black_status_frame, True, True, 5)
-
-        # The game manager instance
-        self.game = game.Game(self, self.chessboard)
-        self.game.bind_status(self.update_status)
-        self.game.update_status()
 
         self.maximize()
 
@@ -806,9 +808,6 @@ class Window(Gtk.ApplicationWindow):
 
         if not move_failed and move in self.game.board.legal_moves:
             self.game._push_move(move)
-            self.game.update_status()
-            self.chessboard.from_board(self.game.board)
-            self.chessboard.update()
             entry.get_buffer().delete_text(0, 5)
         else:
             messagedialogs.show_info(
@@ -886,14 +885,7 @@ class Window(Gtk.ApplicationWindow):
     def random_move(self, *args):
         """Make a random move."""
         
-        if not self.game.board.is_game_over():
-            legal_moves = []
-            for move in self.game.board.legal_moves:
-                legal_moves.append(move.uci())
-            random_move = random.choice(legal_moves)
-            self.game._push_move(chess.Move.from_uci(random_move))
-            self.chessboard.from_board(self.game.board)
-            self.game.update_status()
+        self.game.random_move()
 
     def save_game(self, action=None, something_else=None, append=None):
         """Prompt the user for a file to save the game to and the headers for the game."""
@@ -981,7 +973,6 @@ class Window(Gtk.ApplicationWindow):
                     self.game.new_game()
                     self.game.board = board
                     self.game.update_status()
-                    self.chessboard.from_board(self.game.board)
                 else:
                     messagedialogs.show_info(
                         self,

@@ -22,6 +22,7 @@
 
 import gi
 import os
+import random
 import sys
 
 import chess
@@ -35,7 +36,7 @@ from gi.repository import Gtk
 class Game:
     """The class that manages the chess game."""
 
-    def __init__(self, window, chessboard):
+    def __init__(self, window):
     
         # The last square that was clicked
         self.move_from = None
@@ -44,13 +45,11 @@ class Game:
         # The parent window for the dialogs
         self.window = window
 
+        # The function to call on a chessboard update
+        self.chessboard_function = None
+
         # The function to call on a game status update
         self.status_function = None
-
-        # The chessboard widget
-        self.chessboard = chessboard
-        self.chessboard.bind_move(self._push_move)
-        self.chessboard.bind_promotion(self._promote)
 
         # The limits for the computer
         self.white_limit = None
@@ -58,7 +57,9 @@ class Game:
 
         # The board
         self.board = chess.Board()
-        self.chessboard.from_board(self.board)
+        try: self.chessboard_function(board=self.board)
+        except TypeError:
+            pass
 
         # The stack of undone moves
         self.undo_stack = []
@@ -79,15 +80,6 @@ class Game:
                 print("FATAL ERROR: Cannot set up engine: engine is not executable.")
                 print(f"Please set {ROOT_PATH}stockfish to be executable.")
                 exit()
-
-    def _assert_move(self, event):
-        """Check all the move's stats, and if it's legal, move it."""
-
-        # The square that was clicked
-        square_name = self.chessboard.convert_screen_coords_to_square((event.x, event.y))
-        ignore, square_piece = self.chessboard.convert_square_to_image(square_name)
-
-        self.chessboard.update()
 
     def _game_over(self):
         """Handle the status and dialogs for the game's end."""
@@ -126,7 +118,7 @@ class Game:
             if not self.dialog_ok:
                 messagedialogs.show_game_over(self.window)
                 self.dialog_ok = True
-        self.chessboard.set_sensitive(False)
+        self.chessboard_function(sensitive=False)
 
     def _get_square_is_ours(self, square):
         """Return True if the piece at the square is ours, False otherwise.
@@ -163,30 +155,30 @@ class Game:
         else:
             color = "black"
         promote_to = dialogs.PromotionDialog(self.window, color=color).show_dialog()
-        self.chessboard.from_board(self.board)
+        self.chessboard_function(board=self.board)
         self.update_status()
         return promote_to
 
     def _push_move(self, move):
         """Push the move to the board and highlight the ending square of the move."""
-        self.chessboard.from_board(self.board)
+        self.chessboard_function(board=self.board)
         self.board.push(move)
-        self.chessboard.set_square_color(move.uci()[2:], COLOR_MOVETO)
+        self.chessboard_function(square_color=(move.uci()[2:], COLOR_MOVETO))
         self.update_status()
 
     def _reset_square_colors(self):
         """Set the colors of the squares back to their default."""
 
-        self.chessboard.squaresdict = {}
+        self.chessboard_function(square_color=False)
 
-    def _set_square_color(self, color, square_name, isolate=True):
-        """Set the SQUARE to COLOR, and all the other squares 
-        to their default colors if ISOLATE == True"""
+    def _set_square_color(self, color, square_name):
+        """Set the SQUARE to COLOR."""
         
-        # Configure that square and set it's color
-        if isolate:
-            self.chessboard.squaresdict = {}
-        self.chessboard.squaresdict[square_name] = color
+        self.chessboard_function(square_color=(square_name, color))
+
+    def bind_chessboard(self, func):
+        """Bind chessboard updates to a call of FUNC, giving parameters for it."""
+        self.chessboard_function = func
 
     def bind_status(self, func):
         """Bind status updates to a call of FUNC, giving parameters for game status."""
@@ -227,7 +219,7 @@ class Game:
 
             # Set the move_to setting so we can update the last-moved square
             self.move_to = engine_move.move.uci()[2:]
-            self.chessboard.from_board(self.board)
+            self.chessboard_function(board=self.board)
 
             # Hide the spinners
             self.status_function(thinking=False)
@@ -259,8 +251,8 @@ class Game:
                 move = self.undo_stack.pop()
                 try:
                     self._push_move(move)
-                    self.chessboard.from_board(self.board)
-                    self.chessboard.set_square_color(move.uci()[2:], COLOR_MOVETO)
+                    self.chessboard_function(board=self.board)
+                    self.chessboard_function(square_color=(move.uci()[2:], COLOR_MOVETO))
                 except AssertionError:
                     pass
         except IndexError:
@@ -276,8 +268,8 @@ class Game:
             self.undo_stack.append(move)
 
             # Update the board
-            self.chessboard.from_board(self.board)
-            self.chessboard.set_square_color(move.uci()[:2], COLOR_MOVETO)
+            self.chessboard_function(board=self.board)
+            self.chessboard_function(square_color=(move.uci()[:2], COLOR_MOVETO))
         except IndexError:
             pass
         self.update_status()
@@ -289,15 +281,15 @@ class Game:
         self.board.reset()
 
         # Reset the chessboard
-        self.chessboard.set_sensitive(True)
+        self.chessboard_function(sensitive=True)
         self._reset_square_colors()
-        self.chessboard.from_board(self.board)
+        self.chessboard_function(board=self.board)
         self.dialog_ok = False
 
         # Make the moves in the chess.dcn.Game instance, if one was given
         if game is not None:
             self.board = game.board
-            self.chessboard.from_board(self.board)
+            self.chessboard_function(board=self.board)
 
         self.status_function(white_move="")
         self.status_function(black_move="")
@@ -312,16 +304,16 @@ class Game:
         self.board.reset()
 
         # Reset the chessboard
-        self.chessboard.set_sensitive(True)
+        self.chessboard_function(sensitive=True)
         self._reset_square_colors()
-        self.chessboard.from_board(self.board)
+        self.chessboard_function(board=self.board)
         self.dialog_ok = False
 
         # Make the moves in the chess.dcn.Game instance, if one was given
         if game is not None:
             for move in game.mainline_moves():
                 self.board.push(move)
-            self.chessboard.from_board(self.board)
+            self.chessboard_function(board=self.board)
 
         # Update the status
         self.update_status()
@@ -333,17 +325,23 @@ class Game:
         self.board.reset()
 
         # Reset the chessboard
-        self.chessboard.set_sensitive(True)
+        self.chessboard_function(sensitive=True)
         self._reset_square_colors()
-        self.chessboard.from_board(self.board)
+        self.chessboard_function(board=self.board)
         self.dialog_ok = False
 
         # Make the board
         self.board.set_board_fen(fen)
-        self.chessboard.from_board(self.board)
+        self.chessboard_function(board=self.board)
 
         # Update the status
         self.update_status()
+
+    def random_move(self):
+        """Play a random move."""
+
+        if not self.board.is_game_over():
+            self._push_move(random.choice(self.board.legal_moves))
 
     def set_limit(self, white_limit=None, black_limit=None):
         """Set the limits for the computer."""

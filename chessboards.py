@@ -170,7 +170,7 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
                         self.move_to = None
                         self.squaresdict = {}
 
-        self.update()
+        self.update_widget()
 
     def _func_release(self, event):
         """Event handler for buttons releases."""
@@ -264,7 +264,7 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
             self.NUMBERS = NUMBERS_REVERSED
             self.NUMBERS_REVERSED = NUMBERS
         self.flipped = not self.flipped
-        self.update()
+        self.update_widget()
 
     def from_board(self, board):
         """Rearrange the board according to BOARD."""
@@ -272,7 +272,7 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
         string = str(self.board).replace("\n", " ").split()
         self.squaresonly = False
         self.string = string
-        self.update()
+        self.update_widget()
 
     def get_square_is_ours(self, square):
         """Return True if the piece at the square is ours, False otherwise.
@@ -318,14 +318,31 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
         self.squares.set_size(size)
         self.square_size = self.squares.SIZE
         self.set_size_request(self.squares.BOARD_SIZE, self.squares.BOARD_SIZE)
-        self.update()
+        self.update_widget()
 
     def set_square_color(self, square, color):
         """Set SQUARE to COLOR."""
         self.squaresdict = {}
         self.squaresdict[square] = color
 
-    def update(self):
+    def update(self, board=None, sensitive=None, square_color=None):
+        """Update the chessboard's position, state, and square color."""
+
+        if board is not None:
+            self.from_board(board)
+        if sensitive is not None:
+            if sensitive:
+                self.set_sensitive(True)
+            else:
+                self.set_sensitive(False)
+        if square_color is not None:
+            if square_color:
+                self.set_square_color(*square_color)
+            else:
+                self.squaresdict = {}
+        self.update_widget()
+
+    def update_widget(self):
         """Update the chessboard."""
         self.hide()
         self.show_all()
@@ -434,7 +451,7 @@ class SetupChessBoard(cairoarea.CairoDrawableArea2):
         
         square = self.convert_screen_coords_to_square((event.x, event.y))
         self._bound_place_method(square)
-        self.update()
+        self.update_widget()
 
     def _func_release(self, event):
         """Event handler for buttons releases."""
@@ -522,21 +539,21 @@ class SetupChessBoard(cairoarea.CairoDrawableArea2):
             self.NUMBERS = NUMBERS_REVERSED
             self.NUMBERS_REVERSED = NUMBERS
         self.flipped = not self.flipped
-        self.update()
+        self.update_widget()
 
     def from_board(self, board):
         """Rearrange the board according to BOARD."""
         string = str(board).replace("\n", " ").split()
         self.squaresonly = False
         self.string = string
-        self.update()
+        self.update_widget()
 
     def place(self, piece, square):
         """Place PIECE at SQUARE."""
         self.string[self.BOARD_ORDER.index(square)] = piece
-        self.update()
+        self.update_widget()
 
-    def update(self):
+    def update_widget(self):
         """Update the chessboard."""
         self.hide()
         self.show_all()
