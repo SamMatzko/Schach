@@ -35,7 +35,7 @@ from gi.repository import Gtk
 class Game:
     """The class that manages the chess game."""
 
-    def __init__(self, window, chessboard, white_frame, black_frame, status_bar):
+    def __init__(self, window, chessboard):
     
         # The last square that was clicked
         self.move_from = None
@@ -44,15 +44,13 @@ class Game:
         # The parent window for the dialogs
         self.window = window
 
+        # The function to call on a game status update
+        self.status_function = None
+
         # The chessboard widget
         self.chessboard = chessboard
         self.chessboard.bind_move(self._push_move)
         self.chessboard.bind_promotion(self._promote)
-        
-        # The status widgets
-        self.white_frame = white_frame
-        self.black_frame = black_frame
-        self.status_bar = status_bar
 
         # The limits for the computer
         self.white_limit = None
@@ -95,38 +93,36 @@ class Game:
         """Handle the status and dialogs for the game's end."""
 
         if self.board.is_checkmate():
-            self.status_bar.set_status(game_over="Checkmate")
+            self.status_function(game_over="Checkmate")
             if self.board.turn:
-                self.black_frame.set_status(we_won=True)
-                self.white_frame.set_status(we_won=False)
+                self.status_function(winner="black")
                 # Show the dialog
                 if not self.dialog_ok:
                     messagedialogs.show_game_over_checkmate(self.window, "black")
                     self.dialog_ok = True
             else:
-                self.white_frame.set_status(we_won=True)
-                self.black_frame.set_status(we_won=False)
+                self.status_function(winner="white")
                 # Show the dialog
                 if not self.dialog_ok:
                     messagedialogs.show_game_over_checkmate(self.window, "white")
                     self.dialog_ok = True
         elif self.board.is_fivefold_repetition():
-            self.status_bar.set_status(game_over="Draw (fivefold repetition)")
+            self.status_function(game_over="Draw (fivefold repetition)")
             if not self.dialog_ok:
                 messagedialogs.show_game_over_fivefold_repetition(self.window)
                 self.dialog_ok = True
         elif self.board.is_seventyfive_moves():
-            self.status_bar.set_status(game_over="Draw (seventy-five moves)")
+            self.status_function(game_over="Draw (seventy-five moves)")
             if not self.dialog_ok:
                 messagedialogs.show_game_over_seventyfive_moves(self.window)
                 self.dialog_ok = True
         elif self.board.is_stalemate():
-            self.status_bar.set_status(game_over="Stalemate")
+            self.status_function(game_over="Stalemate")
             if not self.dialog_ok:
                 messagedialogs.show_game_over_stalemate(self.window)
                 self.dialog_ok = True
         else:
-            self.status_bar.set_status(game_over="Draw")
+            self.status_function(game_over="Draw")
             if not self.dialog_ok:
                 messagedialogs.show_game_over(self.window)
                 self.dialog_ok = True
@@ -192,6 +188,10 @@ class Game:
             self.chessboard.squaresdict = {}
         self.chessboard.squaresdict[square_name] = color
 
+    def bind_status(self, func):
+        """Bind status updates to a call of FUNC, giving parameters for game status."""
+        self.status_function = func
+
     def engine_move(self):
         """Make the engine this turn."""
 
@@ -204,12 +204,10 @@ class Game:
             # Move the right time for the right turn
             if self.board.turn:
                 limit = self.white_limit
-                self.white_frame.set_status(thinking=True)
-                self.status_bar.set_status(turn=self.board.turn, thinking=True)
+                self.status_function(thinking="white")
             else:
                 limit = self.black_limit
-                self.black_frame.set_status(thinking=True)
-                self.status_bar.set_status(turn=self.board.turn, thinking=True)
+                self.status_function(thinking="black")
 
             # Show the spinners
             while Gtk.events_pending():
@@ -232,8 +230,7 @@ class Game:
             self.chessboard.from_board(self.board)
 
             # Hide the spinners
-            self.white_frame.set_status(thinking=False)
-            self.black_frame.set_status(thinking=False)
+            self.status_function(thinking=False)
 
             # Update the status labels
             self.update_status()
@@ -302,8 +299,8 @@ class Game:
             self.board = game.board
             self.chessboard.from_board(self.board)
 
-        self.white_frame.set_status(move="")
-        self.black_frame.set_status(move="")
+        self.status_function(white_move="")
+        self.status_function(black_move="")
 
         # Update the status
         self.update_status()
@@ -359,41 +356,33 @@ class Game:
     def update_status(self):
         """Update the status labels."""
 
-        self.white_frame.set_status(board=str(self.board))
-        self.black_frame.set_status(board=str(self.board))
-        
-        self.status_bar.set_status(fen=self.board.fen(), turn=self.board.turn)
+        self.status_function(board=str(self.board), fen=self.board.fen(), turn=self.board.turn)
 
         if self.board.is_game_over():
             self._game_over()
         else:
-            self.white_frame.set_status(we_won=False)
-            self.black_frame.set_status(we_won=False)
+            self.status_function(winner=False, game_over=False)
             if self.board.turn:
                 if self.board.is_check():
-                    self.white_frame.set_status(check=True)
-                    self.status_bar.set_status(check=True)
+                    self.status_function(check="white")
                 else:
-                    self.white_frame.set_status(check=False)
-                    self.status_bar.set_status(check=False)
+                    self.status_function(check=False)
             else:
                 if self.board.is_check():
-                    self.black_frame.set_status(check=True)
-                    self.status_bar.set_status(check=True)
+                    self.status_function(check="black")
                 else:
-                    self.black_frame.set_status(check=False)
-                    self.status_bar.set_status(check=False)
+                    self.status_function(check=False)
         if self.board.turn:
             try:
                 move = self.board.pop()
-                self.black_frame.set_status(move=self.board.san(move))
+                self.status_function(black_move=self.board.san(move))
                 self.board.push(move)
             except IndexError:
                 pass
         else:
             try:
                 move = self.board.pop()
-                self.white_frame.set_status(move=self.board.san(move))
+                self.status_function(white_move=self.board.san(move))
                 self.board.push(move)
             except IndexError:
                 pass

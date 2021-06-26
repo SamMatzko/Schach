@@ -487,13 +487,8 @@ class Window(Gtk.ApplicationWindow):
         self.game_box.pack_start(self.black_status_frame, True, True, 5)
 
         # The game manager instance
-        self.game = game.Game(
-            self,
-            self.chessboard,
-            self.white_status_frame,
-            self.black_status_frame,
-            self.status_bar
-        )
+        self.game = game.Game(self, self.chessboard)
+        self.game.bind_status(self.update_status)
         self.game.update_status()
 
         self.maximize()
@@ -1022,6 +1017,89 @@ class Window(Gtk.ApplicationWindow):
         
         self.settings["show_status_frames"] = not self.settings["show_status_frames"]
         self.set_settings()
+    
+    def update_status(self, **kw):
+        """Update the status frames and status bar."""
+
+        try: board = kw["board"]
+        except:
+            board = None
+        try: black_move = kw["black_move"]
+        except:
+            black_move = None
+        try: check = kw["check"]
+        except:
+            check = None
+        try: fen = kw["fen"]
+        except:
+            fen = None
+        try: game_over = kw["game_over"]
+        except:
+            game_over = None
+        try: thinking = kw["thinking"]
+        except:
+            thinking = None
+        try: turn = kw["turn"]
+        except:
+            turn = None
+        try: white_move = kw["white_move"]
+        except:
+            white_move = None
+        try: winner = kw["winner"]
+        except:
+            winner = None
+
+        if board is not None:
+            self.white_status_frame.set_status(board=board)
+            self.black_status_frame.set_status(board=board)
+        if black_move is not None:
+            if black_move:
+                self.black_status_frame.set_status(move=black_move)
+            else:
+                self.black_status_frame.set_status(move="")
+        if check is not None:
+            if check == "white":
+                self.white_status_frame.set_status(check=True)
+                self.status_bar.set_status(check=True)
+            else:
+                self.white_status_frame.set_status(check=False)
+            if check == "black":
+                self.black_status_frame.set_status(check=True)
+                self.status_bar.set_status(check=True)
+            else:
+                self.black_status_frame.set_status(check=False)
+        if fen is not None:
+            self.status_bar.set_status(fen=fen)
+        if game_over is not None:
+            if game_over:
+                self.status_bar.set_status(game_over=game_over)
+            else:
+                self.status_bar.set_status(game_over="")
+        if thinking is not None:
+            if thinking == "white":
+                self.white_status_frame.set_status(thinking=True)
+            else:
+                self.white_status_frame.set_status(thinking=False)
+            if thinking == "black":
+                self.black_status_frame.set_status(thinking=True)
+            else:
+                self.black_status_frame.set_status(thinking=False)
+        if turn is not None:
+            self.status_bar.set_status(turn=turn)
+        if white_move is not None:
+            if white_move:
+                self.white_status_frame.set_status(move=white_move)
+            else:
+                self.white_status_frame.set_status(move="")
+        if winner is not None:
+            if winner == "white":
+                self.white_status_frame.set_status(we_won=True)
+            else:
+                self.white_status_frame.set_status(we_won=False)
+            if winner == "black":
+                self.black_status_frame.set_status(we_won=True)
+            else:
+                self.black_status_frame.set_status(we_won=False)
 
     def window_focused(self, widget, event):
         if self.has_toplevel_focus():
