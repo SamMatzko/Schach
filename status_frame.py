@@ -22,6 +22,8 @@
 
 import gi
 
+import chess
+
 gi.require_version("Gdk", "3.0")
 gi.require_version("Gtk", "3.0")
 
@@ -136,6 +138,11 @@ class _StatusFrame(Gtk.Frame):
         else:
             self.status_label_box.pack_start(self.status_label, False, False, 5)
 
+        # The move label
+        self.move_label = Gtk.Label()
+        self.box.pack_start(self.move_label, True, True, 5)
+        self.move_label.modify_font(Pango.FontDescription("30"))
+
         # The separator
         self.separator = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
         self.box.pack_start(self.separator, True, False, 5)
@@ -154,7 +161,7 @@ class _StatusFrame(Gtk.Frame):
 
         self.show_all()
 
-    def set_status(self, board=None, thinking=None, check=None, we_won=None):
+    def set_status(self, board=None, thinking=None, check=None, we_won=None, move=None):
         """Set the status of the labels based on the information given."""
 
         # The board
@@ -192,6 +199,8 @@ class _StatusFrame(Gtk.Frame):
                 self.status_label.set_label("Check!")
             else:
                 self.status_label.set_label("")
+        if move is not None:
+            self.move_label.set_label(move)
 
 class WhiteStatusFrame(_StatusFrame):
     """The status frame for white."""
@@ -208,12 +217,15 @@ class BlackStatusFrame(_StatusFrame):
 if __name__ == "__main__":
     window = Gtk.Window()
     window.connect("delete-event", Gtk.main_quit)
+    board = chess.Board()
+    board.push_uci("a2a3")
+    board.push_san("Na6")
     hbox = Gtk.HBox()
     vbox = Gtk.VBox()
     window.add(hbox)
     hbox.pack_start(vbox, True, True, 5)
     wsf = BlackStatusFrame()
     vbox.pack_start(wsf, True, True, 5)
-    wsf.set_status(board="QqPqPrNNnpp", thinking=True, we_won=True)    
+    wsf.set_status(board="QqPqPrNNnpp", thinking=True, we_won=True, move=board.san(chess.Move.from_uci("a3a4")))
     window.show_all()
     Gtk.main()

@@ -302,6 +302,9 @@ class Game:
             self.board = game.board
             self.chessboard.from_board(self.board)
 
+        self.white_frame.set_status(move="")
+        self.black_frame.set_status(move="")
+
         # Update the status
         self.update_status()
 
@@ -380,3 +383,17 @@ class Game:
                 else:
                     self.black_frame.set_status(check=False)
                     self.status_bar.set_status(check=False)
+        if self.board.turn:
+            try:
+                move = self.board.pop()
+                self.black_frame.set_status(move=self.board.san(move))
+                self.board.push(move)
+            except IndexError:
+                pass
+        else:
+            try:
+                move = self.board.pop()
+                self.white_frame.set_status(move=self.board.san(move))
+                self.board.push(move)
+            except IndexError:
+                pass

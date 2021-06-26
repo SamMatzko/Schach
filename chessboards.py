@@ -92,7 +92,6 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
     def _draw_board(self, event, cr, allocation):
         x, y, w, h = allocation
         cr.set_source_rgb(0.0, 0.0, 0.0)
-        cr.rectangle(0, 0, w, h)
         cr.fill()
         for c in self.LETTERS:
             for r in self.NUMBERS:
