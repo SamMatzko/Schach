@@ -701,6 +701,8 @@ class Window(Gtk.ApplicationWindow):
                 filters=None
             ).show()
             if file is not None:
+                if not ".pgn" in file:
+                    file += ".pgn"
 
                 # Save the file
                 pgn.save_game(self.game.board, file, headers)
@@ -935,6 +937,8 @@ class Window(Gtk.ApplicationWindow):
                 filters=FILE_FILTERS
             ).show()
             if file is not None:
+                if not ".dcn" in file:
+                    file += ".dcn"
 
                 # Save the file
                 if append:
