@@ -2,7 +2,7 @@
 <mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
     <mime-type type="application/chess">
         <comment>Descriptive chess notation</comment>
-        <sub-class-of type="text/plain"/>
+        <sub-class-of type="application/xml"/>
         <glob pattern="*.dcn"/>
     </mime-type>
 </mime-info>

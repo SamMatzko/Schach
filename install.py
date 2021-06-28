@@ -67,6 +67,11 @@ if "linux" in sys.platform.lower():
         os.system("xdg-mime default schach-chess.desktop application/vnd.chess-pgn")
         print("Done")
 
+        # Install the mimetype\
+        print("Installing mimetype...", end="")
+        os.system("xdg-mime install %s" % APPLICATION_DIR + "application-chess.xml")
+        print("Done")
+
     else:
 
         # The directories
@@ -86,6 +91,10 @@ if "linux" in sys.platform.lower():
         os.system("xdg-desktop-menu uninstall %s" % APPLICATION_DIR + "schach-chess.desktop")
         os.system("xdg-desktop-icon uninstall %s" % APPLICATION_DIR + "schach-chess.desktop")
         print("Done")
+
+        # Uninstall the mimetype
+        print("Uninstalling mimetype...", end="")
+        os.system("xdg-mime uninstall %s " % APPLICATION_DIR + "application-chess.xml")
 
 else:
     print("FATAL ERROR: Your system is not a Linux. This install cannot run.")
