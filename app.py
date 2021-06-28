@@ -500,6 +500,8 @@ class Window(Gtk.ApplicationWindow):
         self.game_box.pack_start(self.white_status_frame, True, True, 5)
         self.game_box.pack_start(self.chessboard, True, False, 5)
         self.game_box.pack_start(self.black_status_frame, True, True, 5)
+        
+        self.game.update_status()
 
         self.maximize()
 
