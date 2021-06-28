@@ -1,0 +1,41 @@
+<?dcn version="1.0.0">
+<game>
+    <header>
+        <attribute name="name">Event</attribute>
+        <attribute name="value">?</attribute>
+    </header>
+    <header>
+        <attribute name="name">Site</attribute>
+        <attribute name="value">?</attribute>
+    </header>
+    <header>
+        <attribute name="name">Date</attribute>
+        <attribute name="value">????.??.??</attribute>
+    </header>
+    <header>
+        <attribute name="name">Round</attribute>
+        <attribute name="value">?</attribute>
+    </header>
+    <header>
+        <attribute name="name">White</attribute>
+        <attribute name="value">?</attribute>
+    </header>
+    <header>
+        <attribute name="name">Black</attribute>
+        <attribute name="value">?</attribute>
+    </header>
+    <header>
+        <attribute name="name">Result</attribute>
+        <attribute name="value">*</attribute>
+    </header>
+    <board>
+        <attribute name="fen">rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1</attribute>
+    </board>
+    <stack>
+        <move number="1">c2c3...d7d5</move>
+        <move number="2">g1f3...c8f5</move>
+        <move number="3">d2d3...</move>
+    </stack>
+</game>
+
+

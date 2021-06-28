@@ -111,34 +111,6 @@ class Game:
                 self.dialog_ok = True
         self.chessboard_function(sensitive=False)
 
-    def _get_square_is_ours(self, square):
-        """Return True if the piece at the square is ours, False otherwise.
-        If there is no piece, return None."""
-        piece_at_square = str(self.board.piece_at(chess.parse_square(self.move_from)))
-        color_at_square = str(self.board.color_at(chess.parse_square(self.move_from)))
-
-        # Is there a piece here?
-        if piece_at_square != "None":
-
-            # If so, is it ours?
-            if str(color_at_square) == str(self.board.turn):
-                return True
-            else:
-                return False
-        else:
-            return None
-
-    def _move_is_legal(self, move):
-        """Return True if MOVE is legal."""
-
-        try:
-            if chess.Move.from_uci(move) in self.board.legal_moves:
-                return True
-            else:
-                return False
-        except ValueError:
-            return False
-
     def _promote(self):
         """Promote the current pawn."""
         if self.board.turn:
