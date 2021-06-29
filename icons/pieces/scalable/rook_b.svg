@@ -15,7 +15,10 @@
    height="256"
    viewBox="0 0 256 256"
    sodipodi:docname="rook_b.svg"
-   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)">
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"
+   inkscape:export-filename="/home/sam/programs/Schach/icons/pieces/104x104/rook_b.png"
+   inkscape:export-xdpi="39"
+   inkscape:export-ydpi="39">
   <metadata
      id="metadata8">
     <rdf:RDF>
@@ -24,7 +27,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -45,9 +48,9 @@
      showgrid="false"
      showguides="true"
      inkscape:guide-bbox="true"
-     inkscape:zoom="2.8284271"
-     inkscape:cx="155.48651"
-     inkscape:cy="91.893784"
+     inkscape:zoom="2"
+     inkscape:cx="84.551914"
+     inkscape:cy="128.8366"
      inkscape:window-x="0"
      inkscape:window-y="27"
      inkscape:window-maximized="1"

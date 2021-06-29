@@ -1083,7 +1083,7 @@ class SettingsDialog(_Dialog):
         self.board_size_scale = Gtk.Scale.new_with_range(
             Gtk.Orientation.HORIZONTAL,
             1.0,
-            4.0,
+            5.0,
             1.0
         )
         self.board_size_scale.connect("value-changed", self._on_board_size_scale)

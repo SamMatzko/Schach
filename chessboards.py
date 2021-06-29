@@ -581,8 +581,10 @@ class Squares:
             self.SIZE = 84
         elif size == 4:
             self.SIZE = 94
+        elif size == 5:
+            self.SIZE = 104
         else:
-            raise TypeError('Size "%s" must be one of integers 1, 2, 3, or 4' % size)
+            raise TypeError('Size "%s" must be one of integers 1, 2, 3, 4, or 5' % size)
         self.BOARD_SIZE = self.SIZE * 8
         
         self.IMAGE_K = f"{ROOT_PATH}icons/pieces/%sx%s/king_w.png" % (self.SIZE, self.SIZE)
