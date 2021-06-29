@@ -252,7 +252,10 @@ class App(Gtk.Application):
             self.activate()
 
             # Load the file
-            self.window_load_game(file=file)
+            if ".pgn" in file:
+                self.window_import_pgn(file=file)
+            else:
+                self.window_load_game(file=file)
 
         elif new_window is not None:
 
@@ -335,9 +338,12 @@ class App(Gtk.Application):
         """Invoke the current window's load_game method."""
         self.get_current_window_instance().load_game(file)
 
-    def window_import_pgn(self, *args):
+    def window_import_pgn(self, *args, file=None):
         """Invoke the current window's import_pgn method."""
-        self.get_current_window_instance().import_pgn()
+        if file is not None:
+            self.get_current_window_instance().import_pgn(file)
+        else:
+            self.get_current_window_instance().import_pgn()
 
     def window_export_pgn(self, *args):
         """Invoke the current window's export_pgn method."""
