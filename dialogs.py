@@ -542,7 +542,7 @@ class FileSaveAs:
 class GameSelectorDialog(_Dialog):
     """The dialog to prompt the user to choose a game from a loaded file."""
 
-    def __init__(self, parent, games, filetype="dcn"):
+    def __init__(self, parent, games):
         _Dialog.__init__(
             self,
             title="Select a Game",
@@ -561,17 +561,7 @@ class GameSelectorDialog(_Dialog):
         self.game_strings = self.games_file.split("\n\n\n")
 
         # The list of chess.dcn.Game instances
-        self.games = []
-        for game in self.game_strings:
-            if game != "":
-                if filetype == "dcn":
-                    game_instance = chess.dcn.Game().from_string(game)
-                elif filetype == "pgn":
-                    game_instance = chess.pgn.read_game(io.StringIO(game))
-                if game_instance is not None:
-                    self.games.append(game_instance)
-            else:
-                self.game_strings.pop(self.game_strings.index(game))
+        self.games = games
 
         # The listbox for the games
         self.listbox = Gtk.ListBox()

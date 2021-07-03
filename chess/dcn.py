@@ -16,6 +16,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import chess
+import io
+import xml
+import xml.etree.ElementTree as etree
 
 class Game:
     """A game created from a board that stores all the headers and other data
@@ -24,8 +27,8 @@ class Game:
     def __init__(self, board=None):
         self.moves = []
         self.board = chess.Board()
-        self.supported_version = "1.0.0"
-        self.dcn = ""
+        self.game_element = etree.Element("game")
+        self.tree = etree.ElementTree(self.game_element)
         self.headers = {
             "Event": "?",
             "Site": "?",
@@ -38,27 +41,6 @@ class Game:
         if board is not None:
             self.from_board(board)
 
-    def __str__(self):
-        return self.dcn
-
-    def _get_contents_of(self, tag):
-        """Get the contents of TAG."""
-        return tag[
-            tag.find(">") + 1:tag.find("<", tag.find(">"))
-        ]
-
-    def _get_tag(self, tag, dcn):
-        """Get the contents of TAG from string DCN."""
-        return dcn[
-            dcn.find(f"<{tag}"):dcn.find(f"</{tag}>") + len(f"</{tag}>")
-        ]
-
-    def _get_value_of(self, value_of, tag_contents):
-        """Get the value of TAG_CONTENTS's attribute VALUE_OF."""
-        return tag_contents[
-            tag_contents.find(value_of) + len(value_of) + 2:tag_contents.find('"', tag_contents.find(value_of) + len(value_of) + 2)
-        ]
-
     def _is_odd(self, number):
         number = str(number)
         digit = number[len(number) - 1]
@@ -68,32 +50,22 @@ class Game:
             return False
 
     def create_dcn(self):
-        self.dcn = ''
-        self.dcn += '<?dcn version="%s">\n<game>\n' % self.supported_version
+        self.game_element = etree.Element("game")
+        self.tree = etree.ElementTree(self.game_element)
         for header in self.headers:
-            self.dcn += """    <header>
-        <attribute name="name">%s</attribute>
-        <attribute name="value">%s</attribute>
-    </header>\n""" % (header, self.headers[header])
+            header_element = etree.Element("header", name=header)
+            header_element.text = self.headers[header]
+            self.game_element.append(header_element)
+        self.board_element = etree.Element("board", fen=self.start_fen)
+        self.game_element.append(self.board_element)
 
-        self.dcn += """    <board>
-        <attribute name="fen">%s</attribute>
-    </board>\n""" % self.start_fen
-
-        move_index = 1
-        self.dcn += "    <stack>\n"
-        if self.board.move_stack != []:
-            for move in self.board.move_stack:
-                if not self._is_odd(self.board.move_stack.index(move)):
-                    self.dcn += '        <move number="%s">%s...' % (move_index, move.uci())
-                else:
-                    self.dcn += '%s</move>\n' % move.uci()
-                    move_index += 1
-            if not self._is_odd(self.board.move_stack.index(move)):
-                self.dcn +="</move>\n"
-        self.dcn += "    </stack>\n"
-    
-        self.dcn += "</game>"
+        self.stack_element = etree.Element("stack")
+        self.game_element.append(self.stack_element)
+        for move in self.board.move_stack:
+            move_element = etree.Element("move")
+            move_element.text = move.uci()
+            self.stack_element.append(move_element)
+        return self
 
     def from_board(self, board):
         self.moves = []
@@ -104,8 +76,6 @@ class Game:
         self.moves.reverse()
         for move in self.moves:
             self.board.push(move)
-        self.dcn = ''
-        self.dcn += '<?dcn version="%s">\n<game>\n' % self.supported_version
         if self.board is not None:
             if (self.board.turn and not self._is_odd(len(self.board.move_stack) - 1) or
                 not self.board.turn and self._is_odd(len(self.board.move_stack) - 1)):
@@ -114,74 +84,29 @@ class Game:
         return self
     
     def from_file(self, file):
-        with open(file) as f:
-            self.dcn = f.read()
-            f.close()
-        self.from_string(self.dcn)
+        self.tree = etree.ElementTree().parse(file)
         return self
 
     def from_string(self, string):
-        self.dcn = string
-        self.board = chess.Board()
-        dcn = self.dcn
-        dcnlines = dcn.splitlines()
-        if 'version="%s"' % self.supported_version in dcnlines[0]:
-            pass
-        else:
-            raise TypeError("DCN version %s is not supported." % dcnlines[0].replace('<?dcn version="', "").replace('">', ""))
-
-        dcn = self.dcn.replace("    ", "")
-        dcn = dcn.replace("\n", "")
-
-        # Get the headers        
-        game = self._get_tag("game", dcn)
-        while "<header>" in game:
-            header = self._get_tag("header", game)
-            game = game.replace(header, "")
-            while "<attribute" in header:
-                attribute = self._get_tag("attribute", header)
-                if self._get_value_of("name", attribute) == "name":
-                    header_name = self._get_contents_of(attribute)
-                elif self._get_value_of("name", attribute) == "value":
-                    header_value = self._get_contents_of(attribute)
-                header = header.replace(attribute, "")
-            self.headers[header_name] = header_value
-
-        # Get the board
-        while "<board>" in game:
-            board = self._get_tag("board", game)
-            game = game.replace(board, "")
-            while "<attribute" in board:
-                attribute = self._get_tag("attribute", board)
-                if self._get_value_of("name", attribute) == "fen":
-                    board_fen = self._get_contents_of(attribute).split(" ")
-                board = board.replace(attribute, "")
-            self.board.set_board_fen(board_fen[0])
-            if board_fen[1] == "w":
-                self.board.turn = True
-            else:
-                self.board.turn = False
-        self.moves = self.board.move_stack
-        
-        # Get the moves
-        stack = self._get_tag("stack", game)
-        game = game.replace(stack, "")
-        while "<move" in stack:
-            move = self._get_tag("move", stack)
-            moves = self._get_contents_of(move)
-            moves = moves.split("...")
-            for m in moves:
-                if m != "":
-                    self.board.push(chess.Move.from_uci(m))
-            stack = stack.replace(move, "")
+        self.from_file(io.StringIO(string))
         return self
+    
+    def set_headers(self, headers):
+        self.headers = headers
+        self.create_dcn()
+
+    def write(self, file):
+        """Write the game to a file."""
+        self.tree.write(file)
 
 if __name__ == "__main__":
     board = chess.Board()
-    board.push(chess.Move.from_uci("b1c3"))
+    board.turn = False
+    # board.push(chess.Move.from_uci("b1c3"))
     board.push(chess.Move.from_uci("d7d5"))
     board.push(chess.Move.from_uci("a2a3"))
     game = Game(board)
+    game.write("/home/sam/text.dcn")
     print(str(game))
     print()
     game = Game()

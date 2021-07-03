@@ -27,6 +27,7 @@ import gi
 import json
 import unittest
 
+import dcn
 import game
 
 gi.require_version("Gtk", "3.0")
@@ -42,6 +43,7 @@ STATUS_LIST = {
     "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
     "turn": True
 }
+DCN_FILE = """<game><header name="Event">A Test</header><header name="Site">This computer</header><header name="Date">1234.56.78</header><header name="Round">8</header><header name="White">A fake person</header><header name="Black">Dummy D. Dude</header><header name="Result">1-0</header><board fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" /><stack><move>a2a3</move><move>b8a6</move><move>e2e4</move></stack></game>\n\n\n"""
 chessboard_method_tested = False
 promote_method_tested = False
 status_method_tested = False
@@ -181,6 +183,44 @@ class GameManagerTest(unittest.TestCase):
         if not status_method_tested:
             self.assertEqual(kw, STATUS_LIST)
         status_method_tested = True
+
+class GameSaverTestCase(unittest.TestCase):
+    """A test case for dcn and pgn game saving."""
+
+    def create_chess_game(self):
+        """Create a chess.Board instance to work with."""
+
+        board = chess.Board()
+        board.push_uci("a2a3")
+        board.push_san("Na6")
+        board.push_san("e4")
+        return board
+    
+    def test_save_dcn(self):
+        """Test dcn saving by writing a game to a file and then comparing it to
+        a string that is what the file should look like."""
+
+        # Create the game and write it to the file
+        board = self.create_chess_game()
+        game_instance = chess.dcn.Game().from_board(board)
+        game_instance.set_headers(
+            {
+                "Event": "A Test",
+                "Site": "This computer",
+                "Date": "1234.56.78",
+                "Round": "8",
+                "White": "A fake person",
+                "Black": "Dummy D. Dude",
+                "Result": "1-0"
+            }
+        )
+        dcn.save_game(game_instance, "%ssamples/game_.dcn" % ROOT_PATH)
+
+        # Compare the file with what it should look like
+        with open("%ssamples/game_.dcn" % ROOT_PATH) as f:
+            file = f.read()
+            f.close()
+        self.assertEqual(file, DCN_FILE)
 
 if __name__ == "__main__":
     unittest.main()

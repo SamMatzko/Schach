@@ -25,58 +25,12 @@ import time
 import chess
 import chess.dcn
 
-def save_game(board, file, headers):
-    """Save the current game under the file given, replacing the file's contents.
+def save_game(game, file):
+    """Save the GAME under FILE, replacing FILE's contents."""
 
-    VALID ARGUMENTS:
-        event, site, round, white, black"""
-    
-    # Get the keyword arguments
-    try: event = headers["Event"]
-    except:
-        event = None
-    try: site = headers["Site"]
-    except:
-        site = None
-    try: date = headers["Date"]
-    except:
-        date = time.strftime("%Y.%m.%d")
-    try: roundno = headers["Round"]
-    except:
-        roundno = None
-    try: white = headers["White"]
-    except:
-        white = None
-    try: black = headers["Black"]
-    except:
-        black = None
-    try: result = headers["Result"]
-    except:
-        result = None
-
-    # Create the dcn.Game
-    dcn = chess.dcn.Game(board)
-
-    # Set the headers
-    dcn.headers["Date"] = date
-    if event:
-        dcn.headers["Event"] = event
-    if site:
-        dcn.headers["Site"] = site
-    if date:
-        dcn.headers["Date"] = date
-    if roundno:
-        dcn.headers["Round"] = roundno
-    if white:
-        dcn.headers["White"] = white
-    if black:
-        dcn.headers["Black"] = black
-    if result:
-        dcn.headers["Result"] = result
-    dcn.create_dcn()
-
-    with open(file, "w") as f:
-        f.write(str(dcn) + "\n\n\n")
+    game.write(file)
+    with open(file, "a") as f:
+        f.write("\n\n\n")
         f.close()
 
 def save_game_append(board, file, headers):
@@ -127,7 +81,8 @@ def save_game_append(board, file, headers):
         dcn.headers["Black"] = black
     if result:
         dcn.headers["Result"] = result
-
+    dcn.create_dcn()
+    dcn.write(file)
     with open(file, "a") as f:
-        f.write(str(dcn) + "\n\n\n")
+        f.write("\n\n\n")
         f.close()
