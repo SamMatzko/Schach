@@ -557,9 +557,6 @@ class GameSelectorDialog(_Dialog):
         # The games file
         self.games_file = games
 
-        # The list of the games' strings
-        self.game_strings = self.games_file.split("\n\n\n")
-
         # The list of chess.dcn.Game instances
         self.games = games
 

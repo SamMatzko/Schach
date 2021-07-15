@@ -85,15 +85,30 @@ class Game:
     
     def from_file(self, file):
         self.tree = etree.ElementTree().parse(file)
+        self.update_dcn()
         return self
 
     def from_string(self, string):
         self.from_file(io.StringIO(string))
+        self.update_dcn()
         return self
     
     def set_headers(self, headers):
         self.headers = headers
         self.create_dcn()
+
+    def update_dcn(self):
+        """Updage the elements and all the other data variables from self.tree."""
+        self.moves = []
+        self.game_element = self.tree
+        self.board_element = self.tree.find("board")
+        self.stack_element = self.tree.find("stack")
+        for move in self.stack_element.findall("move"):
+            self.moves.append(chess.Move.from_uci(move.text))
+        self.start_fen = self.board_element.get("fen")
+        self.board = chess.Board(self.start_fen.split(" ")[0])
+        for move in self.moves:
+            self.board.push(move)
 
     def write(self, file):
         """Write the game to a file."""

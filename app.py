@@ -763,21 +763,8 @@ class Window(Gtk.ApplicationWindow):
                 filters=FILE_FILTERS
             ).show()
         if file is not None:
-
-            # Get the contents of the file
-            with open(file) as f:
-                games = f.read()
-                f.close()
-
-            # Separate the games
-            game_list = []
-            for game in games:
-                if game != "":
-                    game_instance = chess.dcn.Game().from_string(game)
-                    if game_instance is not None:
-                        game_list.append(game_instance)
-            else:
-                self.game_strings.pop(self.game_strings.index(game))
+            
+            games = dcn.load_game(file)
             
             # Show the game selection dialog
             response, game = dialogs.GameSelectorDialog(self, games).show_dialog()

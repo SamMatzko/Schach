@@ -370,5 +370,5 @@ class Game:
     def show_game_over_stalemate(self):
         pass
 
-    def status_function(self):
+    def status_function(self, **kwargs):
         pass

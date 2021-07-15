@@ -25,6 +25,29 @@ import time
 import chess
 import chess.dcn
 
+def load_game(file):
+    """Load a game from a file object."""
+
+    # Check the file's type before reading it
+    if type(file) == type(""):
+        with open(file) as f:
+            games = f.read()
+            f.close()
+    else:
+        games = file.read()
+        file.close()
+
+    # Separate the games in the string, and add a chess.dcn.Game instance to
+    # the game_list for each game
+    game_list = []
+    games = games.split("\n\n\n")
+    for game in games:
+        if game != "":
+            dcn_game = chess.dcn.Game().from_string(game)
+            game_list.append(dcn_game)
+
+    return game_list
+
 def save_game(game, file):
     """Save the GAME under FILE, replacing FILE's contents."""
 

@@ -192,9 +192,18 @@ class GameSaverTestCase(unittest.TestCase):
 
         board = chess.Board()
         board.push_uci("a2a3")
-        board.push_san("Na6")
-        board.push_san("e4")
+        board.push_uci("b8a6")
+        board.push_uci("e2e4")
         return board
+
+    def test_parse_dcn(self):
+        """Test dcn parsing by first writing a dcn to a file from a board, and
+        then load it again and compare the data stored in the original game."""
+
+        game_instance = chess.dcn.Game().from_board(self.create_chess_game())
+        game_instance.write("%ssamples/game_.dcn" % ROOT_PATH)
+        game_instance2 = chess.dcn.Game().from_file("%ssamples/game_.dcn" % ROOT_PATH)
+        self.assertEqual(game_instance.moves, game_instance2.moves)
     
     def test_save_dcn(self):
         """Test dcn saving by writing a game to a file and then comparing it to
