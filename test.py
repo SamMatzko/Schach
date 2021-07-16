@@ -24,6 +24,7 @@ import chess
 import chess.dcn
 import chess.pgn
 import gi
+import io
 import json
 import unittest
 
@@ -240,6 +241,24 @@ class GameSaverTestCase(unittest.TestCase):
             file = f.read()
             f.close()
         self.assertEqual(file, DCN_FILE)
+
+    def test_parse_pgn(self):
+        """Test dcn parsing by first writing a dcn to a file from a board, and
+        then load it again and compare the data stored in the original game."""
+
+        moves = []
+        moves2 = []
+        game_instance = chess.pgn.Game().from_board(self.create_chess_game())
+        with open("%ssamples/game_.pgn" % ROOT_PATH, "w") as f:
+            f.write(str(game_instance))
+            f.close()
+        with open("%ssamples/game_.pgn" % ROOT_PATH) as f:
+            game_instance2 = chess.pgn.read_game(f)
+        for move in game_instance.mainline_moves():
+            moves.append(move)
+        for move in game_instance2.mainline_moves():
+            moves2.append(move)
+        self.assertEqual(moves, moves2)
 
     def test_save_pgn(self):
         """Test pgn saving by writing a game to a file and then comparing it to
