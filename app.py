@@ -812,12 +812,17 @@ class Window(Gtk.ApplicationWindow):
     def on_move_entry_activate(self, entry):
         """Move the move in the entry, if it is valid."""
 
-        uci = entry.get_text()
+        # Get the move from the entry
+        move_text = entry.get_text()
         move_failed = False
 
-        try: move = chess.Move.from_uci(uci)
+        # Check if move_text is in descriptive or algebraic notation, and create
+        # the chess.Move instance accordingly
+        try: move = chess.Move.from_uci(move_text)
         except:
-            move_failed = True
+            try: move = self.game.board.parse_san(move_text)
+            except:
+                move_failed = True
 
         if not move_failed and move in self.game.board.legal_moves:
             self.game._push_move(move)

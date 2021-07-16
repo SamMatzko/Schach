@@ -123,10 +123,10 @@ class Game:
         return promote_to
 
     def _push_move(self, move):
-        """Push the move to the board and highlight the ending square of the move."""
-        self.chessboard_function(board=self.board)
+        """Push uci move MOVE"""
         self.board.push(move)
         self.chessboard_function(square_color=(move.uci()[2:], COLOR_MOVETO))
+        self.chessboard_function(board=self.board)
         self.update_status()
 
     def _reset_square_colors(self):
