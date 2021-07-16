@@ -68,10 +68,13 @@ class ChessBoard(cairoarea.CairoDrawableArea2):
         # Whether we are flipped or not
         self.flipped = False
 
+        # The chess.Board instance
         if board is not None:
-            self.from_board(board)
-        self.board = board
-
+            self.board = board
+        else:
+            self.board = chess.Board()
+        self.from_board(self.board)
+        
         # The parent
         self.parent = parent
 
