@@ -303,8 +303,13 @@ class Game:
     def random_move(self):
         """Play a random move."""
 
+        # Create a list of the legal moves since random does not like the 
+        # LegalMoveGenerator object.
+        moveoptions = []
+        for move in self.board.legal_moves:
+            moveoptions.append(move)
         if not self.board.is_game_over():
-            self._push_move(random.choice(self.board.legal_moves))
+            self._push_move(random.choice(moveoptions))
 
     def set_limit(self, white_limit=None, black_limit=None):
         """Set the limits for the computer."""
