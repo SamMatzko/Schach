@@ -90,7 +90,6 @@ class Game:
 
     def from_string(self, string):
         self.from_file(io.StringIO(string))
-        self.update_dcn()
         return self
     
     def set_headers(self, headers):
@@ -109,6 +108,8 @@ class Game:
         self.board = chess.Board(self.start_fen.split(" ")[0])
         for move in self.moves:
             self.board.push(move)
+        for header in self.game_element.findall("header"):
+            self.headers[header.get("name")] = header.text
 
     def write(self, file):
         """Write the game to a file."""

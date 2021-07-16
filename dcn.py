@@ -44,7 +44,8 @@ def load_file(file):
     for game in games:
         if game != "":
             dcn_game = chess.dcn.Game().from_string(game)
-            game_list.append(dcn_game)
+            if dcn_game is not None:
+                game_list.append(dcn_game)
 
     return game_list
 

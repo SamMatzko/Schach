@@ -18,7 +18,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 # or see <http://www.gnu.org/licenses/>
 
-# This file is came from part of Flowblade Movie Editor. It is slightly
+# This file came from part of Flowblade Movie Editor. It is slightly
 # modified, but stands under the same license
 
 """

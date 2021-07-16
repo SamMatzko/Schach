@@ -45,7 +45,8 @@ def load_file(file):
     for game in games:
         if game != "":
             pgn_game = chess.pgn.read_game(io.StringIO(game))
-            game_list.append(pgn_game)
+            if pgn_game is not None:
+                game_list.append(pgn_game)
 
     return game_list
 
