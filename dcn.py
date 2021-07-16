@@ -18,15 +18,15 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 # or see <http://www.gnu.org/licenses/>
 
-"""Game saving module for Schach."""
+"""Dcn-format game saving module for Schach."""
 
 import time
 
 import chess
 import chess.dcn
 
-def load_game(file):
-    """Load a game from a file object."""
+def load_file(file):
+    """Load the games from FILE."""
 
     # Check the file's type before reading it
     if type(file) == type(""):

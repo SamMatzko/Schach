@@ -18,115 +18,47 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 # or see <http://www.gnu.org/licenses/>
 
-"""Game saving module for Schach."""
+"""Pgn-format game saving module for Schach."""
 
+import io
 import time
 
 import chess
 import chess.pgn
 
-def save_game(board, file, headers):
-    """Save the current game under the file given, replacing the file's contents.
+def load_file(file):
+    """Load the games from FILE."""
 
-    VALID ARGUMENTS:
-        event, site, round, white, black"""
-    
-    # Get the keyword arguments
-    try: event = headers["Event"]
-    except:
-        event = None
-    try: site = headers["Site"]
-    except:
-        site = None
-    try: date = headers["Date"]
-    except:
-        date = time.strftime("%Y.%m.%d")
-    try: roundno = headers["Round"]
-    except:
-        roundno = None
-    try: white = headers["White"]
-    except:
-        white = None
-    try: black = headers["Black"]
-    except:
-        black = None
-    try: result = headers["Result"]
-    except:
-        result = None
+    # Check the file's type before reading it
+    if type(file) == type(""):
+        with open(file) as f:
+            games = f.read()
+            f.close()
+    else:
+        games = file.read()
+        file.close()
 
-    # Create the pgn.Game
-    pgn = chess.pgn.Game.from_board(board)
+    # Separate the games in the string, and add a chess.dcn.Game instance to
+    # the game_list for each game
+    game_list = []
+    games = games.split("\n\n\n")
+    for game in games:
+        if game != "":
+            pgn_game = chess.pgn.read_game(io.StringIO(game))
+            game_list.append(pgn_game)
 
-    # Set the headers
-    pgn.headers["Date"] = date
-    if event:
-        pgn.headers["Event"] = event
-    if site:
-        pgn.headers["Site"] = site
-    if date:
-        pgn.headers["Date"] = date
-    if roundno:
-        pgn.headers["Round"] = roundno
-    if white:
-        pgn.headers["White"] = white
-    if black:
-        pgn.headers["Black"] = black
-    if result:
-        pgn.headers["Result"] = result
+    return game_list
+
+def save_game(game, file):
+    """Save GAME to FILE in pgn format."""
 
     with open(file, "w") as f:
-        f.write(str(pgn) + "\n\n\n")
+        f.write(str(game) + "\n\n\n")
         f.close()
 
-def save_game_append(board, file, headers):
-    """Save the current game under the file given.
-    
-    VALID ARGUMENTS:
-        event, site, round, white, black"""
-    
-    # Get the keyword arguments
-    try: event = headers["Event"]
-    except:
-        event = None
-    try: site = headers["Site"]
-    except:
-        site = None
-    try: date = headers["Date"]
-    except:
-        date = time.strftime("%Y.%m.%d")
-    try: roundno = headers["Round"]
-    except:
-        roundno = None
-    try: white = headers["White"]
-    except:
-        white = None
-    try: black = headers["Black"]
-    except:
-        black = None
-    try: result = headers["Result"]
-    except:
-        result = None
-
-    # Create the pgn.Game
-    pgn = chess.pgn.Game.from_board(board)
-
-    # Set the headers
-    pgn.headers["Date"] = date
-    if event:
-        pgn.headers["Event"] = event
-    if site:
-        pgn.headers["Site"] = site
-    if date:
-        pgn.headers["Date"] = date
-    if roundno:
-        pgn.headers["Round"] = roundno
-    if white:
-        pgn.headers["White"] = white
-    if black:
-        pgn.headers["Black"] = black
-    if result:
-        pgn.headers["Result"] = result
+def save_game_append(game, file):
+    """Save GAME appending to FILE in pgn format."""
 
     with open(file, "a") as f:
-        f.write(str(pgn) + "\n\n\n")
+        f.write(str(game) + "\n\n\n")
         f.close()

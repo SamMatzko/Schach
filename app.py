@@ -740,12 +740,10 @@ class Window(Gtk.ApplicationWindow):
         if file is not None:
 
             # Get the contents of the file
-            with open(file) as f:
-                games = f.read()
-                f.close()
+            games = pgn.load_file(file)
             
             # Show the game selection dialog
-            response, game = dialogs.GameSelectorDialog(self, games, filetype="pgn").show_dialog()
+            response, game = dialogs.GameSelectorDialog(self, games).show_dialog()
             
             # Load the selected game if the user clicked OK
             if response == Gtk.ResponseType.OK:
@@ -764,7 +762,7 @@ class Window(Gtk.ApplicationWindow):
             ).show()
         if file is not None:
             
-            games = dcn.load_game(file)
+            games = dcn.load_file(file)
             
             # Show the game selection dialog
             response, game = dialogs.GameSelectorDialog(self, games).show_dialog()

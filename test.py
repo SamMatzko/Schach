@@ -29,6 +29,7 @@ import unittest
 
 import dcn
 import game
+import pgn
 
 gi.require_version("Gtk", "3.0")
 
@@ -44,6 +45,15 @@ STATUS_LIST = {
     "turn": True
 }
 DCN_FILE = """<game><header name="Event">A Test</header><header name="Site">This computer</header><header name="Date">1234.56.78</header><header name="Round">8</header><header name="White">A fake person</header><header name="Black">Dummy D. Dude</header><header name="Result">1-0</header><board fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" /><stack><move>a2a3</move><move>b8a6</move><move>e2e4</move></stack></game>\n\n\n"""
+PGN_FILE = """[Event "A Test"]
+[Site "This computer"]
+[Date "1234.56.78"]
+[Round "8"]
+[White "A fake person"]
+[Black "Dummy D. Dude"]
+[Result "1-0"]
+
+1. a3 Na6 2. e4 1-0\n\n\n"""
 chessboard_method_tested = False
 promote_method_tested = False
 status_method_tested = False
@@ -230,6 +240,32 @@ class GameSaverTestCase(unittest.TestCase):
             file = f.read()
             f.close()
         self.assertEqual(file, DCN_FILE)
+
+    def test_save_pgn(self):
+        """Test pgn saving by writing a game to a file and then comparing it to
+        a string that is what the file should look like."""
+
+        # Create the game and write it to the file
+        board = self.create_chess_game()
+        game_instance = chess.pgn.Game().from_board(board)
+        headers = {
+            "Event": "A Test",
+            "Site": "This computer",
+            "Date": "1234.56.78",
+            "Round": "8",
+            "White": "A fake person",
+            "Black": "Dummy D. Dude",
+            "Result": "1-0"
+        }
+        for header in headers:
+            game_instance.headers[header] = headers[header]
+        pgn.save_game(game_instance, "%ssamples/game_.pgn" % ROOT_PATH)
+
+        # Compare the file with what it should look like
+        with open("%ssamples/game_.pgn" % ROOT_PATH) as f:
+            file = f.read()
+            f.close()
+        self.assertEqual(file, PGN_FILE)
 
 if __name__ == "__main__":
     unittest.main()
