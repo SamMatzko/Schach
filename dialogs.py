@@ -896,7 +896,7 @@ class LicenseDialog(_Dialog):
             modal=True
         )
         self.set_resizable(True)
-        self.set_default_size(500, 500)
+        self.set_default_size(610, 500)
 
         # The area to which we can add the text box
         self.area = self.get_content_area()
