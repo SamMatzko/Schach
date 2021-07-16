@@ -619,7 +619,7 @@ class HeadersDialog(_Dialog):
     Valid results for OVERRIDE_RESULT are:
         1 - 0, 0 - 1, 1/2 - 1/2, and *"""
 
-    def __init__(self, parent, title, override_result=None):
+    def __init__(self, parent, title, override_result=None, headers=None):
         _Dialog.__init__(
             self,
             title=title,
@@ -646,6 +646,10 @@ class HeadersDialog(_Dialog):
 
         # Set the buttons
         self._create_buttons()
+
+        # Set the headers
+        if headers is not None:
+            self.set_headers(headers)
 
         self.show_all()
 
@@ -791,23 +795,18 @@ class HeadersDialog(_Dialog):
     def _destroy(self, *args):
         """Close the dialog properly."""
 
-        if self.headers == None:
-    
-            # Set the headers variable to a dictionary
-            self.headers = {}
-
-            # Get all the info for the headers
-            self.headers["Event"] = self.event_header_entry.get_text()
-            self.headers["Site"] = self.site_header_entry.get_text()
-            self.headers["Date"] = "%s.%s.%s" % (
-                self.date_header_year_entry.get_text(),
-                self.date_header_month_entry.get_text(),
-                self.date_header_day_entry.get_text()
-            )
-            self.headers["Round"] = self.round_header_entry.get_text()
-            self.headers["White"] = self.white_header_entry.get_text()
-            self.headers["Black"] = self.black_header_entry.get_text()
-            self.headers["Result"] = self.result
+        # Get all the info for the headers
+        self.headers["Event"] = self.event_header_entry.get_text()
+        self.headers["Site"] = self.site_header_entry.get_text()
+        self.headers["Date"] = "%s.%s.%s" % (
+            self.date_header_year_entry.get_text(),
+            self.date_header_month_entry.get_text(),
+            self.date_header_day_entry.get_text()
+        )
+        self.headers["Round"] = self.round_header_entry.get_text()
+        self.headers["White"] = self.white_header_entry.get_text()
+        self.headers["Black"] = self.black_header_entry.get_text()
+        self.headers["Result"] = self.result
         
         # Destroy us
         self.destroy()
@@ -850,6 +849,29 @@ class HeadersDialog(_Dialog):
                 self.result = "1/2 1/2"
             elif name == "3":
                 self.result = "*"
+
+    def set_headers(self, headers):
+        """Set the headers to HEADERS."""
+        self.headers = headers
+        self.event_header_entry.set_text(self.headers["Event"])
+        self.site_header_entry.set_text(self.headers["Site"])
+        year, month, day = self.headers["Date"].split(".")
+        self.date_header_year_entry.set_text(year)
+        self.date_header_month_entry.set_text(month)
+        self.date_header_day_entry.set_text(day)
+        self.round_header_entry.set_text(self.headers["Round"])
+        self.white_header_entry.set_text(self.headers["White"])
+        self.black_header_entry.set_text(self.headers["Black"])
+        result = self.headers["Result"]
+        if result == "*":
+            self.result_unfinished.set_active(True)
+        elif result == "1-0":
+            self.result_w_b.set_active(True)
+        elif result == "0-1":
+            self.result_b_w.set_active(True)
+        elif result == "1/2":
+            self.result_1_2.set_active(True)
+        self.show_all()
 
     def show_dialog(self):
         """Run the dilaog and return the user's response."""

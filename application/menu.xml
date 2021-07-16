@@ -74,6 +74,12 @@
             </section>
             <section>
                 <item>
+                    <attribute name="label">Edit Game Headers...</attribute>
+                    <attribute name="action">app.edit-edit_headers</attribute>
+                </item>
+            </section>
+            <section>
+                <item>
                     <attribute name="label">Preferences...</attribute>
                     <attribute name="action">app.edit-settings</attribute>
                 </item>

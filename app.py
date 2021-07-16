@@ -103,6 +103,7 @@ class App(Gtk.Application):
         self.edit_paste_game = Gio.SimpleAction.new("edit-paste_game")
         self.edit_copy_game_fen = Gio.SimpleAction.new("edit-copy_game_fen")
         self.edit_paste_game_fen = Gio.SimpleAction.new("edit-paste_game_fen")
+        self.edit_edit_headers = Gio.SimpleAction.new("edit-edit_headers")
         self.edit_settings = Gio.SimpleAction.new("edit-settings")
 
         self.view_toggle_status_frames = Gio.SimpleAction.new("view-toggle_status_frames")
@@ -133,6 +134,7 @@ class App(Gtk.Application):
         self.edit_paste_game.connect("activate", self.window_paste_game)
         self.edit_copy_game_fen.connect("activate", self.window_copy_game_fen)
         self.edit_paste_game_fen.connect("activate", self.window_paste_game_fen)
+        self.edit_edit_headers.connect("activate", self.window_edit_headers)
         self.edit_settings.connect("activate", self.window_show_settings)
 
         self.view_toggle_status_frames.connect("activate", self.window_toggle_status_frames)
@@ -163,6 +165,7 @@ class App(Gtk.Application):
         self.set_accels_for_action("app.edit-paste_game", ["<control>V"])
         self.set_accels_for_action("app.edit-copy_game_fen", ["<control><shift>C"])
         self.set_accels_for_action("app.edit-paste_game_fen", ["<control><shift>V"])
+        self.set_accels_for_action("app.edit-edit_headers", ["<control>H"])
         self.set_accels_for_action("app.edit-settings", ["<control>P"])
 
         self.set_accels_for_action("app.view-flip_chessboard", ["<control>D"])
@@ -188,6 +191,7 @@ class App(Gtk.Application):
         self.add_action(self.edit_paste_game)
         self.add_action(self.edit_copy_game_fen)
         self.add_action(self.edit_paste_game_fen)
+        self.add_action(self.edit_edit_headers)
         self.add_action(self.edit_settings)
         self.add_action(self.view_toggle_status_frames)
         self.add_action(self.view_flip_chessboard)
@@ -377,6 +381,10 @@ class App(Gtk.Application):
         """Invoke the current window's copy_fen method."""
         self.get_current_window_instance().paste_fen()
 
+    def window_edit_headers(self, *args):
+        """Invoke the curreint window's edit_headers method."""
+        self.get_current_window_instance().edit_headers()
+
     def window_show_settings(self, *args):
         """Invoke the current window's show_settings method."""
         # Show the dialog
@@ -494,6 +502,9 @@ class Window(Gtk.ApplicationWindow):
         self.game.show_game_over_stalemate = self.show_game_over_stalemate
         self.game.promote_function = self.show_promotion_dialog
 
+        # The headers of the current game
+        self.reset_headers()
+
         # The status frames
         self.white_status_frame = status_frame.WhiteStatusFrame()
         self.black_status_frame = status_frame.BlackStatusFrame()
@@ -526,7 +537,9 @@ class Window(Gtk.ApplicationWindow):
 
     def copy_game(self, *args):
         """Copy the current game to the clipboard."""
-        self.clipboard.set_text(str(chess.dcn.Game().from_board(self.game.board)), -1)
+        game = chess.dcn.Game().from_board(self.game.board)
+        game.headers = self.headers
+        self.clipboard.set_text(str(game), -1)
 
     def create_application_popover(self):
         """Create the application popover and its contents."""
@@ -646,6 +659,19 @@ class Window(Gtk.ApplicationWindow):
         self.fullscreen_button.set_tooltip_text("Toggle Fullscreen (F11)")
         self.header_bar.pack_end(self.fullscreen_button)
 
+    def edit_headers(self):
+        """Display a dialog for the editing of the current game's headers."""
+
+        # Show the headers dialog
+        response, headers = dialogs.HeadersDialog(
+            self,
+            "Edit Headers",
+            headers=self.headers
+        ).show_dialog()
+        if response == Gtk.ResponseType.OK:
+            print("OK")
+            self.headers = headers
+
     def engine_move(self, *args):
         """Have the computer play for the current turn."""
         self.game.engine_move()
@@ -695,7 +721,8 @@ class Window(Gtk.ApplicationWindow):
         response, headers = dialogs.HeadersDialog(
             self,
             title=title,
-            override_result=override_result
+            override_result=override_result,
+            headers=self.headers
         ).show_dialog()
 
         if response == Gtk.ResponseType.OK:
@@ -747,7 +774,10 @@ class Window(Gtk.ApplicationWindow):
             
             # Load the selected game if the user clicked OK
             if response == Gtk.ResponseType.OK:
-                self.game.new_game_from_pgn(game)        
+                self.game.new_game_from_pgn(game)   
+                self.reset_headers()
+                for header in game.headers:
+                    self.headers[header] = game.headers[header]     
 
     def load_game(self, file=None, *args):
         """Load a game from a dcn file."""
@@ -770,6 +800,7 @@ class Window(Gtk.ApplicationWindow):
             # Load the selected game if the user clicked OK
             if response == Gtk.ResponseType.OK:
                 self.game.new_game(game)
+                self.headers = game.headers
 
     def load_theme(self):
         """Load the theme."""
@@ -800,8 +831,10 @@ class Window(Gtk.ApplicationWindow):
         if response == Gtk.ResponseType.OK:
             self.save_game(append=True)
             self.game.new_game()
+            self.reset_headers()
         elif response == Gtk.ResponseType.NO:
             self.game.new_game()
+            self.reset_headers()
         else:
             pass
 
@@ -905,6 +938,18 @@ class Window(Gtk.ApplicationWindow):
         
         self.game.random_move()
 
+    def reset_headers(self):
+        """Reset self.headers to the default."""
+        self.headers = {
+            "Event": "?",
+            "Site": "?",
+            "Date": "????.??.??",
+            "Round": "?",
+            "White": "?",
+            "Black": "?",
+            "Result": "*"
+        }
+
     def save_game(self, action=None, something_else=None, append=None):
         """Prompt the user for a file to save the game to and the headers for the game."""
 
@@ -931,7 +976,8 @@ class Window(Gtk.ApplicationWindow):
         response, headers = dialogs.HeadersDialog(
             self,
             title=title,
-            override_result=override_result
+            override_result=override_result,
+            headers=self.headers
         ).show_dialog()
 
         if response == Gtk.ResponseType.OK:
