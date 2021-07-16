@@ -208,6 +208,10 @@
                     <attribute name="label">Engine Setup position</attribute>
                     <attribute name="action">app.game-engine_setup_position</attribute>
                 </item>
+                <item>
+                    <attribute name="label">Edit Headers...</attribute>
+                    <attribute name="action">app.edit-edit_headers</attribute>
+                </item>
             </section>
         <section>
             <submenu>
