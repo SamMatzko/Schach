@@ -222,6 +222,14 @@ class Game:
             pass
         self.update_status()
 
+    def move_redo_all(self):
+        """Redo the moves until there are no more moves to redo."""
+        while True:
+            if self.undo_stack != []:
+                self.move_redo()
+            else:
+                break
+
     def move_undo(self):
         """Undo the last move on the stack."""
         

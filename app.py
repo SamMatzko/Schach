@@ -99,6 +99,7 @@ class App(Gtk.Application):
 
         self.edit_undo = Gio.SimpleAction.new("edit-undo")
         self.edit_redo = Gio.SimpleAction.new("edit-redo")
+        self.edit_redo_all = Gio.SimpleAction.new("edit-redo_all")
         self.edit_copy_game = Gio.SimpleAction.new("edit-copy_game")
         self.edit_paste_game = Gio.SimpleAction.new("edit-paste_game")
         self.edit_copy_game_fen = Gio.SimpleAction.new("edit-copy_game_fen")
@@ -130,6 +131,7 @@ class App(Gtk.Application):
 
         self.edit_undo.connect("activate", self.window_move_undo)
         self.edit_redo.connect("activate", self.window_move_redo)
+        self.edit_redo_all.connect("activate", self.window_move_redo_all)
         self.edit_copy_game.connect("activate", self.window_copy_game)
         self.edit_paste_game.connect("activate", self.window_paste_game)
         self.edit_copy_game_fen.connect("activate", self.window_copy_game_fen)
@@ -161,6 +163,7 @@ class App(Gtk.Application):
 
         self.set_accels_for_action("app.edit-undo", ["<control>Z"])
         self.set_accels_for_action("app.edit-redo", ["<control><shift>Z"])
+        self.set_accels_for_action("app.edit-redo_all", ["<control><alt>Z"])
         self.set_accels_for_action("app.edit-copy_game", ["<control>C"])
         self.set_accels_for_action("app.edit-paste_game", ["<control>V"])
         self.set_accels_for_action("app.edit-copy_game_fen", ["<control><shift>C"])
@@ -187,6 +190,7 @@ class App(Gtk.Application):
         self.add_action(self.file_quit)
         self.add_action(self.edit_undo)
         self.add_action(self.edit_redo)
+        self.add_action(self.edit_redo_all)
         self.add_action(self.edit_copy_game)
         self.add_action(self.edit_paste_game)
         self.add_action(self.edit_copy_game_fen)
@@ -364,6 +368,10 @@ class App(Gtk.Application):
     def window_move_redo(self, *args):
         """Invoke the current window's move_redo method."""
         self.get_current_window_instance().move_redo()
+
+    def window_move_redo_all(self, *args):
+        """Invoke the current window's move_redo_all method."""
+        self.get_current_window_instance().move_redo_all()
 
     def window_copy_game(self, *args):
         """Invoke the current window's copy_game method."""
@@ -816,6 +824,10 @@ class Window(Gtk.ApplicationWindow):
     def move_redo(self, *args):
         """Redo the last undone move."""
         self.game.move_redo()
+
+    def move_redo_all(self):
+        """Redo all the undone moves."""
+        self.game.move_redo_all()
 
     def move_undo(self, *args):
         """Undo the last move on the stack."""

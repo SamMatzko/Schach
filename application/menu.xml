@@ -53,6 +53,10 @@
                     <attribute name="label">Redo</attribute>
                     <attribute name="action">app.edit-redo</attribute>
                 </item>
+                <item>
+                    <attribute name="label">Redo all</attribute>
+                    <attribute name="action">app.edit-redo_all</attribute>
+                </item>
             </section>
             <section>
                 <item>
@@ -178,6 +182,12 @@
                     <attribute name="label">Export as PGN...</attribute>
                     <attribute name="action">app.file-export_pgn</attribute>
                 </item>
+        </section>
+        <section>
+            <item>
+                <attribute name="label">Redo all</attribute>
+                <attribute name="action">app.edit-redo_all</attribute>
+            </item> 
         </section>
         <section>
             <item>
