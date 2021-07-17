@@ -168,7 +168,7 @@ class _StatusFrame(Gtk.Frame):
 
         # The move listbox and it's ScrolledWindow
         self.move_window = Gtk.ScrolledWindow()
-        self.box.pack_start(self.move_window, True, True, 5)
+        self.box.pack_start(self.move_window, True, True, 0)
         self.move_listbox = Gtk.ListBox()
         self.move_listbox.connect("event", self._event_handler)
         self.move_window.add(self.move_listbox)
@@ -179,15 +179,15 @@ class _StatusFrame(Gtk.Frame):
 
         # The labels
         self.queen_label = _PieceLabel(self.queen, "0", reverse=self.reverse)
-        self.box.pack_start(self.queen_label, False, False, 5)
+        self.box.pack_start(self.queen_label, False, False, 1)
         self.rook_label = _PieceLabel(self.rook, "0", reverse=self.reverse)
-        self.box.pack_start(self.rook_label, False, False, 5)
+        self.box.pack_start(self.rook_label, False, False, 1)
         self.bishop_label = _PieceLabel(self.bishop, "0", reverse=self.reverse)
-        self.box.pack_start(self.bishop_label, False, False, 5)
+        self.box.pack_start(self.bishop_label, False, False, 1)
         self.knight_label = _PieceLabel(self.knight, "0", reverse=self.reverse)
-        self.box.pack_start(self.knight_label, False, False, 5)
+        self.box.pack_start(self.knight_label, False, False, 1)
         self.pawn_label = _PieceLabel(self.pawn, "0", reverse=self.reverse)
-        self.box.pack_start(self.pawn_label, False, False, 5)
+        self.box.pack_start(self.pawn_label, False, False, 1)
 
         self.show_all()
 
