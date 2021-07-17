@@ -237,6 +237,11 @@ class Game:
             pass
         self.update_status()
 
+    def move_undo_to_index(self, index):
+        """Undo until the current move is at move INDEX."""
+        for x in range(0, len(self.board.move_stack) - index - 1):
+            self.move_undo()
+
     def new_game(self, game=None):
         """Create a new game."""
 
@@ -253,9 +258,6 @@ class Game:
         if game is not None:
             self.board = game.board
             self.chessboard_function(board=self.board)
-
-        self.status_function(white_move="")
-        self.status_function(black_move="")
 
         # Update the status
         self.update_status()
@@ -322,7 +324,7 @@ class Game:
     def update_status(self):
         """Update the status labels."""
 
-        self.status_function(board=str(self.board), fen=self.board.fen(), turn=self.board.turn)
+        self.status_function(board=self.board, fen=self.board.fen(), turn=self.board.turn)
 
         if self.board.is_game_over():
             self._game_over()
@@ -338,20 +340,6 @@ class Game:
                     self.status_function(check="black")
                 else:
                     self.status_function(check=False)
-        if self.board.turn:
-            try:
-                move = self.board.pop()
-                self.status_function(black_move=self.board.san(move))
-                self.board.push(move)
-            except IndexError:
-                pass
-        else:
-            try:
-                move = self.board.pop()
-                self.status_function(white_move=self.board.san(move))
-                self.board.push(move)
-            except IndexError:
-                pass
 
     # ------ Methods for unbound stuff ------ 
     def chessboard_function(self, **kw):

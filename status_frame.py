@@ -77,6 +77,28 @@ class _PieceLabel(Gtk.HBox):
 
         self.show_all()
 
+class _Row(Gtk.ListBoxRow):
+    """The base class for the move listbox rows."""
+
+    def __init__(self, *args, move="MOVE", index=0, **kwargs):
+        Gtk.ListBoxRow.__init__(self, *args, **kwargs)
+
+        # The move to display in the label, and the move's index in the board's
+        # move stack
+        self.move = move
+        self.index = index
+
+        # The main box
+        self.box = Gtk.HBox()
+        self.add(self.box)
+
+        # The label
+        self.label = Gtk.Label(label=move)
+        self.box.pack_start(self.label, True, True, 0)
+
+        self.show_all()
+        self.box.show_all()
+
 class _StatusFrame(Gtk.Frame):
     """The base class for the status frames."""
 
@@ -89,6 +111,12 @@ class _StatusFrame(Gtk.Frame):
         # The main box
         self.box = Gtk.VBox()
         self.add(self.box)
+
+        # The list of listbox rows
+        self.rows = []
+
+        # The number of moves played at the point displayed in the listbox
+        self.moves_so_far = 0
 
         # Set all the variables depending on the color
         if self.color == "white":
@@ -138,10 +166,12 @@ class _StatusFrame(Gtk.Frame):
         else:
             self.status_label_box.pack_start(self.status_label, False, False, 5)
 
-        # The move label
-        self.move_label = Gtk.Label()
-        self.box.pack_start(self.move_label, True, True, 5)
-        self.move_label.modify_font(Pango.FontDescription("30"))
+        # The move listbox and it's ScrolledWindow
+        self.move_window = Gtk.ScrolledWindow()
+        self.box.pack_start(self.move_window, True, True, 5)
+        self.move_listbox = Gtk.ListBox()
+        self.move_listbox.connect("event", self._event_handler)
+        self.move_window.add(self.move_listbox)
 
         # The separator
         self.separator = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
@@ -161,7 +191,16 @@ class _StatusFrame(Gtk.Frame):
 
         self.show_all()
 
-    def set_status(self, board=None, thinking=None, check=None, we_won=None, move=None):
+    def _event_handler(self, listbox, event):
+        if event.type == Gdk.EventType.DOUBLE_BUTTON_PRESS:
+            index = self.move_listbox.get_selected_row().index
+            self.undo_to_move_function(index)
+
+    def bind_undo_to_move(self, func):
+        """Bind a row-item double-click to a call of FUNC."""
+        self.undo_to_move_function = func
+
+    def set_status(self, board=None, thinking=None, check=None, we_won=None):
         """Set the status of the labels based on the information given."""
 
         # The board
@@ -179,11 +218,27 @@ class _StatusFrame(Gtk.Frame):
             p = "p"
 
         if board is not None:
-            self.queen_label.label.set_label(str(board.count(q)))
-            self.rook_label.label.set_label(str(board.count(r)))
-            self.bishop_label.label.set_label(str(board.count(b)))
-            self.knight_label.label.set_label(str(board.count(n)))
-            self.pawn_label.label.set_label(str(board.count(p)))
+            self.queen_label.label.set_label(str(str(board).count(q)))
+            self.rook_label.label.set_label(str(str(board).count(r)))
+            self.bishop_label.label.set_label(str(str(board).count(b)))
+            self.knight_label.label.set_label(str(str(board).count(n)))
+            self.pawn_label.label.set_label(str(str(board).count(p)))
+
+            # Set the move listbox
+            board2 = chess.Board()
+            for row in self.rows:
+                self.move_listbox.remove(row)
+            self.rows = []
+            self.moves_so_far = 0
+            for move in board.move_stack:
+                if (board2.turn and self.color == "white" or
+                    not board2.turn and self.color == "black"):
+                    row = _Row(move=board2.san(move), index=self.moves_so_far)
+                    self.rows.append(row)
+                    self.move_listbox.insert(row, 0)
+                    self.move_window.do_scroll_child(self.move_window, Gtk.ScrollType.START, False)
+                self.moves_so_far += 1
+                board2.push(move)
         if thinking is not None:
             if thinking:
                 self.king_label.spinner.start()
@@ -199,8 +254,10 @@ class _StatusFrame(Gtk.Frame):
                 self.status_label.set_label("Check!")
             else:
                 self.status_label.set_label("")
-        if move is not None:
-            self.move_label.set_label(move)
+
+    # In case it wasn't bound
+    def undo_to_move_function(self, *args):
+        pass
 
 class WhiteStatusFrame(_StatusFrame):
     """The status frame for white."""
@@ -218,14 +275,24 @@ if __name__ == "__main__":
     window = Gtk.Window()
     window.connect("delete-event", Gtk.main_quit)
     board = chess.Board()
-    board.push_uci("a2a3")
-    board.push_san("Na6")
+    board.push(chess.Move.from_uci("a2a3"))
+    print(board)
+    print()
+    board.push(chess.Move.from_uci("a7a6"))
+    print(board)
+    print()
+    board.push(chess.Move.from_uci("a3a4"))
+    print(board)
+    print()
+    board.push(chess.Move.from_uci("a6a5"))
+    print(board)
+    print()
     hbox = Gtk.HBox()
     vbox = Gtk.VBox()
     window.add(hbox)
     hbox.pack_start(vbox, True, True, 5)
     wsf = BlackStatusFrame()
     vbox.pack_start(wsf, True, True, 5)
-    wsf.set_status(board="QqPqPrNNnpp", thinking=True, we_won=True, move=board.san(chess.Move.from_uci("a3a4")))
+    wsf.set_status(board=board, thinking=True, we_won=True)
     window.show_all()
     Gtk.main()

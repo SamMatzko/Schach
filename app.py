@@ -507,7 +507,9 @@ class Window(Gtk.ApplicationWindow):
 
         # The status frames
         self.white_status_frame = status_frame.WhiteStatusFrame()
+        self.white_status_frame.bind_undo_to_move(self.game.move_undo_to_index)
         self.black_status_frame = status_frame.BlackStatusFrame()
+        self.black_status_frame.bind_undo_to_move(self.game.move_undo_to_index)
 
         # The status bar
         self.status_bar = status_bar.StatusBar()
@@ -1127,11 +1129,6 @@ class Window(Gtk.ApplicationWindow):
         if board is not None:
             self.white_status_frame.set_status(board=board)
             self.black_status_frame.set_status(board=board)
-        if black_move is not None:
-            if black_move:
-                self.black_status_frame.set_status(move=black_move)
-            else:
-                self.black_status_frame.set_status(move="")
         if check is not None:
             if check == "white":
                 self.white_status_frame.set_status(check=True)
@@ -1161,11 +1158,6 @@ class Window(Gtk.ApplicationWindow):
                 self.black_status_frame.set_status(thinking=False)
         if turn is not None:
             self.status_bar.set_status(turn=turn)
-        if white_move is not None:
-            if white_move:
-                self.white_status_frame.set_status(move=white_move)
-            else:
-                self.white_status_frame.set_status(move="")
         if winner is not None:
             if winner == "white":
                 self.white_status_frame.set_status(we_won=True)
