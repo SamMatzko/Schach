@@ -95,6 +95,9 @@ MENU_XML = f"{ROOT_PATH}ui/menu.xml"
 # The application info file
 APP_INFO = f"{ROOT_PATH}json/appinfo.json"
 
+# The settings file
+SETTINGS_FILE = f"{ROOT_PATH}json/settings.json"
+
 # The list of filters for the filedialogs
 FILE_FILTERS = []
 f1 = Gtk.FileFilter()

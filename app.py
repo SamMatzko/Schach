@@ -83,6 +83,11 @@ class App(Gtk.Application):
         # The list of windows
         self.windows = []
 
+        # Load the actions' keyboard shortcuts from settings.json
+        self.actions = {}
+        with open(SETTINGS_FILE) as f:
+            self.actions = json.load(f)["keybindings"]
+
         # The name of the currently focused window
         self.window = ""
 
@@ -152,33 +157,69 @@ class App(Gtk.Application):
         self.help_license.connect("activate", self.show_license)
         self.help_about.connect("activate", self.window_show_about)
 
-        self.set_accels_for_action("app.file-new", ["<control>N"])
-        self.set_accels_for_action("app.file-new_window", ["<control><shift>N"])
-        self.set_accels_for_action("app.file-open", ["<control>O"])
-        self.set_accels_for_action("app.file-save_append", ["<control>S"])
-        self.set_accels_for_action("app.file-save", ["<control><shift>S"])
-        self.set_accels_for_action("app.file-import_pgn", ["<control><shift>I"])
-        self.set_accels_for_action("app.file-export_pgn", ["<control><shift>E"])
-        self.set_accels_for_action("app.file-quit", ["<control>Q"])
+        self.set_accels_for_action("app.file-new", self.actions["app.file-new"])
+        self.set_accels_for_action("app.file-new_window", self.actions["app.file-new_window"])
+        self.set_accels_for_action("app.file-open", self.actions["app.file-open"])
+        self.set_accels_for_action("app.file-save_append", self.actions["app.file-save_append"])
+        self.set_accels_for_action("app.file-save", self.actions["app.file-save"])
+        self.set_accels_for_action("app.file-import_pgn", self.actions["app.file-import_pgn"])
+        self.set_accels_for_action("app.file-export_pgn", self.actions["app.file-export_pgn"])
+        self.set_accels_for_action("app.file-quit", self.actions["app.file-quit"])
 
-        self.set_accels_for_action("app.edit-undo", ["<control>Z"])
-        self.set_accels_for_action("app.edit-redo", ["<control><shift>Z"])
-        self.set_accels_for_action("app.edit-redo_all", ["<control><alt>Z"])
-        self.set_accels_for_action("app.edit-copy_game", ["<control>C"])
-        self.set_accels_for_action("app.edit-paste_game", ["<control>V"])
-        self.set_accels_for_action("app.edit-copy_game_fen", ["<control><shift>C"])
-        self.set_accels_for_action("app.edit-paste_game_fen", ["<control><shift>V"])
-        self.set_accels_for_action("app.edit-edit_headers", ["<control>H"])
-        self.set_accels_for_action("app.edit-settings", ["<control>P"])
+        self.set_accels_for_action("app.edit-undo", self.actions["app.edit-undo"])
+        self.set_accels_for_action("app.edit-redo", self.actions["app.edit-redo"])
+        self.set_accels_for_action("app.edit-redo_all", self.actions["app.edit-redo_all"])
+        self.set_accels_for_action("app.edit-copy_game", self.actions["app.edit-copy_game"])
+        self.set_accels_for_action("app.edit-paste_game", self.actions["app.edit-paste_game"])
+        self.set_accels_for_action("app.edit-copy_game_fen", self.actions["app.edit-copy_game_fen"])
+        self.set_accels_for_action("app.edit-paste_game_fen", self.actions["app.edit-paste_game_fen"])
+        self.set_accels_for_action("app.edit-edit_headers", self.actions["app.edit-edit_headers"])
+        self.set_accels_for_action("app.edit-settings", self.actions["app.edit-settings"])
 
-        self.set_accels_for_action("app.view-flip_chessboard", ["<control>D"])
-        self.set_accels_for_action("app.view-toggle_fullscreen", ["F11"])
+        self.set_accels_for_action("app.view-toggle_status_frames", self.actions["app.view-toggle_status_frames"])
+        self.set_accels_for_action("app.view-flip_chessboard", self.actions["app.view-flip_chessboard"])
+        self.set_accels_for_action("app.view-toggle_fullscreen", self.actions["app.view-toggle_fullscreen"])
 
-        self.set_accels_for_action("app.game-engine_move", ["<control>E"])
-        self.set_accels_for_action("app.game-random_move", ["<control>R"])
-        self.set_accels_for_action("app.game-type_move", ["<control>M"])
+        self.set_accels_for_action("app.game-engine_move", self.actions["app.game-engine_move"])
+        self.set_accels_for_action("app.game-random_move", self.actions["app.game-random_move"])
+        self.set_accels_for_action("app.game-setup_start_position", self.actions["app.game-setup_start_position"])
+        self.set_accels_for_action("app.game-engine_setup_position", self.actions["app.game-engine_setup_position"])
+        self.set_accels_for_action("app.game-type_move", self.actions["app.game-type_move"])
 
-        self.set_accels_for_action("app.edit-undo", ["<control>Z"])
+        self.set_accels_for_action("app.help-license", self.actions["app.help-license"])
+        self.set_accels_for_action("app.help-about", self.actions["app.help-about"])
+
+        self.actions["app.file-new"] = self.get_accels_for_action("app.file-new")
+        self.actions["app.file-new_window"] = self.get_accels_for_action("app.file-new_window")
+        self.actions["app.file-open"] = self.get_accels_for_action("app.file-open")
+        self.actions["app.file-save_append"] = self.get_accels_for_action("app.file-save_append")
+        self.actions["app.file-save"] = self.get_accels_for_action("app.file-save")
+        self.actions["app.file-import_pgn"] = self.get_accels_for_action("app.file-import_pgn")
+        self.actions["app.file-export_pgn"] = self.get_accels_for_action("app.file-export_pgn")
+        self.actions["app.file-quit"] = self.get_accels_for_action("app.file-quit")
+
+        self.actions["app.edit-undo"] = self.get_accels_for_action("app.edit-undo") 
+        self.actions["app.edit-redo"] = self.get_accels_for_action("app.edit-redo")
+        self.actions["app.edit-redo_all"] = self.get_accels_for_action("app.edit-redo_all")
+        self.actions["app.edit-copy_game"] = self.get_accels_for_action("app.edit-copy_game")
+        self.actions["app.edit-paste_game"] = self.get_accels_for_action("app.edit-paste_game")
+        self.actions["app.edit-copy_game_fen"] = self.get_accels_for_action("app.edit-copy_game_fen")
+        self.actions["app.edit-paste_game_fen"] = self.get_accels_for_action("app.edit-paste_game_fen")
+        self.actions["app.edit-edit_headers"] = self.get_accels_for_action("app.edit-edit_headers")
+        self.actions["app.edit-settings"] = self.get_accels_for_action("app.edit-settings")
+
+        self.actions["app.view-toggle_status_frames"] = self.get_accels_for_action("app.view-toggle_status_frames")
+        self.actions["app.view-flip_chessboard"] = self.get_accels_for_action("app.view-flip_chessboard") 
+        self.actions["app.view-toggle_fullscreen"] = self.get_accels_for_action("app.view-toggle_fullscreen")
+
+        self.actions["app.game-engine_move"] = self.get_accels_for_action("app.game-engine_move")
+        self.actions["app.game-random_move"] = self.get_accels_for_action("app.game-random_move") 
+        self.actions["app.game-setup_start_position"] = self.get_accels_for_action("app.game-setup_start_position")
+        self.actions["app.game-engine_setup_position"] = self.get_accels_for_action("app.game-engine_setup_position")
+        self.actions["app.game-type_move"] = self.get_accels_for_action("app.game-type_move")
+
+        self.actions["app.help-license"] = self.get_accels_for_action("app.help-license") 
+        self.actions["app.help-about"] = self.get_accels_for_action("app.help-about")
 
         self.add_action(self.file_new)
         self.add_action(self.file_new_window)
