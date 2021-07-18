@@ -157,37 +157,7 @@ class App(Gtk.Application):
         self.help_license.connect("activate", self.show_license)
         self.help_about.connect("activate", self.window_show_about)
 
-        self.set_accels_for_action("app.file-new", self.actions["app.file-new"])
-        self.set_accels_for_action("app.file-new_window", self.actions["app.file-new_window"])
-        self.set_accels_for_action("app.file-open", self.actions["app.file-open"])
-        self.set_accels_for_action("app.file-save_append", self.actions["app.file-save_append"])
-        self.set_accels_for_action("app.file-save", self.actions["app.file-save"])
-        self.set_accels_for_action("app.file-import_pgn", self.actions["app.file-import_pgn"])
-        self.set_accels_for_action("app.file-export_pgn", self.actions["app.file-export_pgn"])
-        self.set_accels_for_action("app.file-quit", self.actions["app.file-quit"])
-
-        self.set_accels_for_action("app.edit-undo", self.actions["app.edit-undo"])
-        self.set_accels_for_action("app.edit-redo", self.actions["app.edit-redo"])
-        self.set_accels_for_action("app.edit-redo_all", self.actions["app.edit-redo_all"])
-        self.set_accels_for_action("app.edit-copy_game", self.actions["app.edit-copy_game"])
-        self.set_accels_for_action("app.edit-paste_game", self.actions["app.edit-paste_game"])
-        self.set_accels_for_action("app.edit-copy_game_fen", self.actions["app.edit-copy_game_fen"])
-        self.set_accels_for_action("app.edit-paste_game_fen", self.actions["app.edit-paste_game_fen"])
-        self.set_accels_for_action("app.edit-edit_headers", self.actions["app.edit-edit_headers"])
-        self.set_accels_for_action("app.edit-settings", self.actions["app.edit-settings"])
-
-        self.set_accels_for_action("app.view-toggle_status_frames", self.actions["app.view-toggle_status_frames"])
-        self.set_accels_for_action("app.view-flip_chessboard", self.actions["app.view-flip_chessboard"])
-        self.set_accels_for_action("app.view-toggle_fullscreen", self.actions["app.view-toggle_fullscreen"])
-
-        self.set_accels_for_action("app.game-engine_move", self.actions["app.game-engine_move"])
-        self.set_accels_for_action("app.game-random_move", self.actions["app.game-random_move"])
-        self.set_accels_for_action("app.game-setup_start_position", self.actions["app.game-setup_start_position"])
-        self.set_accels_for_action("app.game-engine_setup_position", self.actions["app.game-engine_setup_position"])
-        self.set_accels_for_action("app.game-type_move", self.actions["app.game-type_move"])
-
-        self.set_accels_for_action("app.help-license", self.actions["app.help-license"])
-        self.set_accels_for_action("app.help-about", self.actions["app.help-about"])
+        self.set_action_accels()
 
         self.actions["app.file-new"] = self.get_accels_for_action("app.file-new")
         self.actions["app.file-new_window"] = self.get_accels_for_action("app.file-new_window")
@@ -250,6 +220,40 @@ class App(Gtk.Application):
         self.add_action(self.help_about)
 
         self.actions_created = True
+
+    def set_action_accels(self):
+
+        self.set_accels_for_action("app.file-new", self.actions["app.file-new"])
+        self.set_accels_for_action("app.file-new_window", self.actions["app.file-new_window"])
+        self.set_accels_for_action("app.file-open", self.actions["app.file-open"])
+        self.set_accels_for_action("app.file-save_append", self.actions["app.file-save_append"])
+        self.set_accels_for_action("app.file-save", self.actions["app.file-save"])
+        self.set_accels_for_action("app.file-import_pgn", self.actions["app.file-import_pgn"])
+        self.set_accels_for_action("app.file-export_pgn", self.actions["app.file-export_pgn"])
+        self.set_accels_for_action("app.file-quit", self.actions["app.file-quit"])
+
+        self.set_accels_for_action("app.edit-undo", self.actions["app.edit-undo"])
+        self.set_accels_for_action("app.edit-redo", self.actions["app.edit-redo"])
+        self.set_accels_for_action("app.edit-redo_all", self.actions["app.edit-redo_all"])
+        self.set_accels_for_action("app.edit-copy_game", self.actions["app.edit-copy_game"])
+        self.set_accels_for_action("app.edit-paste_game", self.actions["app.edit-paste_game"])
+        self.set_accels_for_action("app.edit-copy_game_fen", self.actions["app.edit-copy_game_fen"])
+        self.set_accels_for_action("app.edit-paste_game_fen", self.actions["app.edit-paste_game_fen"])
+        self.set_accels_for_action("app.edit-edit_headers", self.actions["app.edit-edit_headers"])
+        self.set_accels_for_action("app.edit-settings", self.actions["app.edit-settings"])
+
+        self.set_accels_for_action("app.view-toggle_status_frames", self.actions["app.view-toggle_status_frames"])
+        self.set_accels_for_action("app.view-flip_chessboard", self.actions["app.view-flip_chessboard"])
+        self.set_accels_for_action("app.view-toggle_fullscreen", self.actions["app.view-toggle_fullscreen"])
+
+        self.set_accels_for_action("app.game-engine_move", self.actions["app.game-engine_move"])
+        self.set_accels_for_action("app.game-random_move", self.actions["app.game-random_move"])
+        self.set_accels_for_action("app.game-setup_start_position", self.actions["app.game-setup_start_position"])
+        self.set_accels_for_action("app.game-engine_setup_position", self.actions["app.game-engine_setup_position"])
+        self.set_accels_for_action("app.game-type_move", self.actions["app.game-type_move"])
+
+        self.set_accels_for_action("app.help-license", self.actions["app.help-license"])
+        self.set_accels_for_action("app.help-about", self.actions["app.help-about"])
 
     def do_activate(self):
 
@@ -448,6 +452,10 @@ class App(Gtk.Application):
 
                 # Set the settings to the window
                 window.set_settings()
+
+            self.actions = settings["keybindings"]
+            self.set_action_accels()
+            
         else:
             pass
 
@@ -1074,7 +1082,7 @@ class Window(Gtk.ApplicationWindow):
         self.chessboard.set_size(self.settings["board_size"])
 
         # Write the file
-        json.dump(self.settings, open(f"{ROOT_PATH}json/settings.json", "w"))
+        json.dump(self.settings, open(f"{ROOT_PATH}json/settings.json", "w"), indent="    ")
 
     def setup_start_position(self):
         """Prompt the user for a start position to set a new game to."""

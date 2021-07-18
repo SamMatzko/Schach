@@ -28,6 +28,7 @@ import string
 import chess
 import chess.dcn
 import chessboards
+import messagedialogs
 
 gi.require_version("Gdk", "3.0")
 gi.require_version("Gtk", "3.0")
@@ -54,6 +55,68 @@ class _Dialog(Gtk.Dialog):
         """Close the dialog if the key pressed was "escape"."""
         if event.keyval == Gdk.KEY_Escape:
             self._destroy()
+
+class _ShortcutsListBoxRow(Gtk.ListBoxRow):
+    """A ListBoxRow for the keyboard shortcuts."""
+
+    def __init__(self, *args, parent, action, keybinding, func, **kwargs):
+        Gtk.ListBoxRow.__init__(self, *args, **kwargs)
+
+        self.parent = parent
+        self.action = action
+
+        # The main box
+        self.box = Gtk.HBox()
+        self.add(self.box)
+
+        # The label
+        actions = json.load(open(MENU_OPTIONS))
+        action = actions[action]
+        self.label = Gtk.Label(label=action)
+        self.box.pack_start(self.label, False, True, 0)
+
+        # The function to call when the user sets a shortcut
+        self.func = func
+        
+        # The model button's label
+        try:
+            self.modelbutton_label = keybinding[0].upper()
+        except IndexError:
+            self.modelbutton_label = ""
+        self.modelbutton_label = self.modelbutton_label.replace("<PRIMARY>", "Ctrl+")
+        self.modelbutton_label = self.modelbutton_label.replace("<SHIFT>", "Shift+")
+        self.modelbutton_label = self.modelbutton_label.replace("<ALT>", "Alt+")
+        
+        # The shortcut button
+        self.modelbutton = Gtk.ModelButton(label=self.modelbutton_label)
+        self.modelbutton.connect("clicked", self.show_shortcut_dialog)
+        self.box.pack_end(self.modelbutton, False, True, 0)
+        self.box.show_all()
+
+    def set_shortcut(self, shortcut):
+        """Set the shortcut to SHORTCUT."""
+        self.modelbutton_label = shortcut.upper()
+        self.modelbutton_label = self.modelbutton_label.replace("<PRIMARY>", "Ctrl+")
+        self.modelbutton_label = self.modelbutton_label.replace("<SHIFT>", "Shift+")
+        self.modelbutton_label = self.modelbutton_label.replace("<ALT>", "Alt+")
+        self.modelbutton.set_label(self.modelbutton_label)
+        self.func(self.action, shortcut)
+
+    def show_shortcut_dialog(self, event):
+        response, shortcut = KeybindingsDialog(self.parent).show_dialog()
+        if response == Gtk.ResponseType.OK:
+            humanreadable_shortcut = shortcut.upper()
+            humanreadable_shortcut = humanreadable_shortcut.replace("<PRIMARY>", "Ctrl+")
+            humanreadable_shortcut = humanreadable_shortcut.replace("<SHIFT>", "Shift+")
+            humanreadable_shortcut = humanreadable_shortcut.replace("<ALT>", "Alt+")
+            if not humanreadable_shortcut.endswith("+"):
+                self.set_shortcut(shortcut)
+            else:
+                messagedialogs.show_info(
+                    self.parent,
+                    "Invalid Shortcut",
+                    'Shortcut "%s" does not have a final keystroke.' % humanreadable_shortcut
+                )
 
 class AboutDialog:
     """The class that handles the about dialog."""
@@ -885,6 +948,119 @@ class HeadersDialog(_Dialog):
         # Return the reply
         return response, self.headers
 
+class KeybindingsDialog(_Dialog):
+    """The dialog to get a keyboard shortcut from the user."""
+
+    def __init__(self, parent):
+        _Dialog.__init__(
+            self,
+            title="Enter a shortcut",
+            transient_for=parent,
+            modal=True
+        )
+
+        # The shortcut we're set to
+        self.shortcut = ""
+
+        # The area
+        self.area = self.get_content_area()
+
+        # The boxes
+        self.back_box = Gtk.VBox()
+        self.box = Gtk.HBox()
+        self.back_box.pack_start(self.box, True, True, 3)
+        self.back_box.show_all()
+        self.area.add(self.back_box)
+
+        self.shift_on = False
+        self.control_on = False
+        self.alt_on = False
+        self.entry_text = ""
+
+        buttons = (
+            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL),
+            (Gtk.STOCK_OK, Gtk.ResponseType.OK)
+        )
+        for button in buttons:
+            self.add_button(button[0], button[1])
+
+        # Create the buttons
+        self._create_buttons()
+
+    def _create_buttons(self):
+        """Create the shortcut customizer buttons."""
+
+        self.shift_button = Gtk.ToggleButton(label="Shift")
+        self.shift_button.connect("clicked", self._on_button_toggle, "<Shift>")
+        self.box.pack_start(self.shift_button, False, False, 3)
+
+        self.box.pack_start(Gtk.Label(label="+"), False, False, 3)
+
+        self.control_button = Gtk.ToggleButton(label="Ctrl")
+        self.control_button.connect("clicked", self._on_button_toggle, "<Primary>")
+        self.box.pack_start(self.control_button, False, False, 3)
+
+        self.box.pack_start(Gtk.Label(label="+"), False, False, 3)
+
+        self.alt_button = Gtk.ToggleButton(label="Alt")
+        self.alt_button.connect("clicked", self._on_button_toggle, "<Alt>")
+        self.box.pack_start(self.alt_button, False, False, 3)
+
+        self.box.pack_start(Gtk.Label(label="+"), False, False, 3)
+
+        self.key_entry = Gtk.Entry()
+        self.key_entry.set_width_chars(2)
+        self.key_entry.set_max_length(1)
+        self.key_entry.connect("event", self._entry_activate)
+        self.box.pack_start(self.key_entry, False, False, 3)
+
+        self.box.show_all()
+
+    def _destroy(self, *args):
+        """Destroy us!"""
+        self._set_shortcut()
+        self.destroy()
+
+    def _entry_activate(self, *args):
+        self.entry_text = self.key_entry.get_text()
+
+    def _on_button_toggle(self, button, name):
+        if button.get_active():
+            if name == "<Primary>":
+                self.control_on = True
+            elif name == "<Shift>":
+                self.shift_on = True
+            elif name == "<Alt>":
+                self.alt_on = True
+        else:
+            if name == "<Primary>":
+                self.control_on = True
+            elif name == "<Shift>":
+                self.shift_on = True
+            elif name == "<Alt>":
+                self.alt_on = True
+
+        self._set_shortcut()
+
+    def _set_shortcut(self):
+
+        # Set the shortcut based on the buttons and entry
+        self.shortcut = ""
+        if self.control_on:
+            self.shortcut += "<Primary>"
+        if self.shift_on:
+            self.shortcut += "<Shift>"
+        if self.alt_on:
+            self.shortcut += "<Alt>"
+        self.shortcut += self.entry_text
+
+    def show_dialog(self):
+        """Show the dialog."""
+        response = self.run()
+        self._destroy()
+
+        return response, self.shortcut
+
 class LicenseDialog(_Dialog):
     """The dialog that show the license."""
 
@@ -1030,6 +1206,7 @@ class SettingsDialog(_Dialog):
             self,
             title="Schach Preferences"
         )
+        self.set_resizable(True)
         self.set_default_size(500, 500)
 
         # The square size for the preview
@@ -1037,6 +1214,9 @@ class SettingsDialog(_Dialog):
 
         # The area to which we can add stuff
         self.area = self.get_content_area()
+
+        # The settings
+        self.settings = json.load(open(SETTINGS_FILE))
 
         # Create the window
         self._create_window()
@@ -1070,7 +1250,39 @@ class SettingsDialog(_Dialog):
         # The window tab
         self.window_box = Gtk.VBox()
         self._create_window_box()
-        self.notebook.insert_page(self.window_box, Gtk.Label(label="Window"), 0)
+        self.notebook.append_page(self.window_box, Gtk.Label(label="General"))
+
+        # The shortcuts tab
+        self.shortcuts_box = Gtk.VBox()
+        self._create_shortcuts_box()
+        self.notebook.append_page(self.shortcuts_box, Gtk.Label(label="Keyboard Shortcuts"))
+
+        # Set the window to the settings
+        self._set_to_settings()
+
+        self.notebook.set_current_page(0)
+
+    def _create_shortcuts_box(self):
+        """Add all the elements to the shortcuts box."""
+        
+        # The shortcuts listbox
+        self.shortcuts_listbox = Gtk.ListBox()
+        self.shortcuts_listbox.connect("button-press-event", self._on_row_click)
+        self.shortcuts_window = Gtk.ScrolledWindow()
+        self.shortcuts_window.add(self.shortcuts_listbox)
+        self.shortcuts_box.pack_start(self.shortcuts_window, True, True, 0)
+
+        for shortcut in self.settings["keybindings"]:
+            row = _ShortcutsListBoxRow(
+                parent=self,
+                action=shortcut,
+                keybinding=self.settings["keybindings"][shortcut],
+                func=self._on_shortcut_set
+            )
+            self.shortcuts_listbox.insert(row, -1)
+        
+        self.shortcuts_box.show_all()
+        self.shortcuts_listbox.show_all()
 
     def _create_window_box(self):
         """Add all the elements to the window box."""
@@ -1101,9 +1313,6 @@ class SettingsDialog(_Dialog):
         self.board_size_image = Gtk.Image.new_from_file(self.squares.IMAGE_Q)
         self.board_size_box.pack_end(self.board_size_image, False, False, 3)
 
-        # Set the window to the settings
-        self._set_to_settings()
-
     def _destroy(self, *args):
         """Close the dialog properly."""
 
@@ -1116,6 +1325,15 @@ class SettingsDialog(_Dialog):
         self.board_size_image = Gtk.Image.new_from_file(self.squares.IMAGE_Q)
         self.board_size_box.pack_end(self.board_size_image, False, False, 3)
         self.board_size_box.show_all()
+        
+    def _on_row_click(self, listbox, event):
+        """Show the shortcuts dialog for the selected row, if it was double-clicked."""
+        if event.type == Gdk.EventType.DOUBLE_BUTTON_PRESS:
+            self.shortcuts_listbox.get_selected_row().show_shortcut_dialog(None)
+
+    def _on_shortcut_set(self, name, shortcut):
+        """Set the action NAME to have shortcut SHORTCUT.""" 
+        self.settings["keybindings"][name] = [shortcut]
 
     def _save_settings(self):
         """Save the settings in the window to the json file."""
@@ -1126,13 +1344,13 @@ class SettingsDialog(_Dialog):
         self.settings["board_size"] = int(self.board_size_scale.get_value())
 
         # Write the file
-        json.dump(self.settings, open(f"{ROOT_PATH}json/settings.json", "w"))
+        json.dump(self.settings, open(SETTINGS_FILE, "w"))
 
     def _set_to_settings(self):
         """Set all the window's settings widgets to the settings from settings.json."""
 
         # Get the settings from settings.json
-        self.settings = json.load(open(f"{ROOT_PATH}/json/settings.json"))
+        self.settings = json.load(open(SETTINGS_FILE))
 
         # Set the widgets
         self.status_frames_checkbutton.set_active(self.settings["show_status_frames"])
@@ -1164,13 +1382,13 @@ if __name__ == "__main__":
     def sd(*args):
         # print(BoardSetupDialog(window).show_dialog())
         # print(CalendarDialog(window).show_dialog())
-        print(GameSelectorDialog(window, games).show_dialog())
+        # print(GameSelectorDialog(window, games).show_dialog())
         # print(HeadersDialog(window, "1/2 - 1/2").show_dialog())
         # print(LicenseDialog(window).show_dialog())
         # print(PromotionDialog(window).show_dialog())
         # print(PromotionDialog(window, "black").show_dialog())
         # print(NewGameDialog(window).show_dialog())
-        # print(SettingsDialog(window).show_dialog())
+        print(SettingsDialog(window).show_dialog())
 
     window.connect("delete-event", Gtk.main_quit)
     window.connect("key-press-event", sd)
