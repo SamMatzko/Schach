@@ -42,7 +42,7 @@ if "linux" in sys.platform.lower():
         CURRENT_DIR = os.path.dirname(APPLICATION_DIR)
 
         # Load our version info
-        with open(APPLICATION_DIR + "json/appinfo.json") as f:
+        with open(APPLICATION_DIR + "data/appinfo.json") as f:
             current_appinfo = json.load(f)
             f.close()
         current_version = current_appinfo["version"]
@@ -50,26 +50,39 @@ if "linux" in sys.platform.lower():
 
         # Create the desktop file from the template
         print("Creating desktop...", end="")
-        with open(APPLICATION_DIR + "desktop.template") as f:
+        with open(APPLICATION_DIR + "data/desktop.template") as f:
             template = f.read()
             f.close()
         template = template.replace("<ICON_PATH>", APPLICATION_DIR + "icons/application/appicon.png")
         template = template.replace("<APP_PATH>", APPLICATION)
-        with open(APPLICATION_DIR + "schach-chess.desktop", "w") as f:
+        with open(APPLICATION_DIR + "data/schach-chess.desktop", "w") as f:
             f.write(template)
             f.close()
         print("Done")
         
         # Install the desktop
         print("Installing desktop...", end="")
-        os.system("xdg-desktop-menu install %s" % APPLICATION_DIR + "schach-chess.desktop")
-        os.system("xdg-desktop-icon install %s" % APPLICATION_DIR + "schach-chess.desktop")
+        os.system("xdg-desktop-menu install %s" % APPLICATION_DIR + "data/schach-chess.desktop")
+        os.system("xdg-desktop-icon install %s" % APPLICATION_DIR + "data/schach-chess.desktop")
         os.system("xdg-mime default schach-chess.desktop application/vnd.chess-pgn")
         print("Done")
 
-        # Install the mimetype\
+        # Install the mimetype
         print("Installing mimetype...", end="")
-        os.system("xdg-mime install %s" % APPLICATION_DIR + "application-chess.xml")
+        os.system("xdg-mime install %s" % APPLICATION_DIR + "data/application-chess.xml")
+        print("Done")
+
+        # Install the config directory
+        config_dir = "%s/.schach/" % os.environ["HOME"]
+        print("Installing config directory in %s..." % config_dir, end="")
+        if not os.path.exists(config_dir):
+            os.mkdir(config_dir)
+        with open("%sdata/settings-default.json" % APPLICATION_DIR) as f:
+            default_settings = f.read()
+            f.close()
+        with open("%ssettings.json" % config_dir, "w") as f:
+            f.write(default_settings)
+            f.close()
         print("Done")
 
     else:
@@ -80,7 +93,7 @@ if "linux" in sys.platform.lower():
         CURRENT_DIR = os.path.dirname(APPLICATION_DIR)
 
         # Load our version info
-        with open(APPLICATION_DIR + "json/appinfo.json") as f:
+        with open(APPLICATION_DIR + "data/appinfo.json") as f:
             current_appinfo = json.load(f)
             f.close()
         current_version = current_appinfo["version"]

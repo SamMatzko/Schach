@@ -506,7 +506,7 @@ class Window(Gtk.ApplicationWindow):
         self.connect("key-press-event", self.escape_fullscreen)
 
         # Load the settings
-        self.settings = json.load(open(f"{ROOT_PATH}json/settings.json"))
+        self.settings = json.load(open(SETTINGS_FILE))
 
         # The application
         self.app = application
@@ -1146,7 +1146,7 @@ class Window(Gtk.ApplicationWindow):
         self.chessboard.set_size(self.settings["board_size"])
 
         # Write the file
-        json.dump(self.settings, open(f"{ROOT_PATH}json/settings.json", "w"), indent="    ")
+        json.dump(self.settings, open(SETTINGS_FILE, "w"), indent="    ")
 
     def setup_start_position(self):
         """Prompt the user for a start position to set a new game to."""

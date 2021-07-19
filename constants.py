@@ -30,6 +30,9 @@ from gi.repository import Gtk
 # The parent directory
 ROOT_PATH = f"{os.path.dirname(__file__)}/"
 
+# The config directory
+CONFIG_DIR = "%s/.schach/" % os.environ["HOME"]
+
 # The lists of LETTERS and numbers
 LETTERS = ["a", "b", "c", "d", "e", "f", "g", "h"]
 NUMBERS = ["1", "2", "3", "4", "5", "6", "7", "8"]
@@ -79,11 +82,6 @@ IMAGE_P = f"{ROOT_PATH}icons/pieces/64x64/pawn_w.png"
 IMAGE_p = f"{ROOT_PATH}icons/pieces/64x64/pawn_b.png"
 
 IMAGE_APPLICATION = f"{ROOT_PATH}icons/application/appicon.png"
-IMAGE_ERROR = f"{ROOT_PATH}icons/application/error.png"
-IMAGE_INFO = f"{ROOT_PATH}icons/application/info.png"
-IMAGE_QUESTION = f"{ROOT_PATH}icons/application/question.png"
-IMAGE_SEARCH = f"{ROOT_PATH}icons/application/search.png"
-IMAGE_WARNING = f"{ROOT_PATH}icons/application/warning.png"
 
 # The audio file
 AUDIO_FILE_1 = f"{ROOT_PATH}audio/move1.wav"
@@ -93,13 +91,13 @@ AUDIO_FILE_2 = f"{ROOT_PATH}audio/move2.wav"
 MENU_XML = f"{ROOT_PATH}ui/menu.xml"
 
 # The application info file
-APP_INFO = f"{ROOT_PATH}json/appinfo.json"
+APP_INFO = f"{ROOT_PATH}data/appinfo.json"
 
 # The settings file
-SETTINGS_FILE = f"{ROOT_PATH}json/settings.json"
+SETTINGS_FILE = f"{CONFIG_DIR}settings.json"
 
 # The menu options file
-MENU_OPTIONS = f"{ROOT_PATH}json/menuoptions.json"
+MENU_OPTIONS = f"{ROOT_PATH}data/menuoptions.json"
 
 # The list of filters for the filedialogs
 FILE_FILTERS = []

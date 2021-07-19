@@ -1,0 +1,78 @@
+{
+    "show_status_frames": true,
+    "use_app_theme": false,
+    "board_size": 2,
+    "keybindings": {
+        "app.file-new": [
+            "<Primary>n"
+        ],
+        "app.file-new_window": [
+            "<Primary><Shift>n"
+        ],
+        "app.file-open": [
+            "<Primary>o"
+        ],
+        "app.file-save_append": [
+            "<Primary>s"
+        ],
+        "app.file-save": [
+            "<Primary><Shift>s"
+        ],
+        "app.file-import_pgn": [
+            "<Primary><Shift>i"
+        ],
+        "app.file-export_pgn": [
+            "<Primary><Shift>e"
+        ],
+        "app.file-quit": [
+            "<Primary>q"
+        ],
+        "app.edit-undo": [
+            "<Primary>z"
+        ],
+        "app.edit-redo": [
+            "<Primary><Shift>z"
+        ],
+        "app.edit-redo_all": [
+            "<Primary><Alt>z"
+        ],
+        "app.edit-copy_game": [
+            "<Primary>c"
+        ],
+        "app.edit-paste_game": [
+            "<Primary>v"
+        ],
+        "app.edit-copy_game_fen": [
+            "<Primary><Shift>c"
+        ],
+        "app.edit-paste_game_fen": [
+            "<Primary><Shift>v"
+        ],
+        "app.edit-edit_headers": [
+            "<Primary>h"
+        ],
+        "app.edit-settings": [
+            "<Primary>p"
+        ],
+        "app.view-toggle_status_frames": [],
+        "app.view-flip_chessboard": [
+            "<Primary>d"
+        ],
+        "app.view-toggle_fullscreen": [
+            "F11"
+        ],
+        "app.game-engine_move": [
+            "<Primary>e"
+        ],
+        "app.game-random_move": [
+            "<Primary>r"
+        ],
+        "app.game-setup_start_position": [],
+        "app.game-engine_setup_position": [],
+        "app.game-type_move": [
+            "<Primary>m"
+        ],
+        "app.help-license": [],
+        "app.help-about": []
+    }
+}
