@@ -256,16 +256,16 @@ class App(Gtk.Application):
         self.set_accels_for_action("app.help-about", self.actions["app.help-about"])
 
     def do_activate(self):
+        
+        # Create the actions
+        self.create_actions()
 
-        # If the window list is empty, dd a new window to the list of windows
+        # If the window list is empty, add a new window to the list of windows
         if len(self.windows) == 0:
             window = Window(application=self, title="Schach", name="%s" % len(self.windows))
             self.windows.append(window)
             self.window = window.name
             window.present()
-
-            # Create the actions
-            self.create_actions()
 
     def do_command_line(self, command_line):
 
@@ -509,7 +509,7 @@ class Window(Gtk.ApplicationWindow):
         self.settings = json.load(open(f"{ROOT_PATH}json/settings.json"))
 
         # The application
-        self.application = application
+        self.app = application
 
         # The window's name
         self.name = name
@@ -578,6 +578,7 @@ class Window(Gtk.ApplicationWindow):
         self.game_box.pack_start(self.black_status_frame, True, True, 5)
         
         self.game.update_status()
+        self.set_actions_active()
 
         self.maximize()
 
@@ -731,14 +732,43 @@ class Window(Gtk.ApplicationWindow):
             print("OK")
             self.headers = headers
 
+    def enable_move_actions(self):
+        """Enable all the actions and buttons relating to making a move."""
+        self.play_button.set_sensitive(True)
+        self.random_button.set_sensitive(True)
+        self.app.lookup_action("game-engine_move").set_enabled(True)
+        self.app.lookup_action("game-random_move").set_enabled(True)
+        self.app.lookup_action("game-type_move").set_enabled(True)
+
     def engine_move(self, *args):
         """Have the computer play for the current turn."""
         self.game.engine_move()
 
     def engine_setup_position(self):
         """Have the engine setup a position for the user to solve."""
-        for x in range(0, random.randint(0, 30)):
-            self.game.engine_move()
+
+        # Ask the user if they want to save the current game first
+        response = messagedialogs.ask_yes_no_cancel(
+            self,
+            "Save game?",
+            "Save the current game before creating a new one?"
+        )
+        if response == Gtk.ResponseType.OK:
+            self.save_game(append=True)
+            self.game.new_game()
+            self.reset_headers()
+            for x in range(0, random.randint(0, 30)):
+                self.game.engine_move()
+        elif response == Gtk.ResponseType.NO:
+            self.game.new_game()
+            self.reset_headers()
+            for x in range(0, random.randint(0, 30)):
+                self.game.engine_move()
+        else:
+            pass
+
+        self.set_actions_active()
+        self.enable_move_actions()
 
     def escape_fullscreen(self, widget, event):
         if event.keyval == Gdk.KEY_Escape:
@@ -754,7 +784,7 @@ class Window(Gtk.ApplicationWindow):
         self.game.engine.quit()
 
         # Close the window and give the application the name of the closed window
-        self.application.do_window_closed(self.name)
+        self.app.do_window_closed(self.name)
         self.destroy()
 
     def export_pgn(self):
@@ -836,7 +866,9 @@ class Window(Gtk.ApplicationWindow):
                 self.game.new_game_from_pgn(game)   
                 self.reset_headers()
                 for header in game.headers:
-                    self.headers[header] = game.headers[header]     
+                    self.headers[header] = game.headers[header]
+        self.set_actions_active()
+        self.enable_move_actions()
 
     def load_game(self, file=None, *args):
         """Load a game from a dcn file."""
@@ -860,6 +892,9 @@ class Window(Gtk.ApplicationWindow):
             if response == Gtk.ResponseType.OK:
                 self.game.new_game(game)
                 self.headers = game.headers
+
+        self.set_actions_active()
+        self.enable_move_actions()
 
     def load_theme(self):
         """Load the theme."""
@@ -900,6 +935,9 @@ class Window(Gtk.ApplicationWindow):
             self.reset_headers()
         else:
             pass
+
+        self.set_actions_active()
+        self.enable_move_actions()
 
     def on_black_computer_scale(self, scale):
         """Set the black computer's playing power to the scale's value."""
@@ -1065,6 +1103,32 @@ class Window(Gtk.ApplicationWindow):
         else:
             return True
 
+    def set_actions_active(self):
+        """Set the actions' sensitivity based on application status."""
+
+        if self.game.board.move_stack == []:
+            self.undo_button.set_sensitive(False)
+            self.app.lookup_action("edit-undo").set_enabled(False)
+        else:
+            self.undo_button.set_sensitive(True)
+            self.app.lookup_action("edit-undo").set_enabled(True)
+        
+        if self.game.undo_stack == []:
+            self.redo_button.set_sensitive(False)
+            self.app.lookup_action("edit-redo").set_enabled(False)
+            self.app.lookup_action("edit-redo_all").set_enabled(False)
+        else:
+            self.redo_button.set_sensitive(True)
+            self.app.lookup_action("edit-redo").set_enabled(True)
+            self.app.lookup_action("edit-redo_all").set_enabled(True)
+
+        if self.game.board.is_game_over():
+            self.play_button.set_sensitive(False)
+            self.random_button.set_sensitive(False)
+            self.app.lookup_action("game-engine_move").set_enabled(False)
+            self.app.lookup_action("game-random_move").set_enabled(False)
+            self.app.lookup_action("game-type_move").set_enabled(False)
+
     def set_settings(self):
         """Set the window to the current settings in self.settings."""
 
@@ -1112,6 +1176,7 @@ class Window(Gtk.ApplicationWindow):
                 pass
         else:
             pass
+        self.set_actions_active()
 
     def show_about(self, *args):
         """Show the about dialog."""
@@ -1228,7 +1293,8 @@ class Window(Gtk.ApplicationWindow):
                 self.black_status_frame.set_status(we_won=True)
             else:
                 self.black_status_frame.set_status(we_won=False)
+        self.set_actions_active()
 
     def window_focused(self, widget, event):
         if self.has_toplevel_focus():
-            self.application.do_window_activated(self.name)
+            self.app.do_window_activated(self.name)
