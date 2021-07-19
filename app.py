@@ -736,6 +736,7 @@ class Window(Gtk.ApplicationWindow):
         """Enable all the actions and buttons relating to making a move."""
         self.play_button.set_sensitive(True)
         self.random_button.set_sensitive(True)
+        self.move_entry.set_sensitive(True)
         self.app.lookup_action("game-engine_move").set_enabled(True)
         self.app.lookup_action("game-random_move").set_enabled(True)
         self.app.lookup_action("game-type_move").set_enabled(True)
@@ -867,8 +868,8 @@ class Window(Gtk.ApplicationWindow):
                 self.reset_headers()
                 for header in game.headers:
                     self.headers[header] = game.headers[header]
-        self.set_actions_active()
-        self.enable_move_actions()
+                self.set_actions_active()
+                self.enable_move_actions()
 
     def load_game(self, file=None, *args):
         """Load a game from a dcn file."""
@@ -892,9 +893,8 @@ class Window(Gtk.ApplicationWindow):
             if response == Gtk.ResponseType.OK:
                 self.game.new_game(game)
                 self.headers = game.headers
-
-        self.set_actions_active()
-        self.enable_move_actions()
+                self.set_actions_active()
+                self.enable_move_actions()
 
     def load_theme(self):
         """Load the theme."""
@@ -930,14 +930,15 @@ class Window(Gtk.ApplicationWindow):
             self.save_game(append=True)
             self.game.new_game()
             self.reset_headers()
+            self.set_actions_active()
+            self.enable_move_actions()
         elif response == Gtk.ResponseType.NO:
             self.game.new_game()
             self.reset_headers()
+            self.set_actions_active()
+            self.enable_move_actions()
         else:
             pass
-
-        self.set_actions_active()
-        self.enable_move_actions()
 
     def on_black_computer_scale(self, scale):
         """Set the black computer's playing power to the scale's value."""
@@ -1125,6 +1126,7 @@ class Window(Gtk.ApplicationWindow):
         if self.game.board.is_game_over():
             self.play_button.set_sensitive(False)
             self.random_button.set_sensitive(False)
+            self.move_entry.set_sensitive(False)
             self.app.lookup_action("game-engine_move").set_enabled(False)
             self.app.lookup_action("game-random_move").set_enabled(False)
             self.app.lookup_action("game-type_move").set_enabled(False)
