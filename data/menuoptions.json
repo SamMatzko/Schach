@@ -9,6 +9,7 @@
     "app.file-quit": "Quit",
     "app.edit-undo": "Undo",
     "app.edit-redo": "Redo",
+    "app.edit-undo_all": "Undo All",
     "app.edit-redo_all": "Redo All",
     "app.edit-copy_game": "Copy Game",
     "app.edit-paste_game": "Paste Game",
