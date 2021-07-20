@@ -54,6 +54,10 @@
                     <attribute name="action">app.edit-redo</attribute>
                 </item>
                 <item>
+                    <attribute name="label">Undo All</attribute>
+                    <attribute name="action">app.edit-undo_all</attribute>
+                </item>
+                <item>
                     <attribute name="label">Redo all</attribute>
                     <attribute name="action">app.edit-redo_all</attribute>
                 </item>

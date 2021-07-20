@@ -33,8 +33,11 @@
         "app.edit-redo": [
             "<Primary><Shift>z"
         ],
-        "app.edit-redo_all": [
+        "app.edit-undo_all": [
             "<Primary><Alt>z"
+        ],
+        "app.edit-redo_all": [
+            "<Primary><Shift><Alt>z"
         ],
         "app.edit-copy_game": [
             "<Primary>c"

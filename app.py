@@ -104,6 +104,7 @@ class App(Gtk.Application):
 
         self.edit_undo = Gio.SimpleAction.new("edit-undo")
         self.edit_redo = Gio.SimpleAction.new("edit-redo")
+        self.edit_undo_all = Gio.SimpleAction.new("edit-undo_all")
         self.edit_redo_all = Gio.SimpleAction.new("edit-redo_all")
         self.edit_copy_game = Gio.SimpleAction.new("edit-copy_game")
         self.edit_paste_game = Gio.SimpleAction.new("edit-paste_game")
@@ -136,6 +137,7 @@ class App(Gtk.Application):
 
         self.edit_undo.connect("activate", self.window_move_undo)
         self.edit_redo.connect("activate", self.window_move_redo)
+        self.edit_undo_all.connect("activate", self.window_move_undo_all)
         self.edit_redo_all.connect("activate", self.window_move_redo_all)
         self.edit_copy_game.connect("activate", self.window_copy_game)
         self.edit_paste_game.connect("activate", self.window_paste_game)
@@ -170,6 +172,7 @@ class App(Gtk.Application):
 
         self.actions["app.edit-undo"] = self.get_accels_for_action("app.edit-undo") 
         self.actions["app.edit-redo"] = self.get_accels_for_action("app.edit-redo")
+        self.actions["app.edit-undo_all"] = self.get_accels_for_action("app.edit-undo_all")
         self.actions["app.edit-redo_all"] = self.get_accels_for_action("app.edit-redo_all")
         self.actions["app.edit-copy_game"] = self.get_accels_for_action("app.edit-copy_game")
         self.actions["app.edit-paste_game"] = self.get_accels_for_action("app.edit-paste_game")
@@ -201,6 +204,7 @@ class App(Gtk.Application):
         self.add_action(self.file_quit)
         self.add_action(self.edit_undo)
         self.add_action(self.edit_redo)
+        self.add_action(self.edit_undo_all)
         self.add_action(self.edit_redo_all)
         self.add_action(self.edit_copy_game)
         self.add_action(self.edit_paste_game)
@@ -234,6 +238,7 @@ class App(Gtk.Application):
 
         self.set_accels_for_action("app.edit-undo", self.actions["app.edit-undo"])
         self.set_accels_for_action("app.edit-redo", self.actions["app.edit-redo"])
+        self.set_accels_for_action("app.edit-undo_all", self.actions["app.edit-undo_all"])
         self.set_accels_for_action("app.edit-redo_all", self.actions["app.edit-redo_all"])
         self.set_accels_for_action("app.edit-copy_game", self.actions["app.edit-copy_game"])
         self.set_accels_for_action("app.edit-paste_game", self.actions["app.edit-paste_game"])
@@ -413,6 +418,10 @@ class App(Gtk.Application):
     def window_move_redo(self, *args):
         """Invoke the current window's move_redo method."""
         self.get_current_window_instance().move_redo()
+
+    def window_move_undo_all(self, *args):
+        """Invoke the current window's move_undo_all method."""
+        self.get_current_window_instance().move_undo_all()
 
     def window_move_redo_all(self, *args):
         """Invoke the current window's move_redo_all method."""
@@ -917,6 +926,10 @@ class Window(Gtk.ApplicationWindow):
         """Undo the last move on the stack."""
         self.game.move_undo()
 
+    def move_undo_all(self):
+        """Undo all the moves."""
+        self.game.move_undo_to_index(-1)
+
     def new_game(self, *args):
         """Create a new game."""
 
@@ -1110,9 +1123,11 @@ class Window(Gtk.ApplicationWindow):
         if self.game.board.move_stack == []:
             self.undo_button.set_sensitive(False)
             self.app.lookup_action("edit-undo").set_enabled(False)
+            self.app.lookup_action("edit-undo_all").set_enabled(False)
         else:
             self.undo_button.set_sensitive(True)
             self.app.lookup_action("edit-undo").set_enabled(True)
+            self.app.lookup_action("edit-undo_all").set_enabled(True)
         
         if self.game.undo_stack == []:
             self.redo_button.set_sensitive(False)
