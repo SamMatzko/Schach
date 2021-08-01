@@ -137,12 +137,15 @@
             <attribute name="label">_Help</attribute>
             <section>
                 <item>
+                    <attribute name="label">Help</attribute>
+                    <attribute name="action">app.help-docs</attribute>
+                </item>
+            </section>
+            <section>
+                <item>
                     <attribute name="label">License</attribute>
                     <attribute name="action">app.help-license</attribute>
                 </item>
-            </section>
-            <attribute name="label">_Help</attribute>
-            <section>
                 <item>
                     <attribute name="label">About Schach</attribute>
                     <attribute name="action">app.help-about</attribute>
@@ -179,6 +182,10 @@
             </item>
         </section>
         <section>
+            <item>
+                <attribute name="label">Help</attribute>
+                <attribute name="action">app.help-docs</attribute>
+            </item>
             <item>
                 <attribute name="label">About</attribute>
                 <attribute name="action">app.help-about</attribute>

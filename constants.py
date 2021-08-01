@@ -90,6 +90,9 @@ AUDIO_FILE_2 = f"{ROOT_PATH}audio/move2.wav"
 # The menu .xml file
 MENU_XML = f"{ROOT_PATH}ui/menu.xml"
 
+# The main help document
+HELP_FILE = f"{ROOT_PATH}help/index.html"
+
 # The application info file
 APP_INFO = f"{ROOT_PATH}data/appinfo.json"
 

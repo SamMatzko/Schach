@@ -123,6 +123,7 @@ class App(Gtk.Application):
         self.game_engine_setup_position = Gio.SimpleAction.new("game-engine_setup_position")
         self.game_type_move = Gio.SimpleAction.new("game-type_move")
 
+        self.help_docs = Gio.SimpleAction.new("help-docs")
         self.help_license = Gio.SimpleAction.new("help-license")
         self.help_about = Gio.SimpleAction.new("help-about")
 
@@ -156,6 +157,7 @@ class App(Gtk.Application):
         self.game_engine_setup_position.connect("activate", self.window_engine_setup_position)
         self.game_type_move.connect("activate", self.window_focus_move_entry)
 
+        self.help_docs.connect("activate", self.show_help)
         self.help_license.connect("activate", self.show_license)
         self.help_about.connect("activate", self.window_show_about)
 
@@ -191,6 +193,7 @@ class App(Gtk.Application):
         self.actions["app.game-engine_setup_position"] = self.get_accels_for_action("app.game-engine_setup_position")
         self.actions["app.game-type_move"] = self.get_accels_for_action("app.game-type_move")
 
+        self.actions["app.help-docs"] = self.get_accels_for_action("app.help-docs")
         self.actions["app.help-license"] = self.get_accels_for_action("app.help-license") 
         self.actions["app.help-about"] = self.get_accels_for_action("app.help-about")
 
@@ -220,6 +223,7 @@ class App(Gtk.Application):
         self.add_action(self.game_setup_start_position)
         self.add_action(self.game_engine_setup_position)
         self.add_action(self.game_type_move)
+        self.add_action(self.help_docs)
         self.add_action(self.help_license)
         self.add_action(self.help_about)
 
@@ -257,6 +261,7 @@ class App(Gtk.Application):
         self.set_accels_for_action("app.game-engine_setup_position", self.actions["app.game-engine_setup_position"])
         self.set_accels_for_action("app.game-type_move", self.actions["app.game-type_move"])
 
+        self.set_accels_for_action("app.help-docs", self.actions["app.help-docs"])
         self.set_accels_for_action("app.help-license", self.actions["app.help-license"])
         self.set_accels_for_action("app.help-about", self.actions["app.help-about"])
 
@@ -375,6 +380,10 @@ class App(Gtk.Application):
     def get_current_window_instance(self):
         """Return the current window instance."""
         return self.windows[int(self.window)]
+
+    def show_help(self, *args):
+        """Show the help docs."""
+        os.system("browse %s" % HELP_FILE)
 
     def show_license(self, *args):
         """Show the dialog displaying GPU license."""
