@@ -36,6 +36,12 @@ gi.require_version("Gtk", "3.0")
 from constants import *
 from gi.repository import Gtk, Gdk, GdkPixbuf
 
+# The text for the KeybindingsDialog's expander label
+EXPANDER_TEXT = """Enter a keyboard shortcut.
+Do be aware that these will not be checked for validity!
+Gtk uses keyboard shortcuts in this format: <Primary>R ("Primary" means
+"Control"), F11, <Primary><Alt>R, <Primary><Shift><Alt>R."""
+
 class _Dialog(Gtk.Dialog):
     """The base class for the dialogs."""
 
@@ -962,6 +968,9 @@ class KeybindingsDialog(_Dialog):
         # The shortcut we're set to
         self.shortcut = ""
 
+        # Whether the expander is open or not
+        self.expander_open = False
+
         # The area
         self.area = self.get_content_area()
 
@@ -986,6 +995,9 @@ class KeybindingsDialog(_Dialog):
 
         # Create the buttons
         self._create_buttons()
+
+        # Create the expander
+        self._create_expander()
 
     def _create_buttons(self):
         """Create the shortcut customizer buttons."""
@@ -1016,6 +1028,35 @@ class KeybindingsDialog(_Dialog):
 
         self.box.show_all()
 
+    def _create_expander(self):
+        """Create the expander with advanced keybinding setting."""
+
+        # The expander and its box
+        self.expander = Gtk.Expander(label="Advanced")
+        self.expander.connect("activate", self._on_expander_activate)
+        self.back_box.pack_end(self.expander, True, False, 3)
+
+        self.expander_box = Gtk.VBox()
+        self.expander.add(self.expander_box)
+
+        # The label and entry for the expander
+        self.expander_label = Gtk.Label(label=EXPANDER_TEXT)
+        self.expander_box.pack_start(self.expander_label, False, False, 3)
+
+        self.expander_entry_box = Gtk.HBox()
+        self.expander_box.pack_start(self.expander_entry_box, True, True, 3)
+
+        self.expander_entry = Gtk.Entry()
+        self.expander_entry.set_placeholder_text("Type a shortcut...")
+        self.expander_entry_box.pack_start(self.expander_entry, True, True, 3)
+
+        # The apply button for the entry
+        self.expander_apply_button = Gtk.Button(label="Apply")
+        self.expander_apply_button.connect("clicked", self._set_shortcut)
+        self.expander_entry_box.pack_start(self.expander_apply_button, False, False, 3)
+
+        self.show_all()
+
     def _destroy(self, *args):
         """Destroy us!"""
         self._set_shortcut()
@@ -1042,17 +1083,31 @@ class KeybindingsDialog(_Dialog):
 
         self._set_shortcut()
 
-    def _set_shortcut(self):
+    def _on_expander_activate(self, expander):
+        """Set self.expander_open to True if the expander is open; False otherwise."""
+
+        # Set to the reverse values since the the variable is behind
+        if expander.get_expanded():
+            self.box.set_sensitive(True)
+            self.expander_open = False
+        else:
+            self.box.set_sensitive(False)
+            self.expander_open = True
+
+    def _set_shortcut(self, *args):
 
         # Set the shortcut based on the buttons and entry
         self.shortcut = ""
-        if self.control_on:
-            self.shortcut += "<Primary>"
-        if self.shift_on:
-            self.shortcut += "<Shift>"
-        if self.alt_on:
-            self.shortcut += "<Alt>"
-        self.shortcut += self.entry_text
+        if self.expander_open:
+            self.shortcut = self.expander_entry.get_text()
+        else:
+            if self.control_on:
+                self.shortcut += "<Primary>"
+            if self.shift_on:
+                self.shortcut += "<Shift>"
+            if self.alt_on:
+                self.shortcut += "<Alt>"
+            self.shortcut += self.entry_text
 
     def show_dialog(self):
         """Show the dialog."""
@@ -1377,9 +1432,9 @@ if __name__ == "__main__":
     window = Gtk.Window()
     window.add(Gtk.Label(label="Press a key to see the dialogs."))
     window.show_all()
-    with open("/home/sam/text.dcn") as f:
-        games = f.read()
-        f.close()
+    # with open("/home/sam/text.dcn") as f:
+    #     games = f.read()
+    #     f.close()
     def sd(*args):
         # print(BoardSetupDialog(window).show_dialog())
         # print(CalendarDialog(window).show_dialog())
