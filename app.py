@@ -1182,6 +1182,7 @@ class Window(Gtk.ApplicationWindow):
                 if valid_board:
                     self.game.new_game()
                     self.game.board = board
+                    self.chessboard.from_board(board)
                     self.game.update_status()
                 else:
                     messagedialogs.show_info(
