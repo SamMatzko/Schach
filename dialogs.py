@@ -1260,6 +1260,7 @@ class SettingsDialog(_Dialog):
         # Set the window to the settings
         self._set_to_settings()
 
+        self.notebook.show_all()
         self.notebook.set_current_page(0)
 
     def _create_shortcuts_box(self):
