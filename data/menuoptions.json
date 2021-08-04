@@ -25,6 +25,7 @@
     "app.game-setup_start_position": "Setup Start Position",
     "app.game-engine_setup_position": "Engine Setup Position",
     "app.game-type_move": "Type Move",
+    "app.help-docs": "Help",
     "app.help-license": "License",
     "app.help-about": "About Schach"
 }
