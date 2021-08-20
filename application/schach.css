@@ -12,43 +12,121 @@
   outline-style: dashed;
   outline-offset: -3px;
   outline-width: 1px;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   -gtk-outline-radius: 2px;
 }
 
 .background {
   color: #D3DAE3;
-  background-image: url("/home/sam/Chess-12.png");
+  background: #00437a;
+  background-size: 100%, 100%;
 }
 
 *:disabled {
   -gtk-icon-effect: dim;
+  background: #00437a;
+}
+
+.titlebar {
+  background: linear-gradient(to bottom, #0074d3, #00437a);
 }
 
 .gtkstyle-fallback {
   background-color: #363666;
   color: #D3DAE3;
 }
-  .gtkstyle-fallback:hover {
-    background-color: #4e5467;
-    color: #D3DAE3;
-  }
-  .gtkstyle-fallback:active {
-    background-color: #22242d;
-    color: #D3DAE3;
-  }
-  .gtkstyle-fallback:disabled {
-    background-color: #3c4150;
-    color: rgba(211, 218, 227, 0.45);
-  }
-  .gtkstyle-fallback:selected {
-    background-color: #3333ff;
-    color: #ffffff;
-  }
+.gtkstyle-fallback:hover {
+  background-color: #4e5467;
+  color: #D3DAE3;
+}
+.gtkstyle-fallback:active {
+  background-color: #22242d;
+  color: #D3DAE3;
+}
+.gtkstyle-fallback:disabled {
+  background-color: #3c4150;
+  color: rgba(211, 218, 227, 0.45);
+}
+.gtkstyle-fallback:selected {
+  background-color: #3333ff;
+  color: #ffffff;
+}
 
-.titlebar button {
+button {
   min-width: 25px;
   min-height: 25px;
-  background: linear-gradient(#363636, #d9d9d9);
+  background: linear-gradient(#0074d3, #00437a);
+  background-size: 100%, 100%;
   padding: 5px;
-  border: 0px;
+  border: 2px solid;
+  border-color: transparent;
+}
+button:active {
+  background: linear-gradient(#008cff, #005eaa);
+  border-color: #0074d3;
+}
+button:checked {
+  border: 2px inset;
+  border-color: #363666;
+}
+
+dialog *{
+  background-color: #00437a;
+}
+dialog box {
+  background-color: transparent;
+}
+dialog *button {
+  background-color: transparent;
+}
+dialog *image{
+  background-color: transparent;
+}
+dialog titlebar{
+  background-color: transparent;
+}
+dialog *label {
+  background-color: transparent;
+}
+dialog text{
+  background-color: #00437a;
+}
+
+entry {
+  min-width: 25px;
+  min-height: 25px;
+  background: linear-gradient(#0074d3, #00437a);
+  background-size: 100%, 100%;
+  padding: 5px;
+  border: 2px solid;
+  border-color: #363636;
+}
+
+list {
+  background-color:#012f55;
+}
+
+menu {
+  background: #00437a;
+}
+menu menuitem {
+  background: linear-gradient(to left, #00437a, #0074d3);
+}
+
+menubar {
+  background-color: inherit;
+}
+menubar menuitem:hover {
+  color: #ffffff;
+}
+
+scrollbar {
+  background-color: transparent;
+  
+}
+scrollbar slider {
+  background-color: #008cff;
+}
+scrollbar slider:active {
+  background-color: #ffffff;
 }
