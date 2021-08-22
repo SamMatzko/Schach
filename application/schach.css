@@ -148,3 +148,10 @@ scrollbar slider {
 scrollbar slider:active {
   background-color: #ffffff;
 }
+
+treeview {
+  background-color: #00437a;
+}
+treeview *:focus {
+  background: #ff0000;
+}

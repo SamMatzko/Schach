@@ -75,6 +75,7 @@
         "app.game-type_move": [
             "<Primary>m"
         ],
+        "app.help-docs": [],
         "app.help-license": [],
         "app.help-about": []
     }
