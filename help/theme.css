@@ -1,0 +1,131 @@
+.body {
+    background-image: url("media/background.png");
+    background-size: 100%, 100%;
+    position: absolute;
+}
+
+.div-body-scroll-container {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    overflow-y: scroll;
+    padding-top: 50px;
+    padding-left: 280px;
+    padding-right: 60px;
+    padding-bottom: 50px;
+}
+
+.div-content-panel {
+    background-color: #1d2334dd;
+    margin: auto;
+    clear: both;
+    min-height: 100%;
+}
+
+.div-content-panel img {
+    float: inherit;
+}
+
+.label-app-icon {
+    background: #363636;
+    column-count: 2;
+}
+
+.label-app-icon img {
+    width: 75px;
+    height: 75px;
+    padding-top: 10px;
+    padding-left: 10px;
+}
+
+.label-app-icon p {
+    color: #ffffff;
+    font-size: 15px;
+    padding-top: 25px;
+    padding-right: 25px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.link {
+    color: #069bff;
+}
+
+.menu {
+    background-color: transparent;
+}
+
+.menu-item {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 13px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    box-sizing: border-box;
+    display: block;
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+}
+
+.menu ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.menu ul li {
+    background-color: #363636;
+    border-bottom: 25px;
+    box-sizing: border-box;
+    list-style: none;
+    margin-bottom: 10px;
+}
+
+.menu ul li:hover {
+    background-color: #3f3f3f;
+    border-bottom: 25px;
+    box-sizing: border-box;
+    list-style: none;
+    margin-bottom: 10px;
+}
+
+.nav-side-bar {
+    background-color: #1d2334dd;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    min-height: 100%;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+.nav-side-scroll {
+    position: relative;
+    height: 100%;
+    width: 230px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.text-header1 {
+    color: #ffffff;
+    font-size: 50px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.text-header2 {
+    color: #ffffff;
+    font-size: 15px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    padding-left: 20px;
+}
+
+.text-paragraph1 {
+    color: #ffffff;
+    font-size: 20px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    padding-left: 10px;
+    padding-right: 10px;
+}

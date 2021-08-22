@@ -33,6 +33,9 @@ ROOT_PATH = f"{os.path.dirname(__file__)}/"
 # The config directory
 CONFIG_DIR = "%s/.schach/" % os.environ["HOME"]
 
+# The help html directory
+HELP_DIR = "%shelp/" % ROOT_PATH
+
 # The lists of LETTERS and numbers
 LETTERS = ["a", "b", "c", "d", "e", "f", "g", "h"]
 NUMBERS = ["1", "2", "3", "4", "5", "6", "7", "8"]
@@ -87,8 +90,14 @@ IMAGE_APPLICATION = f"{ROOT_PATH}icons/application/appicon.png"
 AUDIO_FILE_1 = f"{ROOT_PATH}audio/move1.wav"
 AUDIO_FILE_2 = f"{ROOT_PATH}audio/move2.wav"
 
+# The html template
+HTML_TEMPLATE = f"{ROOT_PATH}help/template.html"
+
 # The menu .xml file
 MENU_XML = f"{ROOT_PATH}ui/menu.xml"
+
+# The main help document
+HELP_FILE = f"{ROOT_PATH}help/index.html"
 
 # The application info file
 APP_INFO = f"{ROOT_PATH}data/appinfo.json"
