@@ -12,7 +12,8 @@
   outline-style: dashed;
   outline-offset: -3px;
   outline-width: 1px;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-family: cursive;
+  font-size: large;
   -gtk-outline-radius: 2px;
 }
 
@@ -70,7 +71,7 @@ button:checked {
   border-color: #363666;
 }
 
-dialog *{
+dialog *viewport {
   background-color: #00437a;
 }
 dialog box {
@@ -82,14 +83,14 @@ dialog *button {
 dialog *image{
   background-color: transparent;
 }
-dialog titlebar{
-  background-color: transparent;
-}
 dialog *label {
   background-color: transparent;
 }
 dialog text{
   background-color: #00437a;
+}
+dialog .titlebar *{
+  background: transparent;
 }
 
 entry {
@@ -112,12 +113,25 @@ menu {
 menu menuitem {
   background: linear-gradient(to left, #00437a, #0074d3);
 }
+menu menuitem:hover {
+  background: linear-gradient(to left, #00437a, #008cff);
+}
 
 menubar {
   background-color: inherit;
 }
 menubar menuitem:hover {
   color: #ffffff;
+}
+
+modelbutton {
+  background: linear-gradient(to left, #00437a, #0074d3);
+}
+modelbutton:checked {
+  border-color: #3333ff;
+}
+modelbutton:hover {
+  background: linear-gradient(to left, #00437a, #008cff);
 }
 
 scrollbar {
