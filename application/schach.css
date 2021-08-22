@@ -20,7 +20,6 @@
 .background {
   color: #D3DAE3;
   background: #00437a;
-  background-size: 100%, 100%;
 }
 
 *:disabled {
@@ -28,7 +27,7 @@
   background: #00437a;
 }
 
-.titlebar {
+*.titlebar {
   background: linear-gradient(to bottom, #0074d3, #00437a);
 }
 
@@ -60,7 +59,7 @@ button {
   background-size: 100%, 100%;
   padding: 5px;
   border: 2px solid;
-  border-color: transparent;
+  border-color: #00437a;
 }
 button:active {
   background: linear-gradient(#008cff, #005eaa);
@@ -68,6 +67,7 @@ button:active {
 }
 button:checked {
   border: 2px inset;
+  background: #00437a;
   border-color: #363666;
 }
 
@@ -132,6 +132,10 @@ modelbutton:checked {
 }
 modelbutton:hover {
   background: linear-gradient(to left, #00437a, #008cff);
+}
+
+notebook tab{
+  background-color: #00437a;
 }
 
 scrollbar {
