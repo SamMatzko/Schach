@@ -1,6 +1,6 @@
 {
-    "authors": ["Samuel Matzko"],
-    "artists": ["Samuel Matzko"],
+    "authors": ["Samuel Matzko<matzko+sam@gmail.com>"],
+    "artists": ["Samuel Matzko<matzko+sam@gmail.com>"],
     "program_name": "Schach",
     "version": "3.2.9",
     "comments": "Chess playing and game management software for Linux.",
