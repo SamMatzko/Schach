@@ -12,10 +12,14 @@
                     <attribute name="label">New window</attribute>
                     <attribute name="action">app.file-new_window</attribute>
                 </item>
+            </section>
+            <section>
                 <item>
                     <attribute name="label">Load game...</attribute>
                     <attribute name="action">app.file-open</attribute>
                 </item>
+            </section>
+            <section>
                 <item>
                     <attribute name="label">Save: Add Game...</attribute>
                     <attribute name="action">app.file-save_append</attribute>
@@ -23,6 +27,12 @@
                 <item>
                     <attribute name="label">Save: Replace Game...</attribute>
                     <attribute name="action">app.file-save</attribute>
+                </item>
+            </section>
+            <section>
+                <item>
+                    <attribute name="label">Print game...</attribute>
+                    <attribute name="action">app.file-print</attribute>
                 </item>
             </section>
             <section>
@@ -155,8 +165,10 @@
     </menu>
     <menu id="app-popover">
         <section>
-            <attribute name="label">New Window</attribute>
-            <attribute name="action">app.new-window</attribute>
+            <item>
+                <attribute name="label">New Window</attribute>
+                <attribute name="action">app.new-window</attribute>
+            </item>
         </section>
         <section>
             <submenu>

@@ -98,6 +98,7 @@ class App(Gtk.Application):
         self.file_open = Gio.SimpleAction.new("file-open")
         self.file_save_append = Gio.SimpleAction.new("file-save_append")
         self.file_save = Gio.SimpleAction.new("file-save")
+        self.file_print = Gio.SimpleAction.new("file-print")
         self.file_import_pgn = Gio.SimpleAction.new("file-import_pgn")
         self.file_export_pgn = Gio.SimpleAction.new("file-export_pgn")
         self.file_quit = Gio.SimpleAction.new("file-quit")
@@ -132,6 +133,7 @@ class App(Gtk.Application):
         self.file_open.connect("activate", self.window_load_game)
         self.file_save_append.connect("activate", self.window_save_game_append)
         self.file_save.connect("activate", self.window_save_game)
+        self.file_print.connect("activate", self.window_print_game)
         self.file_import_pgn.connect("activate", self.window_import_pgn)
         self.file_export_pgn.connect("activate", self.window_export_pgn)
         self.file_quit.connect("activate", self.window_quit)
@@ -168,6 +170,7 @@ class App(Gtk.Application):
         self.actions["app.file-open"] = self.get_accels_for_action("app.file-open")
         self.actions["app.file-save_append"] = self.get_accels_for_action("app.file-save_append")
         self.actions["app.file-save"] = self.get_accels_for_action("app.file-save")
+        self.actions["app.file-print"] = self.get_accels_for_action("app.file-print")
         self.actions["app.file-import_pgn"] = self.get_accels_for_action("app.file-import_pgn")
         self.actions["app.file-export_pgn"] = self.get_accels_for_action("app.file-export_pgn")
         self.actions["app.file-quit"] = self.get_accels_for_action("app.file-quit")
@@ -202,6 +205,7 @@ class App(Gtk.Application):
         self.add_action(self.file_open)
         self.add_action(self.file_save_append)
         self.add_action(self.file_save)
+        self.add_action(self.file_print)
         self.add_action(self.file_import_pgn)
         self.add_action(self.file_export_pgn)
         self.add_action(self.file_quit)
@@ -236,6 +240,7 @@ class App(Gtk.Application):
         self.set_accels_for_action("app.file-open", self.actions["app.file-open"])
         self.set_accels_for_action("app.file-save_append", self.actions["app.file-save_append"])
         self.set_accels_for_action("app.file-save", self.actions["app.file-save"])
+        # self.set_accels_for_action("app.file-print", self.actions["app.file-print"])
         self.set_accels_for_action("app.file-import_pgn", self.actions["app.file-import_pgn"])
         self.set_accels_for_action("app.file-export_pgn", self.actions["app.file-export_pgn"])
         self.set_accels_for_action("app.file-quit", self.actions["app.file-quit"])
@@ -353,6 +358,10 @@ class App(Gtk.Application):
         main_menubar = builder.get_object("app-menubar")
         self.set_menubar(main_menubar)
 
+        # Add the print button to the popover
+        popover = builder.get_object("app-popover")
+        popover.add(Gtk.Button.new_from_icon_name("document-print-symbolic", 1))
+
     def do_window_activated(self, window_name):
         """Set the current window to the window with the name WINDOW_NAME."""
 
@@ -400,6 +409,10 @@ class App(Gtk.Application):
     def window_save_game_append(self, *args):
         """Invoke the current window's save_game method."""
         self.get_current_window_instance().save_game(append=True)
+
+    def window_print_game(self, *args):
+        """Invoke the current window's print_game method."""
+        self.get_current_window_instance().print_game()
 
     def window_load_game(self, *args, file=None):
         """Invoke the current window's load_game method."""
@@ -631,6 +644,10 @@ class Window(Gtk.ApplicationWindow):
         self.app_popover_image = Gtk.Image.new_from_icon_name("open-menu-symbolic", 1)
         self.app_popover_button.set_image(self.app_popover_image)
         self.header_bar.pack_end(self.app_popover_button)
+
+        # The popover
+        self.app_popover = self.app_popover_button.get_popover()
+        self.app_popover.add(Gtk.Button.new_from_icon_name("document-print-symbolic", 1))
 
     def create_engine_popover(self):
         """Create the engine popover and its contents."""
@@ -1036,6 +1053,10 @@ class Window(Gtk.ApplicationWindow):
             self.game.new_game(game_instance)
         else:
             pass
+
+    def print_game(self):
+        """Print the current game to a printer."""
+        print("Printing game.")
 
     def quit(self, *args):
         """Properly close the application."""
